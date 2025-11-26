@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<sitemap><loc>https://www.blackjesusrecords.ca/sitemap-0.xml</loc></sitemap>
-</sitemapindex>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.blackjesusrecords.ca/</loc>
+  </url>
+  <url>
+    <loc>https://www.blackjesusrecords.ca/services</loc>
+  </url>
+  <url>
+    <loc>https://www.blackjesusrecords.ca/portfolio</loc>
+  </url>
+  <url>
+    <loc>https://www.blackjesusrecords.ca/post-production</loc>
+  </url>
+  <url>
+    <loc>https://www.blackjesusrecords.ca/label</loc>
+  </url>
+  <url>
+    <loc>https://www.blackjesusrecords.ca/booking</loc>
+  </url>
+  <url>
+    <loc>https://www.blackjesusrecords.ca/contact</loc>
+  </url>
+</urlset>
