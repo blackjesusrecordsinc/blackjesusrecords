@@ -131,3 +131,6 @@ export default function Navbar() {
     </header>
   );
 }
+<Link href="/a-propos" className="...">
+  À propos
+</Link>
