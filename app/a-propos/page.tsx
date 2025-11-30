@@ -1,155 +1,104 @@
-// app/a-propos/page.tsx
-
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "À propos | Black Jesus Records",
-  description:
-    "Black Jesus Records est un label et studio créatif basé à Lévis, Québec. Fondé par Emmanuel Ramazani Kibanda, le label accompagne artistes, marques et événements avec une approche professionnelle et stratégique.",
-};
-
-export default function AboutPage() {
+export default function APropos() {
   return (
-    <main className="min-h-screen bg-black text-white">
-      <section className="max-w-4xl mx-auto px-4 py-16 space-y-10">
-        <header className="space-y-4">
-          <p className="text-sm uppercase tracking-widest text-yellow-400">
-            À propos
-          </p>
-          <h1 className="text-4xl md:text-5xl font-bold">
-            Qui sommes-nous ?
-          </h1>
-          <p className="text-base md:text-lg text-white/75 leading-relaxed">
-            Black Jesus Records est un{" "}
-            <strong>label et studio créatif basé à Lévis, Québec</strong>.
-            Nous accompagnons les artistes, les marques et les événements qui
-            veulent une image cohérente, professionnelle et prête pour le
-            monde numérique.
-          </p>
-        </header>
+    <div className="max-w-3xl mx-auto py-20 px-4 text-gray-200">
+      <h1 className="text-4xl font-bold mb-8 text-yellow-400">À propos</h1>
 
-        {/* FONDATEUR */}
-        <section className="space-y-4">
-          <h2 className="text-2xl md:text-3xl font-semibold">
-            Le fondateur
-          </h2>
-          <p className="text-white/80 leading-relaxed">
-            Black Jesus Records a été fondé par{" "}
-            <strong>Emmanuel Ramazani Kibanda</strong>, réalisateur,
-            producteur et entrepreneur installé à Lévis. Après des années
-            passées à développer la musique, l’image et les histoires d’artistes
-            émergents, il crée Black Jesus Records pour offrir un service
-            complet :{" "}
-            <span className="italic">
-              de l’idée jusqu’au contenu final prêt à être publié
-            </span>
-            .
-          </p>
-        </section>
+      {/* INTRO */}
+      <p className="mb-6 leading-relaxed">
+        <strong>Black Jesus Records</strong> est un studio créatif et un label basé à Lévis (QC),
+        spécialisé dans l’audiovisuel, la musique, la photographie et la stratégie digitale.
+        Nous accompagnons les artistes, les indépendants et les entreprises qui veulent 
+        projeter une image forte, professionnelle et moderne.
+      </p>
 
-        {/* LABEL + STUDIO CRÉATIF */}
-        <section className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
-            <h3 className="text-xl font-semibold">Un label</h3>
-            <p className="text-sm text-white/80 leading-relaxed">
-              Black Jesus Records développe des artistes rap, hip-hop, afro
-              et alternatifs. Nous accompagnons :
-            </p>
-            <ul className="text-sm text-white/75 space-y-1.5 list-disc list-inside">
-              <li>Direction artistique et positionnement de l’artiste</li>
-              <li>Stratégie de sortie de singles, EP, albums</li>
-              <li>Accompagnement pour clips, visuels et réseaux sociaux</li>
-              <li>Suivi professionnel et vision long terme</li>
-            </ul>
-          </div>
+      {/* NOTRE HISTOIRE */}
+      <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Notre histoire</h2>
+      <p className="mb-4 leading-relaxed">
+        Black Jesus Records est né d’un besoin simple : avoir un endroit où les idées des
+        artistes et des entrepreneurs sont prises au sérieux, même quand le budget est
+        limité, mais l’ambition très élevée.
+      </p>
+      <p className="mb-6 leading-relaxed">
+        Au départ, le studio a été construit morceau par morceau : traitement acoustique,
+        matériel vidéo, lumière, montage, musique… Chaque élément a été pensé pour offrir
+        une expérience professionnelle dans un environnement humain, accessible et créatif.
+      </p>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-3">
-            <h3 className="text-xl font-semibold">Un studio créatif</h3>
-            <p className="text-sm text-white/80 leading-relaxed">
-              Au-delà du label, Black Jesus Records est un{" "}
-              <strong>studio créatif complet</strong> :
-            </p>
-            <ul className="text-sm text-white/75 space-y-1.5 list-disc list-inside">
-              <li>Clips musicaux, captations live, aftermovies</li>
-              <li>Shooting photo pour artistes, familles et entreprises</li>
-              <li>Montage, étalonnage, sound design et mixage</li>
-              <li>Création de sites web et optimisation pour les réseaux</li>
-            </ul>
-          </div>
-        </section>
+      {/* FONDATEUR */}
+      <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Le fondateur</h2>
+      <p className="mb-4 leading-relaxed">
+        Le studio a été fondé par <strong>Emmanuel Ramazani Kibanda</strong>, créateur
+        multidisciplinaire passionné par l’image, le son et les histoires vraies.
+      </p>
+      <p className="mb-4 leading-relaxed">
+        Emmanuel a construit son parcours en apprenant, en expérimentant et en travaillant
+        sans relâche : production musicale, enregistrement, mixage, réalisation de clips,
+        tournage, montage, direction artistique et accompagnement de projets.
+      </p>
+      <p className="mb-6 leading-relaxed">
+        Son objectif est clair : offrir aux artistes et aux entreprises un partenaire fiable,
+        capable de transformer une idée en contenu concret, prêt à être montré au public.
+      </p>
 
-        {/* INFORMATIONS LÉGALES / LOCALISATION */}
-        <section className="space-y-4">
-          <h2 className="text-2xl md:text-3xl font-semibold">
-            Informations officielles
-          </h2>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 space-y-2 text-sm text-white/80">
-            <p>
-              <span className="font-semibold">Nom :</span>{" "}
-              Black Jesus Records
-            </p>
-            <p>
-              <span className="font-semibold">Statut :</span>{" "}
-              Label & studio créatif enregistré au Canada
-            </p>
-            <p>
-              <span className="font-semibold">Localisation :</span>{" "}
-              Lévis, QC, Canada
-            </p>
-            <p>
-              <span className="font-semibold">Enregistrement :</span>{" "}
-              Black Jesus Records figure dans les registres d’entreprises
-              canadiens (voir les informations publiques sur{" "}
-              <a
-                href="https://canadacompanyregistry.com/"
-                target="_blank"
-                rel="noreferrer"
-                className="underline underline-offset-2 text-yellow-300"
-              >
-                canadacompanyregistry.com
-              </a>
-              ).
-            </p>
-          </div>
-        </section>
+      {/* IDENTITÉ */}
+      <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Notre identité</h2>
+      <p className="mb-6 leading-relaxed">
+        Black Jesus Records est à la fois un <strong>label</strong> et un
+        <strong> studio créatif</strong>. Nous travaillons sur :
+        clips, campagnes visuelles, shooting photo, enregistrement, post-production,
+        branding visuel et optimisation pour les réseaux sociaux.
+      </p>
 
-        {/* POURQUOI NOUS CHOISIR */}
-        <section className="space-y-4">
-          <h2 className="text-2xl md:text-3xl font-semibold">
-            Pourquoi travailler avec Black Jesus Records ?
-          </h2>
-          <ul className="space-y-2 text-sm text-white/80 list-disc list-inside">
-            <li>
-              <strong>Une vision d’artiste</strong> : on comprend la réalité du
-              terrain, des budgets limités et de la nécessité d’avoir du
-              contenu solide pour se démarquer.
-            </li>
-            <li>
-              <strong>Une approche stratégique</strong> : chaque clip, photo ou
-              campagne est pensé pour servir ta carrière ou ton entreprise, pas
-              seulement pour “faire une vidéo”.
-            </li>
-            <li>
-              <strong>Un cadre professionnel</strong> : label déclaré, contrats
-              propres, suivi sérieux et respect des délais.
-            </li>
-            <li>
-              <strong>Basé à Lévis, ouvert au monde</strong> : nous travaillons
-              au Québec et à l’international, en présentiel ou à distance.
-            </li>
-          </ul>
-        </section>
+      {/* MISSION */}
+      <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Notre mission</h2>
+      <p className="mb-6 leading-relaxed">
+        Apporter aux artistes et aux entreprises les outils visuels et sonores nécessaires 
+        pour faire grandir leur image, toucher leur public et se démarquer sur les réseaux 
+        et dans leur domaine. Que ce soit un clip, un site web, un shooting photo ou une
+        stratégie de contenu, le but est toujours le même : créer du contenu qui compte.
+      </p>
 
-        {/* CTA */}
-        <section className="pt-4">
-          <a
-            href="/contact"
-            className="inline-flex items-center px-6 py-3 rounded-full bg-yellow-400 text-black font-semibold text-sm hover:bg-yellow-300 transition"
-          >
-            Discuter d&apos;un projet
-          </a>
-        </section>
-      </section>
-    </main>
+      {/* VALEURS */}
+      <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Nos valeurs</h2>
+      <ul className="list-disc pl-6 mb-6 space-y-3">
+        <li>
+          <strong>Authenticité :</strong> le contenu doit refléter la vraie identité du client,
+          pas une façade.
+        </li>
+        <li>
+          <strong>Qualité :</strong> soigner autant les détails techniques que l’émotion transmise.
+        </li>
+        <li>
+          <strong>Créativité :</strong> proposer des idées qui sortent du simple “déjà vu”.
+        </li>
+        <li>
+          <strong>Respect & discrétion :</strong> confidentialité, professionnalisme et attitude propre.
+        </li>
+        <li>
+          <strong>Accompagnement :</strong> guider du premier message jusqu’à la livraison finale.
+        </li>
+      </ul>
+
+      {/* DIFFÉRENCE */}
+      <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Ce qui nous distingue</h2>
+      <ul className="list-disc pl-6 mb-6 space-y-3">
+        <li>Un seul studio pour l’image, le son et la stratégie.</li>
+        <li>Une approche flexible : Lévis, Québec et projets possibles à l’international.</li>
+        <li>Une relation directe avec le fondateur, sans couche d’intermédiaires inutile.</li>
+        <li>Des livrables optimisés pour les plateformes modernes (YouTube, Reels, TikTok, etc.).</li>
+        <li>Un suivi après le projet pour aider à bien utiliser le contenu créé.</li>
+      </ul>
+
+      {/* VISION */}
+      <h2 className="text-2xl font-semibold mb-4 text-yellow-300">Notre vision</h2>
+      <p className="mb-4 leading-relaxed">
+        Construire, depuis Lévis, un label et un studio créatif reconnus pour leur sérieux,
+        leur exigence et leur capacité à faire émerger des projets solides.
+      </p>
+      <p className="leading-relaxed">
+        Black Jesus Records veut être une référence pour celles et ceux qui ne cherchent pas
+        seulement une “vidéo” ou des “photos”, mais un vrai partenaire pour développer leur image.
+      </p>
+    </div>
   );
 }
