@@ -13,6 +13,7 @@ const navItems = [
   { href: "/post-production", label: "Post-production" },
   { href: "/booking", label: "Réservation" },
   { href: "/contact", label: "Contact" },
+  { href: "/a-propos", label: "à propos" },
 ];
 
 export default function Navbar() {
