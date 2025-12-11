@@ -1,79 +1,112 @@
 export default function PortfolioPage() {
   return (
-    <main className="min-h-screen text-white px-6 py-20 max-w-5xl mx-auto space-y-10">
-      <h1 className="text-5xl font-bold text-primary">Portfolio</h1>
-
-      <p className="text-lg text-gray-300">
-        Voici une base de portfolio pour présenter les projets Black Jesus Records.
-        Tu pourras plus tard remplacer chaque bloc par de vrais clips, liens et visuels.
-      </p>
+    <main className="min-h-screen text-white px-6 py-20 max-w-5xl mx-auto space-y-12">
+      {/* Titre + intro */}
+      <section className="space-y-4">
+        <h1 className="text-5xl font-extrabold text-yellow-400">Portfolio</h1>
+        <p className="text-lg text-gray-300 leading-relaxed max-w-2xl">
+          Une sélection de formats que Black Jesus Records peut réaliser : clips rap / street,
+          contenus pour marques, mariages et événements. Tu pourras ensuite remplacer chaque bloc
+          par de vrais projets, liens et visuels.
+        </p>
+      </section>
 
       {/* Clips d'artistes */}
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Clips & projets d&apos;artistes</h2>
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-white">
+          Clips &amp; projets d&apos;artistes
+        </h2>
+
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="bg-zinc-900 p-5 rounded-xl">
-            <h3 className="text-xl font-semibold mb-1">Clip – Shégué (exemple)</h3>
-            <p className="text-gray-400 text-sm mb-3">
+          {/* Clip Shégué */}
+          <div className="bg-zinc-900/80 p-6 rounded-2xl border border-white/5 backdrop-blur">
+            <h3 className="text-xl font-semibold mb-2">Clip – Shégué (rap / street)</h3>
+            <p className="text-gray-300 text-sm leading-relaxed mb-3">
               Clip rap / street tourné en extérieur, ambiance nocturne, plans stabilisés
-              et images serrées sur l&apos;artiste.
+              et images serrées sur l&apos;artiste. Pensé pour YouTube et les réseaux.
             </p>
-            <p className="text-xs text-gray-500">
-              Plus tard : intégrer ici un lien YouTube / Vimeo réel.
-            </p>
+
+            <a
+              href="https://youtube.com/@shegue242?si=xPnxWCIG98q8bohh"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-yellow-400 underline text-sm font-medium inline-flex items-center gap-1"
+            >
+              🔗 Voir la chaîne YouTube de Shégué
+            </a>
           </div>
 
-          <div className="bg-zinc-900 p-5 rounded-xl">
-            <h3 className="text-xl font-semibold mb-1">Session studio filmée</h3>
-            <p className="text-gray-400 text-sm mb-3">
-              Performance en studio avec mise en lumière, plusieurs angles de caméra
-              et son retravaillé en post-production.
+          {/* Session studio filmée */}
+          <div className="bg-zinc-900/80 p-6 rounded-2xl border border-white/5 backdrop-blur">
+            <h3 className="text-xl font-semibold mb-2">Session studio filmée</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Performance filmée en studio avec éclairage contrôlé, plusieurs angles de
+              caméra et mixage audio propre. Idéal pour montrer le talent brut d&apos;un artiste.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Événements */}
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Événements & aftermovies</h2>
+      {/* Événements & aftermovies */}
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-white">
+          Événements &amp; aftermovies
+        </h2>
+
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="bg-zinc-900 p-5 rounded-xl">
-            <h3 className="text-xl font-semibold mb-1">Mariage / événement privé</h3>
-            <p className="text-gray-400 text-sm mb-3">
-              Captation des moments forts, discours, détails, montés dans un film
-              émotionnel pour la famille.
+          {/* Mariage / événement privé */}
+          <div className="bg-zinc-900/80 p-6 rounded-2xl border border-white/5 backdrop-blur">
+            <h3 className="text-xl font-semibold mb-2">Mariage / événement privé</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Captation discrète des moments forts, discours et détails, montée ensuite en
+              film émotionnel pour la famille. Livraison optimisée pour la TV et le partage en ligne.
             </p>
           </div>
 
-          <div className="bg-zinc-900 p-5 rounded-xl">
-            <h3 className="text-xl font-semibold mb-1">Aftermovie de soirée / show</h3>
-            <p className="text-gray-400 text-sm mb-3">
-              Résumé dynamique d&apos;une soirée ou d&apos;un concert, avec focus sur
-              l&apos;énergie du public et l&apos;artiste.
+          {/* Aftermovie */}
+          <div className="bg-zinc-900/80 p-6 rounded-2xl border border-white/5 backdrop-blur">
+            <h3 className="text-xl font-semibold mb-2">Aftermovie de soirée / show</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Résumé dynamique d&apos;une soirée, d&apos;un concert ou d&apos;un festival :
+              énergie du public, moments clés sur scène, détails visuels et sound design
+              pour revivre l&apos;événement.
             </p>
           </div>
         </div>
       </section>
 
       {/* Marques & entreprises */}
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Contenus pour marques & entreprises</h2>
+      <section className="space-y-6">
+        <h2 className="text-2xl font-semibold text-white">
+          Contenus pour marques &amp; entreprises
+        </h2>
+
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="bg-zinc-900 p-5 rounded-xl">
-            <h3 className="text-xl font-semibold mb-1">Vidéo réseaux sociaux</h3>
-            <p className="text-gray-400 text-sm mb-3">
-              Vidéos courtes verticales pour TikTok / Reels / Shorts, pensées pour
-              attirer l&apos;attention rapidement.
+          {/* Vidéo réseaux sociaux */}
+          <div className="bg-zinc-900/80 p-6 rounded-2xl border border-white/5 backdrop-blur">
+            <h3 className="text-xl font-semibold mb-2">Vidéo réseaux sociaux</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Formats courts verticaux (TikTok, Reels, Shorts) pensés pour attirer
+              l&apos;attention en quelques secondes : hooks forts, textes à l&apos;écran,
+              montage rapide et transitions propres.
             </p>
           </div>
 
-          <div className="bg-zinc-900 p-5 rounded-xl">
-            <h3 className="text-xl font-semibold mb-1">Présentation d&apos;entreprise</h3>
-            <p className="text-gray-400 text-sm mb-3">
-              Vidéo présentant l&apos;activité, l&apos;équipe ou un produit, adaptée
-              au site web et aux réseaux.
+          {/* Présentation d’entreprise */}
+          <div className="bg-zinc-900/80 p-6 rounded-2xl border border-white/5 backdrop-blur">
+            <h3 className="text-xl font-semibold mb-2">Présentation d&apos;entreprise</h3>
+            <p className="text-gray-300 text-sm leading-relaxed">
+              Vidéo qui présente l&apos;activité, l&apos;histoire et l&apos;équipe d&apos;une
+              entreprise. Utilisable sur le site web, LinkedIn et en pitch commercial.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* CTA bas de page */}
+      <section className="pt-4">
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black rounded-full inline-flex items-center px-8 py-3 text-sm font-semibold hover:brightness-110 transition">
+          <a href="/booking">Réserver un tournage ou une post-production</a>
         </div>
       </section>
     </main>
