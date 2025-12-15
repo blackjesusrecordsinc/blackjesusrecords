@@ -1,3 +1,4 @@
+// app/booking/page.tsx
 "use client";
 
 import React, { useState } from "react";
@@ -41,17 +42,17 @@ export default function BookingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#0B0B0E] text-white antialiased">
+    <main className="min-h-screen bg-[#0B0B0E] text-white font-sans">
       {/* Header */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
             Réservation
           </p>
         </div>
 
-        <h1 className="mt-5 text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+        <h1 className="mt-5 text-4xl md:text-5xl font-bold leading-tight">
           Réserver une <span className="text-[#F5C518]">date</span>
         </h1>
 
@@ -66,8 +67,8 @@ export default function BookingPage() {
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Left: form card */}
           <div className="lg:col-span-8">
-            <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
-              <h2 className="text-2xl font-semibold tracking-wide">Informations du projet</h2>
+            <div className="rounded-2xl border border-white/10 bg-[#1A1A1F] p-7">
+              <h2 className="text-2xl font-semibold">Informations du projet</h2>
               <p className="mt-2 text-sm md:text-base text-white/70 leading-relaxed">
                 Plus tu es précis, plus on peut te répondre vite avec une proposition claire.
               </p>
@@ -75,14 +76,12 @@ export default function BookingPage() {
               <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
                 {/* Name */}
                 <div>
-                  <label className="block text-sm text-white/80 mb-2 uppercase">
-                    Nom complet *
-                  </label>
+                  <label className="block text-sm text-white/80 mb-2">Nom complet *</label>
                   <input
                     name="name"
                     type="text"
                     required
-                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/20"
                     placeholder="Ex. Emmanuel Kibanda"
                   />
                 </div>
@@ -90,25 +89,21 @@ export default function BookingPage() {
                 {/* Email + Phone */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-white/80 mb-2 uppercase">
-                      Email *
-                    </label>
+                    <label className="block text-sm text-white/80 mb-2">Email *</label>
                     <input
                       name="email"
                       type="email"
                       required
-                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#F5C518]"
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/20"
                       placeholder="ex. contact@..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-white/80 mb-2 uppercase">
-                      Téléphone
-                    </label>
+                    <label className="block text-sm text-white/80 mb-2">Téléphone</label>
                     <input
                       name="phone"
                       type="text"
-                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#F5C518]"
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/20"
                       placeholder="(optionnel)"
                     />
                   </div>
@@ -116,13 +111,11 @@ export default function BookingPage() {
 
                 {/* Service */}
                 <div>
-                  <label className="block text-sm text-white/80 mb-2 uppercase">
-                    Type de service
-                  </label>
+                  <label className="block text-sm text-white/80 mb-2">Type de service</label>
                   <input
                     name="service"
                     type="text"
-                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/20"
                     placeholder="Clip, événement, réseaux sociaux, site web..."
                   />
                 </div>
@@ -130,23 +123,19 @@ export default function BookingPage() {
                 {/* Date + Location */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-white/80 mb-2 uppercase">
-                      Date souhaitée
-                    </label>
+                    <label className="block text-sm text-white/80 mb-2">Date souhaitée</label>
                     <input
                       name="date"
                       type="date"
-                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-white/20"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-white/80 mb-2 uppercase">
-                      Lieu (ville, salle, etc.)
-                    </label>
+                    <label className="block text-sm text-white/80 mb-2">Lieu (ville, salle, etc.)</label>
                     <input
                       name="location"
                       type="text"
-                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#F5C518]"
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/20"
                       placeholder="Ex. Lévis, Québec, Montréal..."
                     />
                   </div>
@@ -154,27 +143,23 @@ export default function BookingPage() {
 
                 {/* Budget */}
                 <div>
-                  <label className="block text-sm text-white/80 mb-2 uppercase">
-                    Budget approximatif
-                  </label>
+                  <label className="block text-sm text-white/80 mb-2">Budget approximatif</label>
                   <input
                     name="budget"
                     type="text"
-                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/20"
                     placeholder="Ex. 800$, 1500$, à discuter..."
                   />
                 </div>
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm text-white/80 mb-2 uppercase">
-                    Détails du projet *
-                  </label>
+                  <label className="block text-sm text-white/80 mb-2">Détails du projet *</label>
                   <textarea
                     name="message"
                     rows={5}
                     required
-                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder-white/40 outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/40 outline-none focus:border-white/20"
                     placeholder="Objectif, style, références, plateformes, délais..."
                   />
                   <p className="mt-2 text-xs text-white/50">
@@ -187,14 +172,14 @@ export default function BookingPage() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-7 py-3 text-sm font-semibold text-black transform transition-transform hover:scale-105 disabled:opacity-50"
+                    className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-7 py-3 text-sm font-semibold text-black transition transform hover:scale-105 duration-200 disabled:opacity-50"
                   >
                     {status === "loading" ? "Envoi en cours..." : "Envoyer la demande"}
                   </button>
 
                   <a
                     href="/contact"
-                    className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-7 py-3 text-sm font-semibold text-[#F5C518] transition-colors hover:bg-[#F5C518] hover:text-black"
+                    className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-7 py-3 text-sm font-semibold text-[#F5C518] transition transform hover:scale-105 duration-200 hover:bg-[#F5C518] hover:text-black"
                   >
                     Passer par Contact
                   </a>
@@ -202,7 +187,7 @@ export default function BookingPage() {
 
                 {/* Status messages */}
                 {status === "success" && (
-                  <div className="mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 shadow-md">
+                  <div className="mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
                     <p className="text-sm text-white">
                       ✅ Demande envoyée. Merci — on te revient pour confirmer la date et les détails.
                     </p>
@@ -210,7 +195,7 @@ export default function BookingPage() {
                 )}
 
                 {status === "error" && (
-                  <div className="mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 shadow-md">
+                  <div className="mt-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
                     <p className="text-sm text-white">
                       ❌ Une erreur est survenue. Réessaie plus tard ou écris directement par email.
                     </p>
@@ -222,7 +207,7 @@ export default function BookingPage() {
 
           {/* Right: info card */}
           <div className="lg:col-span-4">
-            <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+            <div className="rounded-2xl border border-white/10 bg-[#1A1A1F] p-7">
               <h3 className="text-xl font-semibold">Ce qu’on vérifie</h3>
               <p className="mt-2 text-sm text-white/70 leading-relaxed">
                 On te répond avec une proposition claire et réaliste selon tes objectifs.
@@ -254,7 +239,7 @@ export default function BookingPage() {
         </div>
       </section>
 
-      {/* Bottom CTA */}
+      {/* Bottom CTA (cohérence globale) */}
       <section className="border-t border-white/10 bg-[#121216]">
         <div className="max-w-6xl mx-auto px-6 lg:px-8 py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="max-w-2xl">
@@ -270,13 +255,13 @@ export default function BookingPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition transform hover:scale-105 duration-200 hover:opacity-90"
             >
               Contact
             </a>
             <a
               href="/services"
-              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition-colors hover:bg-[#F5C518] hover:text-black"
+              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition transform hover:scale-105 duration-200 hover:bg-[#F5C518] hover:text-black"
             >
               Voir les services
             </a>

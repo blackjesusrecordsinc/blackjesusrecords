@@ -1,3 +1,4 @@
+// app/portfolio/page.tsx
 import React from "react";
 
 type PortfolioItem = {
@@ -79,17 +80,17 @@ const sections: PortfolioSection[] = [
 
 export default function PortfolioPage() {
   return (
-    <main className="min-h-screen bg-[#0B0B0E] text-white antialiased">
+    <main className="min-h-screen bg-[#0B0B0E] text-white font-sans">
       {/* Header */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
             Portfolio
           </p>
         </div>
 
-        <h1 className="mt-5 text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+        <h1 className="mt-5 text-4xl md:text-5xl font-bold leading-tight">
           Projets & formats{" "}
           <span className="text-[#F5C518]">cinématographiques</span>.
         </h1>
@@ -106,7 +107,7 @@ export default function PortfolioPage() {
         {sections.map((sec) => (
           <div key={sec.title} className="space-y-5">
             <div>
-              <h2 className="text-2xl md:text-3xl font-semibold tracking-wide">{sec.title}</h2>
+              <h2 className="text-2xl md:text-3xl font-semibold">{sec.title}</h2>
               {sec.subtitle && (
                 <p className="mt-2 text-sm md:text-base text-white/70 max-w-3xl leading-relaxed">
                   {sec.subtitle}
@@ -118,14 +119,14 @@ export default function PortfolioPage() {
               {sec.items.map((item) => (
                 <div
                   key={item.title}
-                  className="group rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300"
+                  className="group rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 transition transform hover:scale-105 duration-200 hover:border-white/20"
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-xl md:text-2xl font-semibold tracking-wide leading-snug">
+                    <h3 className="text-xl md:text-2xl font-semibold leading-snug">
                       {item.title}
                     </h3>
                     {item.tag && (
-                      <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase text-white/70">
+                      <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                         {item.tag}
                       </span>
                     )}
@@ -141,7 +142,7 @@ export default function PortfolioPage() {
                         href={item.link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-[#F5C518] hover:underline transform transition-transform hover:scale-105"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-[#F5C518] hover:opacity-90 transition transform hover:scale-105 duration-200"
                       >
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
                         {item.link.label}
@@ -174,13 +175,13 @@ export default function PortfolioPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="/booking"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition transform hover:scale-105 duration-200 hover:opacity-90"
             >
               Réserver une date
             </a>
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition-colors hover:bg-[#F5C518] hover:text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition transform hover:scale-105 duration-200 hover:bg-[#F5C518] hover:text-black"
             >
               Parler de votre projet
             </a>

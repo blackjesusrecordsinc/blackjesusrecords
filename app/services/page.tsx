@@ -1,3 +1,4 @@
+// app/services/page.tsx
 import React from "react";
 
 type Service = {
@@ -64,17 +65,17 @@ const services: Service[] = [
 
 export default function ServicesPage() {
   return (
-    <main className="min-h-screen bg-[#0B0B0E] text-white antialiased">
+    <main className="min-h-screen bg-[#0B0B0E] text-white font-sans">
       {/* Header */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
             Services
           </p>
         </div>
 
-        <h1 className="mt-5 text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+        <h1 className="mt-5 text-4xl md:text-5xl font-bold leading-tight">
           Image, son{" "}
           <span className="text-[#F5C518]">& stratégie</span>{" "}
           pour les marques exigeantes.
@@ -94,11 +95,11 @@ export default function ServicesPage() {
           {services.map((service) => (
             <div
               key={service.title}
-              className="group rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300"
+              className="group rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 transition transform hover:scale-105 duration-200 hover:border-white/20"
             >
               <div className="flex items-start justify-between gap-4">
-                <h2 className="text-xl md:text-2xl font-semibold tracking-wide">{service.title}</h2>
-                <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase text-white/70">
+                <h2 className="text-xl md:text-2xl font-semibold">{service.title}</h2>
+                <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                   Sur demande
                 </span>
               </div>
@@ -142,13 +143,13 @@ export default function ServicesPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="/booking"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition transform hover:scale-105 duration-200 hover:opacity-90"
             >
               Réserver une date
             </a>
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition-colors hover:bg-[#F5C518] hover:text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition transform hover:scale-105 duration-200 hover:bg-[#F5C518] hover:text-black"
             >
               Parler de votre projet
             </a>

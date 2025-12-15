@@ -1,18 +1,19 @@
+// app/label/page.tsx
 import React from "react";
 
 export default function LabelPage() {
   return (
-    <main className="min-h-screen bg-[#0B0B0E] text-white antialiased">
+    <main className="min-h-screen bg-[#0B0B0E] text-white font-sans">
       {/* Header */}
       <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
             Label
           </p>
         </div>
 
-        <h1 className="mt-5 text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+        <h1 className="mt-5 text-4xl md:text-5xl font-bold leading-tight">
           Black Jesus <span className="text-[#F5C518]">Records</span>
         </h1>
 
@@ -26,10 +27,10 @@ export default function LabelPage() {
       <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-20">
         <div className="grid gap-6 md:grid-cols-2">
           {/* Mission */}
-          <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+          <div className="rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 hover:border-white/20 transition transform hover:scale-105 duration-200">
             <div className="flex items-start justify-between gap-4">
-              <h2 className="text-2xl font-semibold tracking-wide">Notre mission</h2>
-              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase text-white/70">
+              <h2 className="text-2xl font-semibold">Notre mission</h2>
+              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                 Vision
               </span>
             </div>
@@ -42,10 +43,10 @@ export default function LabelPage() {
           </div>
 
           {/* Founder */}
-          <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+          <div className="rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 hover:border-white/20 transition transform hover:scale-105 duration-200">
             <div className="flex items-start justify-between gap-4">
-              <h2 className="text-2xl font-semibold tracking-wide">Le fondateur</h2>
-              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase text-white/70">
+              <h2 className="text-2xl font-semibold">Le fondateur</h2>
+              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                 Direction
               </span>
             </div>
@@ -58,10 +59,10 @@ export default function LabelPage() {
           </div>
 
           {/* Artists */}
-          <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+          <div className="rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 hover:border-white/20 transition transform hover:scale-105 duration-200">
             <div className="flex items-start justify-between gap-4">
-              <h2 className="text-2xl font-semibold tracking-wide">Nos artistes</h2>
-              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase text-white/70">
+              <h2 className="text-2xl font-semibold">Nos artistes</h2>
+              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                 Développement
               </span>
             </div>
@@ -78,10 +79,10 @@ export default function LabelPage() {
           </div>
 
           {/* Offer */}
-          <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+          <div className="rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 hover:border-white/20 transition transform hover:scale-105 duration-200">
             <div className="flex items-start justify-between gap-4">
-              <h2 className="text-2xl font-semibold tracking-wide">Ce qu’on offre</h2>
-              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase text-white/70">
+              <h2 className="text-2xl font-semibold">Ce qu’on offre</h2>
+              <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                 Accompagnement
               </span>
             </div>
@@ -106,11 +107,11 @@ export default function LabelPage() {
         </div>
 
         {/* Submit project block */}
-        <div className="mt-8 rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+        <div className="mt-8 rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 hover:border-white/20 transition transform hover:scale-105 duration-200">
           <div className="flex items-start justify-between gap-4">
-            <h2 className="text-2xl font-semibold tracking-wide">Soumettre un projet</h2>
-            <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase text-white/70">
-              A&amp;R
+            <h2 className="text-2xl font-semibold">Soumettre un projet</h2>
+            <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+              A&R
             </span>
           </div>
 
@@ -123,13 +124,13 @@ export default function LabelPage() {
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition-colors hover:bg-[#F5C518] hover:text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition transform hover:scale-105 duration-200 hover:bg-[#F5C518] hover:text-black"
             >
               Envoyer une démo (Contact)
             </a>
             <a
               href="/booking"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition transform hover:scale-105 duration-200 hover:opacity-90"
             >
               Réserver un appel
             </a>
@@ -146,7 +147,7 @@ export default function LabelPage() {
               <span className="text-[#F5C518]">réelle</span> ?
             </h2>
             <p className="mt-3 text-sm md:text-base text-white/70 leading-relaxed">
-              Envoie une démo ou réserve une date. On te propose une direction claire, un rendu solide
+              Envoie une démo ou réserve une date. On te propose une direction claire, un rendu premium
               et une stratégie adaptée à ton public.
             </p>
           </div>
@@ -154,13 +155,13 @@ export default function LabelPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="/booking"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition transform hover:scale-105 duration-200 hover:opacity-90"
             >
               Réserver une date
             </a>
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition-colors hover:bg-[#F5C518] hover:text-black transform transition-transform hover:scale-105"
+              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition transform hover:scale-105 duration-200 hover:bg-[#F5C518] hover:text-black"
             >
               Contact
             </a>
