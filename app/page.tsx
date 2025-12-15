@@ -1,21 +1,37 @@
 // app/page.tsx
 import Link from "next/link";
+import Image from "next/image";
 import SectionTitle from "@/components/SectionTitle";
 import ServiceCard from "@/components/ServiceCard";
 import { services } from "@/lib/services";
 
+const proof = [
+  { value: "+20", label: "Projets livrés (clips, événements, contenus)" },
+  { value: "48–72h", label: "Délai moyen pour un premier preview montage" },
+  { value: "4K", label: "Exports optimisés YouTube, TikTok, Reels" },
+];
+
+const portfolioPreview = [
+  { title: "Clip rap / street", tag: "Réalisation · Montage", href: "/portfolio" },
+  { title: "Aftermovie événement", tag: "Captation · Étalonnage", href: "/portfolio" },
+  { title: "Contenu réseaux", tag: "Reels · TikTok · Shorts", href: "/portfolio" },
+];
+
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      {/* HERO PRO */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background */}
+      {/* HERO */}
+      <section className="relative min-h-[92vh] flex items-center overflow-hidden">
+        {/* Background (ciné + profondeur) */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/10 to-black" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-400/10 via-black to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-400/12 via-black to-black" />
+        <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(#ffffff_1px,transparent_1px)] [background-size:18px_18px]" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/60 to-transparent" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Texte */}
+            {/* TEXTE */}
             <div className="space-y-6">
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20">
@@ -25,7 +41,7 @@ export default function HomePage() {
                   </span>
                 </div>
 
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.05]">
                   <span className="bg-gradient-to-r from-white to-white bg-clip-text text-transparent">
                     Image, son
                   </span>
@@ -42,13 +58,18 @@ export default function HomePage() {
                   <span className="text-yellow-400 font-medium">événements</span> qui veulent
                   marquer les esprits.
                 </p>
+
+                <p className="text-sm md:text-base text-white/55 max-w-2xl">
+                  Direction artistique, tournage stabilisé, drone, montage, étalonnage et exports
+                  optimisés — une seule équipe, un rendu ciné.
+                </p>
               </div>
 
               {/* CTA */}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link
                   href="/booking"
-                  className="group relative px-8 py-4 bg-yellow-400 text-black font-semibold rounded-lg overflow-hidden transition-all hover:scale-105 active:scale-95"
+                  className="group relative px-8 py-4 bg-yellow-400 text-black font-semibold rounded-lg overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_12px_40px_rgba(0,0,0,0.35)]"
                 >
                   <span className="relative z-10">Réserver une date</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -79,22 +100,69 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Visuel simple (sans image perso) */}
+            {/* VISUEL PRO (photo + citation) */}
             <div className="relative">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-yellow-400/20 via-purple-500/10 to-pink-500/20 border border-white/10 backdrop-blur-sm p-8 flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center mx-auto">
-                    <span className="text-2xl">🎬</span>
-                  </div>
-                  <p className="text-white/80 italic">
-                    "De l&apos;idée à la réalisation, nous transformons votre vision en contenu
-                    mémorable."
+              {/* Glow discret */}
+              <div className="absolute -inset-6 bg-gradient-to-br from-yellow-400/16 via-purple-500/10 to-pink-500/10 blur-2xl opacity-70" />
+
+              <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+                <Image
+                  src="/black-jesus-records-hero.jpg"
+                  alt="Black Jesus Records – Réalisation"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                  className="object-cover object-[50%_18%] scale-[1.02]"
+                />
+
+                {/* Vignette + contraste (plus clean) */}
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.07),_rgba(0,0,0,0.65))]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10" />
+
+                {/* Dégradé bas pour texte */}
+                <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/80 to-transparent" />
+
+                {/* TEXTE EN BAS */}
+                <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-8 pb-10 md:pb-12">
+                  <p className="text-white/95 text-base md:text-[15px] italic tracking-wide drop-shadow">
+                    “De l’idée à la réalisation.”
                   </p>
-                  <p className="text-xs text-white/60">Équipe Black Jesus Records</p>
+                  <p className="mt-2 text-white/70 text-xs md:text-sm tracking-wide">
+                    — Black Jesus Records
+                  </p>
                 </div>
+              </div>
+
+              {/* Détail premium */}
+              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/50">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-400/70" />
+                Direction artistique · Réalisation · Post-production
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* PREUVE & CRÉDIBILITÉ */}
+      <section className="max-w-6xl mx-auto px-4 py-14">
+        <div className="grid gap-6 md:grid-cols-3">
+          {proof.map((p) => (
+            <div
+              key={p.value}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-yellow-400/35 transition shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
+            >
+              <p className="text-3xl font-bold text-white">{p.value}</p>
+              <p className="mt-2 text-white/70 text-sm leading-relaxed">{p.label}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-yellow-400/30 bg-yellow-400/5 p-6 md:p-8">
+          <p className="text-white/90 italic text-base md:text-lg leading-relaxed">
+            “Qualité cinéma, communication simple, et livraison dans les délais. On a enfin un rendu
+            qui fait pro.”
+          </p>
+          <p className="mt-3 text-sm text-white/60">— Client / artiste</p>
         </div>
       </section>
 
@@ -112,6 +180,56 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* APERÇU PORTFOLIO */}
+      <section className="max-w-6xl mx-auto px-4 pb-16">
+        <SectionTitle
+          eyebrow="Portfolio"
+          title="Aperçu de nos réalisations"
+          subtitle="Un style ciné, une énergie street, et des formats pensés pour performer sur les plateformes."
+        />
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {portfolioPreview.map((item, i) => (
+            <Link
+              key={item.title}
+              href={item.href}
+              className="group rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-yellow-400/40 transition shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-white font-semibold">{item.title}</p>
+                <span className="text-white/50 group-hover:text-yellow-400 transition">→</span>
+              </div>
+              <p className="mt-2 text-sm text-white/60">{item.tag}</p>
+
+              {/* vignette premium (sans assets) */}
+              <div className="mt-4 h-28 rounded-xl border border-white/10 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/18 via-purple-500/10 to-pink-500/10" />
+                <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:22px_22px]" />
+                <div
+                  className={`absolute inset-0 ${
+                    i === 0
+                      ? "bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.10),transparent_55%)]"
+                      : i === 1
+                      ? "bg-[radial-gradient(circle_at_70%_35%,rgba(255,255,255,0.10),transparent_55%)]"
+                      : "bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,0.10),transparent_55%)]"
+                  }`}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/portfolio"
+            className="px-6 py-3 rounded-full border border-white/20 text-white hover:border-yellow-400 hover:text-yellow-400 transition"
+          >
+            Voir tout le portfolio
+          </Link>
+        </div>
+      </section>
+
       {/* LABEL HIGHLIGHT */}
       <section className="max-w-6xl mx-auto px-4 pb-16">
         <div className="border border-yellow-400/40 rounded-2xl p-6 md:p-8 bg-yellow-400/5">
@@ -121,7 +239,7 @@ export default function HomePage() {
             subtitle="Plus qu’un prestataire : un label qui comprend les réalités des artistes, des indépendants aux professionnels."
           />
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <p className="text-sm text-white/75 max-w-xl">
+            <p className="text-sm text-white/75 max-w-xl leading-relaxed">
               Direction artistique, production musicale, accompagnement d’image, coaching carrière :
               nous travaillons avec des artistes qui veulent structurer leur projet, construire un
               univers fort et préparer le long terme.
@@ -131,6 +249,37 @@ export default function HomePage() {
               className="px-5 py-2.5 rounded-full bg-white text-black text-sm font-medium hover:bg-yellow-400 transition-colors"
             >
               Découvrir le label
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA FINAL */}
+      <section className="max-w-6xl mx-auto px-4 pb-24">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+          <div>
+            <p className="text-2xl md:text-3xl font-bold text-white">
+              Prêt à tourner quelque chose de fort ?
+            </p>
+            <p className="mt-2 text-white/70 leading-relaxed">
+              Dis-nous ton idée. On te répond avec une approche claire, un plan, et un rendu ciné.
+            </p>
+            <p className="mt-3 text-sm text-white/55">
+              Réponse rapide · Plan clair · Livraison propre
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Link
+              href="/booking"
+              className="px-7 py-3 rounded-lg bg-yellow-400 text-black font-semibold hover:scale-[1.02] transition"
+            >
+              Réserver
+            </Link>
+            <Link
+              href="/contact"
+              className="px-7 py-3 rounded-lg border border-white/20 text-white hover:border-yellow-400 hover:text-yellow-400 transition"
+            >
+              Contact
             </Link>
           </div>
         </div>
