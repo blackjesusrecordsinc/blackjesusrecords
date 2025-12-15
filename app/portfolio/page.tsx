@@ -1,5 +1,8 @@
 // app/portfolio/page.tsx
-import React from "react";
+"use client";
+
+import React, { useMemo, useState } from "react";
+import Image from "next/image";
 
 type PortfolioItem = {
   title: string;
@@ -13,6 +16,8 @@ type PortfolioSection = {
   subtitle?: string;
   items: PortfolioItem[];
 };
+
+type GalleryImage = { src: string; alt: string };
 
 const sections: PortfolioSection[] = [
   {
@@ -79,6 +84,18 @@ const sections: PortfolioSection[] = [
 ];
 
 export default function PortfolioPage() {
+  // ✅ Galerie photo (public/photo-portrait/web/portrait-1.jpg → portrait-11.jpg)
+  const photoPortraitGallery: GalleryImage[] = useMemo(
+    () =>
+      Array.from({ length: 11 }, (_, i) => ({
+        src: `/photo-portrait/web/portrait-${i + 1}.jpg`,
+        alt: `Séance photo — Portrait ${i + 1}`,
+      })),
+    []
+  );
+
+  const [lightbox, setLightbox] = useState<GalleryImage | null>(null);
+
   return (
     <main className="min-h-screen bg-[#0B0B0E] text-white font-sans">
       {/* Header */}
@@ -97,13 +114,28 @@ export default function PortfolioPage() {
 
         <p className="mt-5 max-w-3xl text-base md:text-lg text-white/70 leading-relaxed">
           Une sélection de formats que Black Jesus Records peut réaliser : clips rap / street,
-          contenus pour marques, mariages et événements. Tu pourras ensuite remplacer chaque bloc
-          par de vrais projets, liens et visuels.
+          contenus pour marques, mariages et événements — et maintenant{" "}
+          <span className="text-white">séances photo professionnelles</span>.
         </p>
+
+        <div className="mt-7 flex flex-col sm:flex-row gap-3">
+          <a
+            href="/booking"
+            className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition hover:opacity-90"
+          >
+            Réserver une date
+          </a>
+          <a
+            href="/contact"
+            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+          >
+            Demander un devis
+          </a>
+        </div>
       </section>
 
       {/* Sections */}
-      <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-20 space-y-10">
+      <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-16 space-y-12">
         {sections.map((sec) => (
           <div key={sec.title} className="space-y-5">
             <div>
@@ -119,7 +151,7 @@ export default function PortfolioPage() {
               {sec.items.map((item) => (
                 <div
                   key={item.title}
-                  className="group rounded-2xl border border-white/10 bg-[#1A1A1F] p-7 transition transform hover:scale-105 duration-200 hover:border-white/20"
+                  className="group rounded-2xl border border-white/10 bg-[#14141A] p-7 transition duration-200 hover:border-white/20 hover:bg-[#171720]"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <h3 className="text-xl md:text-2xl font-semibold leading-snug">
@@ -142,7 +174,7 @@ export default function PortfolioPage() {
                         href={item.link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-[#F5C518] hover:opacity-90 transition transform hover:scale-105 duration-200"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-[#F5C518] hover:opacity-90 transition"
                       >
                         <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
                         {item.link.label}
@@ -156,6 +188,76 @@ export default function PortfolioPage() {
             </div>
           </div>
         ))}
+
+        {/* ✅ Nouvelle section: Séance photo professionnelle */}
+        <div className="space-y-5 pt-2">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-semibold">
+              Séance photo professionnelle
+            </h2>
+            <p className="mt-2 text-sm md:text-base text-white/70 max-w-3xl leading-relaxed">
+              Portraits premium & branding visuel : direction artistique, lumière maîtrisée et
+              retouches propres. Idéal pour artistes, cover, presse, réseaux et site web.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-[#14141A] p-7">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                  Galerie
+                </div>
+                <h3 className="mt-3 text-xl md:text-2xl font-semibold">
+                  Extraits — Portrait / Lifestyle
+                </h3>
+                <p className="mt-2 text-sm text-white/70">
+                  Clique sur une photo pour l’ouvrir en plein écran.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <a
+                  href="/booking"
+                  className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition hover:opacity-90"
+                >
+                  Réserver une séance
+                </a>
+                <a
+                  href="/contact"
+                  className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition hover:bg-[#F5C518] hover:text-black"
+                >
+                  Tarifs / Devis
+                </a>
+              </div>
+            </div>
+
+            {/* Gallery Grid */}
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {photoPortraitGallery.map((img) => (
+                <button
+                  key={img.src}
+                  onClick={() => setLightbox(img)}
+                  className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-black/30"
+                  aria-label={`Ouvrir ${img.alt}`}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-black/0 opacity-0 transition-opacity group-hover:opacity-100" />
+                </button>
+              ))}
+            </div>
+
+            <p className="mt-4 text-xs text-white/55">
+              Fichiers optimisés web (JPEG) pour un affichage rapide sur mobile et desktop.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* CTA */}
@@ -175,19 +277,47 @@ export default function PortfolioPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="/booking"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition transform hover:scale-105 duration-200 hover:opacity-90"
+              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition hover:opacity-90"
             >
               Réserver une date
             </a>
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition transform hover:scale-105 duration-200 hover:bg-[#F5C518] hover:text-black"
+              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition hover:bg-[#F5C518] hover:text-black"
             >
               Parler de votre projet
             </a>
           </div>
         </div>
       </section>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setLightbox(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="relative w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-black"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="relative aspect-[16/10]">
+              <Image src={lightbox.src} alt={lightbox.alt} fill className="object-contain" />
+            </div>
+            <div className="flex items-center justify-between border-t border-white/10 px-4 py-3">
+              <p className="text-sm text-white/75">{lightbox.alt}</p>
+              <button
+                onClick={() => setLightbox(null)}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

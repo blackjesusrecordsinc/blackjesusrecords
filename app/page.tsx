@@ -105,17 +105,18 @@ export default function HomePage() {
               {/* Glow discret */}
               <div className="absolute -inset-6 bg-gradient-to-br from-yellow-400/16 via-purple-500/10 to-pink-500/10 blur-2xl opacity-70" />
 
-              <div className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+              {/* IMPORTANT: hauteur réelle (évite carré vide / rendu instable) */}
+              <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] rounded-2xl overflow-hidden border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
                 <Image
                   src="/black-jesus-records-hero.jpg"
                   alt="Black Jesus Records – Réalisation"
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 560px"
-                  className="object-cover object-[50%_18%] scale-[1.02]"
+                  className="object-cover object-[50%_14%]"
                 />
 
-                {/* Vignette + contraste (plus clean) */}
+                {/* Vignette + contraste */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.07),_rgba(0,0,0,0.65))]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10" />
 
@@ -123,11 +124,11 @@ export default function HomePage() {
                 <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/80 to-transparent" />
 
                 {/* TEXTE EN BAS */}
-                <div className="absolute inset-0 flex flex-col items-center justify-end text-center px-8 pb-10 md:pb-12">
-                  <p className="text-white/95 text-base md:text-[15px] italic tracking-wide drop-shadow">
+                <div className="absolute inset-x-0 bottom-8 text-center px-8">
+                  <p className="text-white/95 text-[15px] italic tracking-wide drop-shadow">
                     “De l’idée à la réalisation.”
                   </p>
-                  <p className="mt-2 text-white/70 text-xs md:text-sm tracking-wide">
+                  <p className="mt-2 text-white/70 text-sm tracking-wide">
                     — Black Jesus Records
                   </p>
                 </div>
@@ -201,7 +202,6 @@ export default function HomePage() {
               </div>
               <p className="mt-2 text-sm text-white/60">{item.tag}</p>
 
-              {/* vignette premium (sans assets) */}
               <div className="mt-4 h-28 rounded-xl border border-white/10 overflow-hidden relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/18 via-purple-500/10 to-pink-500/10" />
                 <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(rgba(255,255,255,0.7)_1px,transparent_1px)] [background-size:22px_22px]" />
