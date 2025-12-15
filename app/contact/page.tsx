@@ -1,8 +1,6 @@
-// app/contact/page.tsx
 "use client";
 
-import { useState } from "react";
-import SectionTitle from "@/components/SectionTitle";
+import React, { useState } from "react";
 
 type FormState = {
   name: string;
@@ -54,11 +52,11 @@ export default function ContactPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Une erreur est survenue.");
+        setError(data?.error || "Une erreur est survenue.");
         return;
       }
 
-      setSuccess("Merci ! Votre message a bien été envoyé.");
+      setSuccess("Merci. Ton message a bien été envoyé, on te répond rapidement.");
       setForm({
         name: "",
         email: "",
@@ -71,149 +69,255 @@ export default function ContactPage() {
       });
     } catch (err) {
       console.error(err);
-      setError("Erreur de connexion. Réessayez plus tard.");
+      setError("Erreur de connexion. Réessaie plus tard.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16">
-      <SectionTitle
-        eyebrow="Contact"
-        title="Parlez-nous de votre projet"
-        subtitle="Remplissez ce formulaire et nous vous répondons rapidement pour discuter de vos besoins."
-      />
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm text-white/70 mb-1">Nom complet *</label>
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-white/70 mb-1">Email *</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm text-white/70 mb-1">Téléphone</label>
-            <input
-              type="tel"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-white/70 mb-1">Type de service</label>
-            <select
-              name="service"
-              value={form.service}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-            >
-              <option value="">Sélectionner…</option>
-              <option value="Clip musical">Clip musical</option>
-              <option value="Événement">Événement (mariage, gala, etc.)</option>
-              <option value="Contenu réseaux sociaux">Contenu réseaux sociaux</option>
-              <option value="Post-production">Post-production</option>
-              <option value="Label / accompagnement artiste">
-                Label / accompagnement artiste
-              </option>
-              <option value="Autre">Autre</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm text-white/70 mb-1">Date souhaitée</label>
-            <input
-              type="date"
-              name="date"
-              value={form.date}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="block text-sm text-white/70 mb-1">Lieu</label>
-            <input
-              type="text"
-              name="location"
-              value={form.location}
-              onChange={handleChange}
-              placeholder="Ville, salle, type de lieu..."
-              className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm text-white/70 mb-1">Budget (approx.)</label>
-          <input
-            type="text"
-            name="budget"
-            value={form.budget}
-            onChange={handleChange}
-            placeholder="Ex: 800$, 1500$..."
-            className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm text-white/70 mb-1">Message *</label>
-          <textarea
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            required
-            rows={5}
-            className="w-full rounded-lg bg-black border border-white/20 px-3 py-2 text-sm focus:outline-none focus:border-yellow-400"
-            placeholder="Parlez-nous de votre projet, du style, des besoins techniques, etc."
-          />
-        </div>
-
-        {error && (
-          <p className="text-sm text-red-400">
-            {error}
+    <main className="min-h-screen bg-[#0B0B0E] text-white antialiased">
+      {/* Header */}
+      <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-10">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-white/70">
+            Contact
           </p>
-        )}
-        {success && (
-          <p className="text-sm text-green-400">
-            {success}
-          </p>
-        )}
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-8 py-3 rounded-lg bg-yellow-400 text-black font-semibold text-sm hover:bg-yellow-300 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-        >
-          {loading ? "Envoi en cours..." : "Envoyer le message"}
-        </button>
-      </form>
-    </div>
+        <h1 className="mt-5 text-4xl md:text-5xl font-extrabold tracking-tight leading-tight">
+          Parlez-nous de votre{" "}
+          <span className="text-[#F5C518]">projet</span>
+        </h1>
+
+        <p className="mt-5 max-w-3xl text-base md:text-lg text-white/70 leading-relaxed">
+          Décris ton idée, ton besoin ou ton objectif. Que ce soit un clip, un événement,
+          de la post-production ou un projet artistique, on te répond avec une approche claire.
+        </p>
+      </section>
+
+      {/* Form */}
+      <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-20">
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Form card */}
+          <div className="lg:col-span-8">
+            <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+              <h2 className="text-2xl font-semibold tracking-wide">Formulaire de contact</h2>
+              <p className="mt-2 text-sm md:text-base text-white/70 leading-relaxed">
+                Plus les infos sont claires, plus notre réponse sera précise.
+              </p>
+
+              <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+                {/* Name + Email */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-white/80 mb-2 uppercase">
+                      Nom complet *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={form.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-white/80 mb-2 uppercase">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    />
+                  </div>
+                </div>
+
+                {/* Phone + Service */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-white/80 mb-2 uppercase">
+                      Téléphone
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleChange}
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-white/80 mb-2 uppercase">
+                      Type de service
+                    </label>
+                    <select
+                      name="service"
+                      value={form.service}
+                      onChange={handleChange}
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    >
+                      <option value="">Sélectionner…</option>
+                      <option value="Clip musical">Clip musical</option>
+                      <option value="Événement">Événement</option>
+                      <option value="Réseaux sociaux">Contenu réseaux sociaux</option>
+                      <option value="Post-production">Post-production</option>
+                      <option value="Label">Label / accompagnement artiste</option>
+                      <option value="Autre">Autre</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Date + Location */}
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm text-white/80 mb-2 uppercase">
+                      Date souhaitée
+                    </label>
+                    <input
+                      type="date"
+                      name="date"
+                      value={form.date}
+                      onChange={handleChange}
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm text-white/80 mb-2 uppercase">
+                      Lieu
+                    </label>
+                    <input
+                      type="text"
+                      name="location"
+                      value={form.location}
+                      onChange={handleChange}
+                      placeholder="Ville, salle, studio, extérieur…"
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    />
+                  </div>
+                </div>
+
+                {/* Budget */}
+                <div>
+                  <label className="block text-sm text-white/80 mb-2 uppercase">
+                    Budget approximatif
+                  </label>
+                  <input
+                    type="text"
+                    name="budget"
+                    value={form.budget}
+                    onChange={handleChange}
+                    placeholder="Ex. 800$, 1500$, à discuter…"
+                    className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                  />
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label className="block text-sm text-white/80 mb-2 uppercase">
+                    Message *
+                  </label>
+                    <textarea
+                      name="message"
+                      value={form.message}
+                      onChange={handleChange}
+                      required
+                      rows={5}
+                      placeholder="Objectif, style, références, plateformes, délais…"
+                      className="w-full rounded-xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-[#F5C518]"
+                    />
+                </div>
+
+                {/* Feedback */}
+                {error && (
+                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 shadow-md">
+                    <p className="text-sm text-white">{error}</p>
+                  </div>
+                )}
+
+                {success && (
+                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 shadow-md">
+                    <p className="text-sm text-white">{success}</p>
+                  </div>
+                )}
+
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-8 py-3 text-sm font-semibold text-black transform transition-transform hover:scale-105 disabled:opacity-50"
+                >
+                  {loading ? "Envoi en cours…" : "Envoyer le message"}
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Info card */}
+          <div className="lg:col-span-4">
+            <div className="rounded-3xl border border-white/10 bg-[#1A1A1F] p-7 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+              <h3 className="text-xl font-semibold">Comment on travaille</h3>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                Chaque projet est analysé avant confirmation.
+              </p>
+
+              <div className="mt-5 space-y-3 text-sm text-white/80">
+                {[
+                  "Analyse du besoin & des objectifs",
+                  "Disponibilité & faisabilité",
+                  "Approche créative proposée",
+                  "Délais & livraison",
+                ].map((item) => (
+                  <div key={item} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 h-px w-full bg-white/10" />
+
+              <p className="mt-5 text-sm text-white/70">
+                Pour une réservation directe avec date précise, passe par la page{" "}
+                <a href="/booking" className="text-[#F5C518] font-semibold hover:underline">
+                  Réservation
+                </a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Bottom CTA */}
+      <section className="border-t border-white/10 bg-[#121216]">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-2xl">
+            <h2 className="text-2xl md:text-3xl font-semibold leading-tight">
+              On te répond{" "}
+              <span className="text-[#F5C518]">rapidement</span>
+            </h2>
+            <p className="mt-3 text-sm md:text-base text-white/70">
+              Tous les messages sont lus. Les projets clairs et structurés sont prioritaires.
+            </p>
+          </div>
+
+          <a
+            href="/services"
+            className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition-colors hover:bg-[#F5C518] hover:text-black transform transition-transform hover:scale-105"
+          >
+            Voir les services
+          </a>
+        </div>
+      </section>
+    </main>
   );
 }
