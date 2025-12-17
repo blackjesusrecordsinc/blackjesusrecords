@@ -37,7 +37,7 @@ function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
-function normalizePhone(v: string) {
+function normalizePhone(v?: string) {
   const x = clean(v);
   if (!x) return "";
   return x.replace(/[^\d+]/g, "");
@@ -177,13 +177,21 @@ export async function POST(req: Request) {
       );
     }
 
-    const body = (await req.json()) as ContactPayload;
+    let body: ContactPayload;
+    try {
+      body = (await req.json()) as ContactPayload;
+    } catch {
+      return NextResponse.json(
+        { error: "Payload JSON invalide." },
+        { status: 400 }
+      );
+    }
 
     // ✅ Honeypot anti-bot
     const honeypot = clean(body.company);
     if (honeypot) return NextResponse.json({ success: true });
 
-    // ✅ Normalize + clamp
+    // ✅ Normalize + clamp (TOUJOURS string)
     const name = safeLen(clean(body.name) || "Non renseigné", 80);
     const email = safeLen(clean(body.email).toLowerCase(), 120);
     const phone = safeLen(normalizePhone(body.phone), 40);
@@ -218,7 +226,8 @@ export async function POST(req: Request) {
     const internal = await resend.emails.send({
       from: internalFrom,
       to: [internalTo],
-      replyTo: email, // si TS refuse: update resend ou remplace par reply_to
+      replyTo: email, // (Resend) OK dans la majorité des versions
+      headers: { "Reply-To": email }, // fallback robuste
       subject: `Nouvelle demande — ${service}`,
       html: buildInternalHtml({
         name,
@@ -240,9 +249,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2) Auto-réponse client ✅ (VIRGULE CORRIGÉE ICI)
+    // 2) Auto-réponse client
     const client = await resend.emails.send({
-      from: clientFrom, // ✅ virgule obligatoire
+      from: clientFrom,
       to: [email],
       subject: "Confirmation de réception — Black Jesus Records",
       html: buildClientHtml(name),
