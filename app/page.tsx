@@ -15,6 +15,16 @@ const portfolioPreview = [
   { title: "Clip rap / street", tag: "Réalisation · Montage", href: "/portfolio" },
   { title: "Aftermovie événement", tag: "Captation · Étalonnage", href: "/portfolio" },
   { title: "Contenu réseaux", tag: "Reels · TikTok · Shorts", href: "/portfolio" },
+  { title: "Séance photo pro", tag: "Portrait · Food · Corporate", href: "/portfolio#photo" },
+];
+
+const photoQuickLinks = [
+  { title: "Portrait", desc: "Studio & lifestyle, branding visuel.", href: "/portfolio#portrait" },
+  { title: "Food", desc: "Photos culinaires pour restaurants & menus.", href: "/portfolio#food" },
+  { title: "Couple", desc: "Séances naturelles, complicité & émotion.", href: "/portfolio#couple" },
+  { title: "Corporate", desc: "Commerces, équipe, locaux, image de marque.", href: "/portfolio#corporate" },
+  { title: "Editorial", desc: "Direction artistique, style, contenu signature.", href: "/portfolio#editorial" },
+  { title: "Family", desc: "Moments sincères, famille & enfants.", href: "/portfolio#family" },
 ];
 
 export default function HomePage() {
@@ -22,7 +32,6 @@ export default function HomePage() {
     <div className="min-h-screen">
       {/* HERO */}
       <section className="relative min-h-[92vh] flex items-center overflow-hidden">
-        {/* Background (ciné + profondeur) */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/10 to-black" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-yellow-400/12 via-black to-black" />
         <div className="absolute inset-0 opacity-[0.08] [background-image:radial-gradient(#ffffff_1px,transparent_1px)] [background-size:18px_18px]" />
@@ -52,16 +61,15 @@ export default function HomePage() {
                 </h1>
 
                 <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-2xl">
-                  Pour les{" "}
-                  <span className="text-yellow-400 font-medium">artistes</span>, les{" "}
+                  Pour les <span className="text-yellow-400 font-medium">artistes</span>, les{" "}
                   <span className="text-yellow-400 font-medium">marques</span> et les{" "}
-                  <span className="text-yellow-400 font-medium">événements</span> qui veulent
-                  marquer les esprits.
+                  <span className="text-yellow-400 font-medium">événements</span> qui veulent marquer les esprits.
                 </p>
 
                 <p className="text-sm md:text-base text-white/55 max-w-2xl">
-                  Direction artistique, tournage stabilisé, drone, montage, étalonnage et exports
-                  optimisés — une seule équipe, un rendu ciné.
+                  Direction artistique, tournage stabilisé, drone, montage, étalonnage et exports optimisés — une seule
+                  équipe, un rendu ciné.
+                  <span className="text-white/70"> Maintenant : séances photo pro (portrait, food, corporate).</span>
                 </p>
               </div>
 
@@ -100,12 +108,10 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* VISUEL PRO (photo + citation) */}
+            {/* VISUEL */}
             <div className="relative">
-              {/* Glow discret */}
               <div className="absolute -inset-6 bg-gradient-to-br from-yellow-400/16 via-purple-500/10 to-pink-500/10 blur-2xl opacity-70" />
 
-              {/* IMPORTANT: hauteur réelle (évite carré vide / rendu instable) */}
               <div className="relative h-[420px] sm:h-[520px] lg:h-[620px] rounded-2xl overflow-hidden border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
                 <Image
                   src="/black-jesus-records-hero.jpg"
@@ -115,26 +121,18 @@ export default function HomePage() {
                   sizes="(max-width: 1024px) 100vw, 560px"
                   className="object-cover object-[50%_14%]"
                 />
-
-                {/* Vignette + contraste */}
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.07),_rgba(0,0,0,0.65))]" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10" />
-
-                {/* Dégradé bas pour texte */}
                 <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/80 to-transparent" />
 
-                {/* TEXTE EN BAS */}
                 <div className="absolute inset-x-0 bottom-8 text-center px-8">
                   <p className="text-white/95 text-[15px] italic tracking-wide drop-shadow">
                     “De l’idée à la réalisation.”
                   </p>
-                  <p className="mt-2 text-white/70 text-sm tracking-wide">
-                    — Black Jesus Records
-                  </p>
+                  <p className="mt-2 text-white/70 text-sm tracking-wide">— Black Jesus Records</p>
                 </div>
               </div>
 
-              {/* Détail premium */}
               <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/50">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-400/70" />
                 Direction artistique · Réalisation · Post-production
@@ -144,7 +142,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* PREUVE & CRÉDIBILITÉ */}
+      {/* PREUVE */}
       <section className="max-w-6xl mx-auto px-4 py-14">
         <div className="grid gap-6 md:grid-cols-3">
           {proof.map((p) => (
@@ -160,14 +158,13 @@ export default function HomePage() {
 
         <div className="mt-8 rounded-2xl border border-yellow-400/30 bg-yellow-400/5 p-6 md:p-8">
           <p className="text-white/90 italic text-base md:text-lg leading-relaxed">
-            “Qualité cinéma, communication simple, et livraison dans les délais. On a enfin un rendu
-            qui fait pro.”
+            “Qualité cinéma, communication simple, et livraison dans les délais. On a enfin un rendu qui fait pro.”
           </p>
           <p className="mt-3 text-sm text-white/60">— Client / artiste</p>
         </div>
       </section>
 
-      {/* SECTION SERVICES */}
+      {/* SERVICES */}
       <section className="max-w-6xl mx-auto px-4 py-16">
         <SectionTitle
           eyebrow="Services"
@@ -230,7 +227,44 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* LABEL HIGHLIGHT */}
+      {/* QUICK ACCESS PHOTO */}
+      <section className="max-w-6xl mx-auto px-4 pb-16">
+        <SectionTitle
+          eyebrow="Photo"
+          title="Séance photo professionnelle"
+          subtitle="Sous-catégories claires, accès rapide aux galeries."
+        />
+
+        <div className="grid gap-6 md:grid-cols-3">
+          {photoQuickLinks.map((c) => (
+            <Link
+              key={c.title}
+              href={c.href}
+              className="group rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-yellow-400/40 transition shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-white font-semibold">{c.title}</p>
+                <span className="text-white/50 group-hover:text-yellow-400 transition">→</span>
+              </div>
+              <p className="mt-2 text-sm text-white/60 leading-relaxed">{c.desc}</p>
+
+              <div className="mt-4 h-24 rounded-xl border border-white/10 overflow-hidden relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/14 via-purple-500/10 to-pink-500/10" />
+                <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(rgba(255,255,255,0.65)_1px,transparent_1px)] [background-size:22px_22px]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <p className="text-sm text-white/55 text-center mt-8">
+          <strong>Galeries en cours d’enrichissement.</strong>
+          <br />
+          De nouvelles photos et projets seront ajoutés progressivement.
+        </p>
+      </section>
+
+      {/* LABEL */}
       <section className="max-w-6xl mx-auto px-4 pb-16">
         <div className="border border-yellow-400/40 rounded-2xl p-6 md:p-8 bg-yellow-400/5">
           <SectionTitle
@@ -240,9 +274,8 @@ export default function HomePage() {
           />
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <p className="text-sm text-white/75 max-w-xl leading-relaxed">
-              Direction artistique, production musicale, accompagnement d’image, coaching carrière :
-              nous travaillons avec des artistes qui veulent structurer leur projet, construire un
-              univers fort et préparer le long terme.
+              Direction artistique, production musicale, accompagnement d’image, coaching carrière : nous travaillons
+              avec des artistes qui veulent structurer leur projet, construire un univers fort et préparer le long terme.
             </p>
             <Link
               href="/label"
@@ -258,15 +291,11 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-4 pb-24">
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
           <div>
-            <p className="text-2xl md:text-3xl font-bold text-white">
-              Prêt à tourner quelque chose de fort ?
-            </p>
+            <p className="text-2xl md:text-3xl font-bold text-white">Prêt à tourner quelque chose de fort ?</p>
             <p className="mt-2 text-white/70 leading-relaxed">
               Dis-nous ton idée. On te répond avec une approche claire, un plan, et un rendu ciné.
             </p>
-            <p className="mt-3 text-sm text-white/55">
-              Réponse rapide · Plan clair · Livraison propre
-            </p>
+            <p className="mt-3 text-sm text-white/55">Réponse rapide · Plan clair · Livraison propre</p>
           </div>
           <div className="flex gap-3">
             <Link
