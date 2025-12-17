@@ -45,6 +45,9 @@ type LightboxState = {
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 
+// ✅ Snappr featured link (obligatoire)
+const SNAPPR_FEATURED_URL = "https://www.snappr.com/best-photographers/quebec-city-qc";
+
 const sections: PortfolioSection[] = [
   {
     id: "clips",
@@ -376,6 +379,25 @@ export default function PortfolioPage() {
           contenus pour marques, mariages et événements — et maintenant{" "}
           <span className="text-white">séances photo professionnelles</span>.
         </p>
+
+        {/* ✅ Snappr featured badge (visible, conforme) */}
+        <div className="mt-5">
+          <div className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            <span className="h-2 w-2 rounded-full bg-[#F5C518]" />
+            <p className="text-sm text-white/80">
+              Featured as one of{" "}
+              <a
+                href={SNAPPR_FEATURED_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#F5C518] hover:opacity-90 transition"
+              >
+                Quebec City’s highest-rated photographers
+              </a>
+              .
+            </p>
+          </div>
+        </div>
 
         <div className="mt-7 flex flex-col sm:flex-row gap-3">
           <Link
