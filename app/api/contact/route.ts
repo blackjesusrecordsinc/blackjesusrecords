@@ -37,14 +37,17 @@ function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
+// ✅ accepte string | undefined, retourne TOUJOURS string
 function normalizePhone(v?: string) {
   const x = clean(v);
   if (!x) return "";
   return x.replace(/[^\d+]/g, "");
 }
 
-function safeLen(v: string, max: number) {
-  return v.length > max ? v.slice(0, max) : v;
+// ✅ accepte string | undefined, retourne TOUJOURS string
+function safeLen(v: string | undefined, max: number) {
+  const s = v ?? "";
+  return s.length > max ? s.slice(0, max) : s;
 }
 
 function buildInternalHtml(data: {
@@ -226,8 +229,8 @@ export async function POST(req: Request) {
     const internal = await resend.emails.send({
       from: internalFrom,
       to: [internalTo],
-      replyTo: email, // (Resend) OK dans la majorité des versions
-      headers: { "Reply-To": email }, // fallback robuste
+      replyTo: email,
+      headers: { "Reply-To": email },
       subject: `Nouvelle demande — ${service}`,
       html: buildInternalHtml({
         name,
@@ -241,8 +244,8 @@ export async function POST(req: Request) {
       }),
     });
 
-    if (internal.error) {
-      console.error("RESEND INTERNAL ERROR:", internal.error);
+    if ((internal as any).error) {
+      console.error("RESEND INTERNAL ERROR:", (internal as any).error);
       return NextResponse.json(
         { error: "Erreur email (interne)." },
         { status: 500 }
@@ -257,8 +260,8 @@ export async function POST(req: Request) {
       html: buildClientHtml(name),
     });
 
-    if (client.error) {
-      console.error("RESEND CLIENT ERROR:", client.error);
+    if ((client as any).error) {
+      console.error("RESEND CLIENT ERROR:", (client as any).error);
       return NextResponse.json(
         { error: "Erreur email (client)." },
         { status: 500 }
