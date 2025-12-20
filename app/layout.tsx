@@ -1,5 +1,6 @@
 // app/layout.tsx
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -49,6 +50,7 @@ export default function RootLayout({
         <Navbar />
         <main className="pt-24">{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
