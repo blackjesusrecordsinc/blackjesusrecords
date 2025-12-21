@@ -105,4 +105,141 @@ export default function SupportWebPage() {
             </div>
           </Reveal>
 
-          <Reveal dela
+          <Reveal delay={0.16}>
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { k: "Délai", v: "Réponse en 24-48h" },
+                { k: "Scope", v: "Clair avant de commencer" },
+                { k: "Livraison", v: "Branche propre + déploiement" },
+                { k: "Suivi", v: "Accès à un Slack partagé" },
+              ].map((x) => (
+                <div key={x.k} className={cn(UI.card, "px-5 py-4")}>
+                  <p className="text-[11px] tracking-[0.25em] uppercase text-white/45">{x.k}</p>
+                  <p className="mt-1 text-sm font-semibold text-white/85">{x.v}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+
+          <div className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+        </section>
+
+        <section className={cn(UI.max, "pb-10")}>
+          <Reveal>
+            <div className={cn(UI.card, "p-7")}>
+              <h2 className={UI.h2}>
+                Ce qu&apos;on fait{" "}
+                <span className="text-[#F5C518]">vraiment</span>
+              </h2>
+              <p className={cn("mt-2 max-w-3xl text-sm md:text-base", UI.subtle)}>
+                Des tâches concrètes. Pas d&apos;engagement long terme, pas de forfait flou.
+              </p>
+
+              <div className="mt-6 grid gap-3 md:grid-cols-2">
+                {[
+                  "Correctifs et debug (fonctionnalités cassées, erreurs en prod)",
+                  "Ajout de pages / sections (en suivant ton design)",
+                  "Optimisation web (Core Web Vitals, performance, accessibilité)",
+                  "Migration de stack (CMS, framework, hosting)",
+                  "Améliorations UX/UI (dans le scope qu&apos;on définit)",
+                  "Accompagnement technique (formation, transfert de connaissances)",
+                ].map((p) => (
+                  <div key={p} className="flex gap-3 text-sm text-white/80">
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                    <span className="leading-relaxed">{p}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
+        <section className={cn(UI.max, "pb-10")}>
+          <Reveal>
+            <div className="flex items-end justify-between flex-col md:flex-row gap-4">
+              <div>
+                <h2 className={UI.h2}>
+                  Tarifs à la{" "}
+                  <span className="text-[#F5C518]">demande</span>
+                </h2>
+                <p className={cn("mt-2 text-sm md:text-base max-w-3xl", UI.subtle)}>
+                  Chaque projet est unique. On évalue le scope et te propose un prix fixe ou des tarifs horaires.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Link href="/contact" className={UI.btnGhost}>Faire une demande</Link>
+                <Link href="/booking" className={UI.btnOutlineGold}>Appel gratuit</Link>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              {[
+                {
+                  t: "Petit projet",
+                  d: "Quelques heures de travail",
+                  examples: ["Un correctif", "Ajout de section", "Optimisation légère"],
+                },
+                {
+                  t: "Projet moyen",
+                  d: "Quelques jours de travail",
+                  examples: ["Migration partielle", "Plusieurs pages", "Refactor modéré"],
+                },
+                {
+                  t: "Grand projet",
+                  d: "Plusieurs semaines",
+                  examples: ["Migration complète", "Refonte majeure", "Accompagnement long terme"],
+                },
+              ].map((p) => (
+                <motion.div
+                  key={p.t}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-120px" }}
+                  transition={{ duration: 0.55, ease: "easeOut" }}
+                  className={cn(UI.card, "p-7 hover:border-white/20 transition")}
+                >
+                  <h3 className="text-lg font-semibold text-white">{p.t}</h3>
+                  <p className={cn("mt-2 text-sm", UI.subtle)}>{p.d}</p>
+                  <ul className="mt-4 space-y-2">
+                    {p.examples.map((ex) => (
+                      <li key={ex} className="flex gap-2 text-sm text-white/70">
+                        <span className="text-[#F5C518]">•</span>
+                        {ex}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
+            </div>
+          </Reveal>
+        </section>
+
+        <section className={cn(UI.max, "pb-20")}>
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent mb-10" />
+          <Reveal>
+            <div className="text-center">
+              <h2 className={UI.h2}>
+                Prêt à{" "}
+                <span className="text-[#F5C518]">commencer</span>?
+              </h2>
+              <p className={cn("mt-4 text-base md:text-lg max-w-2xl mx-auto", UI.subtle)}>
+                Envoie-nous les détails de ton besoin. On te répond rapidement avec un plan et un prix.
+              </p>
+              <div className="mt-8 flex gap-3 justify-center">
+                <Link href="/contact" className={UI.btnGold}>
+                  <span className={UI.shine} />
+                  <span className="relative">Faire une demande</span>
+                </Link>
+                <Link href="/booking" className={UI.btnGhost}>
+                  Réserver un appel
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+      </div>
+    </main>
+  );
+}
