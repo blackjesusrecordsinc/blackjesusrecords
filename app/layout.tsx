@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const SITE_NAME = "Black Jesus Records";
 const SITE_URL = "https://www.blackjesusrecords.ca";
@@ -49,6 +50,7 @@ export default function RootLayout({
         <Navbar />
         <main className="pt-24">{children}</main>
         <Footer />
+        <SpeedInsights />
       </body>
     </html>
   );
