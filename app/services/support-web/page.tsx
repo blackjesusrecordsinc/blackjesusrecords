@@ -5,7 +5,8 @@ import React from "react";
 import Link from "next/link";
 import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 
-const cn = (...c: Array<string | false | null | undefined>) => c.filter(Boolean).join(" ");
+const cn = (...c: Array<string | false | null | undefined>) =>
+  c.filter(Boolean).join(" ");
 
 const UI = {
   wrap: "min-h-screen bg-[#0B0B0E] text-white relative overflow-hidden",
@@ -27,7 +28,13 @@ const UI = {
   h2: "text-2xl md:text-3xl font-semibold leading-tight tracking-[-0.01em]",
 };
 
-function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function Reveal({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 18, filter: "blur(8px)" }}
@@ -42,30 +49,48 @@ function Reveal({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 
 export default function SupportWebPage() {
   const { scrollYProgress } = useScroll();
-  const bar = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.4 });
+  const bar = useSpring(scrollYProgress, {
+    stiffness: 120,
+    damping: 30,
+    mass: 0.4,
+  });
   const y1 = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -80]);
 
   return (
     <main className={UI.wrap}>
-      <motion.div aria-hidden className="fixed top-0 left-0 right-0 h-[2px] z-[60] bg-[#F5C518]/25">
-        <motion.div className="h-full bg-[#F5C518]" style={{ scaleX: bar, transformOrigin: "0% 50%" }} />
+      {/* progress bar */}
+      <motion.div
+        aria-hidden
+        className="fixed top-0 left-0 right-0 h-[2px] z-[60] bg-[#F5C518]/25"
+      >
+        <motion.div
+          className="h-full bg-[#F5C518]"
+          style={{ scaleX: bar, transformOrigin: "0% 50%" }}
+        />
       </motion.div>
-
+      {/* background effects */}
       <div aria-hidden className="absolute inset-0 pointer-events-none">
         <motion.div
           className="absolute -top-44 left-1/2 -translate-x-1/2 h-[560px] w-[560px] rounded-full bg-[#F5C518]/10 blur-[120px]"
           style={{ y: y1 }}
         />
-        <motion.div className="absolute top-10 right-0 h-[420px] w-[420px] rounded-full bg-white/5 blur-[120px]" style={{ y: y2 }} />
+        <motion.div
+          className="absolute top-10 right-0 h-[420px] w-[420px] rounded-full bg-white/5 blur-[120px]"
+          style={{ y: y2 }}
+        />
         <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:22px_22px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/45" />
       </div>
 
       <div className="relative">
+        {/* header */}
         <div className={cn(UI.max, "pt-10")}>
           <div className="flex items-center justify-between gap-3">
-            <Link href="/services" className="text-sm text-white/70 hover:text-white transition">
+            <Link
+              href="/services"
+              className="text-sm text-white/70 hover:text-white transition"
+            >
               ← Retour aux services
             </Link>
             <div className={UI.pill}>
@@ -75,7 +100,8 @@ export default function SupportWebPage() {
           </div>
         </div>
 
-        <section className={cn(UI.max, "pt-12 pb-10")}>
+        {/* hero */}
+        <section className={cn(UI.max, "pt-12 pb-20")}>
           <Reveal>
             <h1 className={UI.h1}>
               Support web{" "}
@@ -87,9 +113,15 @@ export default function SupportWebPage() {
           </Reveal>
 
           <Reveal delay={0.08}>
-            <p className={cn("mt-5 max-w-3xl text-base md:text-lg", UI.subtle)}>
-              Correctifs, ajout de pages, optimisation, migration, accompagnement. Tu fais une demande claire → on te répond
-              avec un plan et un délai. Pas de flou.
+            <p
+              className={cn(
+                "mt-5 max-w-3xl text-base md:text-lg",
+                UI.subtle
+              )}
+            >
+              Correctifs, ajout de pages, optimisation, migration,
+              accompagnement. Tu fais une demande claire → on te répond avec un
+              plan et un délai. Pas de flou.
             </p>
           </Reveal>
 
@@ -105,4 +137,38 @@ export default function SupportWebPage() {
             </div>
           </Reveal>
 
-          <Reveal dela
+          {/* SERVICES */}
+          <Reveal delay={0.16}>
+            <div className={cn(UI.card, "mt-14 p-6 md:p-8")}>
+              <h2 className={UI.h2}>Ce qu’on prend en charge</h2>
+
+              <ul className="mt-6 grid gap-3 md:grid-cols-2 text-sm text-white/80">
+                <li className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  Bugs & correctifs UI / UX
+                </li>
+                <li className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  Ajout de pages & sections
+                </li>
+                <li className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  Optimisation performance & SEO
+                </li>
+                <li className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  Migration, déploiement, Vercel
+                </li>
+              </ul>
+            </div>
+          </Reveal>
+
+          {/* CTA FINAL */}
+          <Reveal delay={0.22}>
+            <div className="mt-16 text-center">
+              <Link href="/contact" className={UI.btnOutlineGold}>
+                Lancer une demande maintenant
+              </Link>
+            </div>
+          </Reveal>
+        </section>
+      </div>
+    </main>
+  );
+}
