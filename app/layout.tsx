@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 const SITE_NAME = "Black Jesus Records";
 const SITE_URL = "https://www.blackjesusrecords.ca";
@@ -49,18 +50,6 @@ export default function RootLayout({
         <Navbar />
         <main className="pt-24">{children}</main>
         <Footer />
-      </body>
-    </html>
-  );
-}
-import { Analytics } from "@vercel/analytics/react";
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="fr">
-      <body>
-        {children}
-        <Analytics />
       </body>
     </html>
   );
