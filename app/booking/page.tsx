@@ -76,18 +76,22 @@ const item: Variants = {
   },
 };
 
+/** AQUARIUM UI (zéro noir) */
 const UI = {
   pill:
-    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20",
+    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full " +
+    "bg-cyan-300/10 border border-cyan-300/25 shadow-[0_0_40px_rgba(0,180,255,0.12)]",
   card:
-    "rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_18px_50px_rgba(0,0,0,0.25)]",
+    "rounded-2xl border border-white/10 bg-white/6 p-6 " +
+    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl",
   btnPrimary:
-    "group relative px-7 py-3 rounded-lg bg-yellow-400 text-black font-semibold overflow-hidden transition " +
-    "hover:scale-[1.02] active:scale-95 shadow-[0_12px_40px_rgba(0,0,0,0.35)]",
+    "group relative px-7 py-3 rounded-lg bg-cyan-300 text-[#001019] font-semibold overflow-hidden transition " +
+    "hover:scale-[1.02] active:scale-95 shadow-[0_14px_52px_rgba(0,8,22,0.45)]",
   btnPrimaryGlow:
-    "absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity",
+    "absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-300 opacity-0 group-hover:opacity-100 transition-opacity",
   btnSecondary:
-    "px-7 py-3 rounded-lg border border-white/20 text-white font-medium hover:border-yellow-400 hover:text-yellow-400 transition",
+    "px-7 py-3 rounded-lg border border-white/20 text-white font-medium " +
+    "hover:border-cyan-300 hover:text-cyan-100 transition",
   sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
 };
 
@@ -183,29 +187,33 @@ export default function BookingPage() {
   );
 
   return (
-    <main className="min-h-screen">
-      {/* HEADER (style Home) */}
+    <div className="min-h-[calc(100vh-var(--nav-h))]">
+      {/* HEADER */}
       <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        {/* aquarium glows */}
+        <div className="pointer-events-none absolute -top-12 left-[-10%] h-[360px] w-[360px] rounded-full blur-3xl opacity-25 bg-cyan-300/40" />
+        <div className="pointer-events-none absolute top-24 right-[-12%] h-[440px] w-[440px] rounded-full blur-3xl opacity-20 bg-blue-400/40" />
+
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
           <motion.div variants={item} className={UI.pill}>
-            <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
-            <span className="text-xs uppercase tracking-widest text-yellow-400">Réservation</span>
+            <span className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse" />
+            <span className="text-xs uppercase tracking-widest text-cyan-100">Réservation</span>
           </motion.div>
 
           <motion.div variants={item}>
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+            <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight drop-shadow-[0_12px_40px_rgba(0,180,255,0.18)]">
               Réserver une{" "}
               <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
                   date
                 </span>
-                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-yellow-400/10 blur-xl opacity-70" />
+                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-cyan-300/12 blur-xl opacity-70" />
               </span>
               .
             </h1>
           </motion.div>
 
-          <motion.p variants={item} className="text-base md:text-lg text-white/70 leading-relaxed max-w-3xl">
+          <motion.p variants={item} className="text-base md:text-lg text-white/75 leading-relaxed max-w-3xl">
             Envoie l’essentiel. On revient avec une proposition claire : disponibilité, logistique, livrables et délais.
           </motion.p>
 
@@ -237,11 +245,11 @@ export default function BookingPage() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Réservation rapide</h2>
-                  <p className="mt-2 text-sm md:text-base text-white/70 leading-relaxed">
+                  <p className="mt-2 text-sm md:text-base text-white/75 leading-relaxed">
                     Clique un modèle pour remplir le brief en 10 secondes.
                   </p>
                 </div>
-                <span className="shrink-0 hidden sm:inline-flex items-center rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs text-white/70">
+                <span className="shrink-0 hidden sm:inline-flex items-center rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs text-white/70">
                   Réponse 24–48h
                 </span>
               </div>
@@ -253,18 +261,18 @@ export default function BookingPage() {
                     key={x.id}
                     type="button"
                     onClick={() => applyTemplate(x.title, x.message)}
-                    className="group rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-left transition hover:border-white/20 hover:bg-white/5"
+                    className="group rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-left transition hover:border-cyan-300/35 hover:bg-white/8"
                   >
                     <p className="text-sm font-semibold">
-                      {x.title} <span className="text-yellow-400">→</span>
+                      {x.title} <span className="text-cyan-200">→</span>
                     </p>
-                    <p className="mt-1 text-xs text-white/55 leading-relaxed">{x.hint}</p>
+                    <p className="mt-1 text-xs text-white/60 leading-relaxed">{x.hint}</p>
                   </button>
                 ))}
               </div>
 
               <form ref={formRef} className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
-                {/* Honeypot hidden */}
+                {/* Honeypot */}
                 <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
                 <div className="grid md:grid-cols-2 gap-4">
@@ -322,11 +330,11 @@ export default function BookingPage() {
           >
             <motion.div variants={item} className={UI.card}>
               <h3 className="text-xl font-semibold tracking-tight">Ce qu’on confirme</h3>
-              <p className="mt-2 text-sm text-white/70 leading-relaxed">
+              <p className="mt-2 text-sm text-white/75 leading-relaxed">
                 Une proposition réaliste selon ton objectif et la plateforme finale.
               </p>
 
-              <div className="mt-5 space-y-3 text-sm text-white/80">
+              <div className="mt-5 space-y-3 text-sm text-white/85">
                 {[
                   "Disponibilité & logistique (date / lieu)",
                   "Style & références visuelles",
@@ -334,16 +342,16 @@ export default function BookingPage() {
                   "Délais de livraison",
                 ].map((t) => (
                   <div key={t} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-yellow-400" />
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-300" />
                     <span className="leading-relaxed">{t}</span>
                   </div>
                 ))}
               </div>
             </motion.div>
 
-            <motion.div variants={item} className="rounded-2xl border border-white/10 bg-black/20 p-6">
+            <motion.div variants={item} className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl">
               <h3 className="text-lg font-semibold">Devis détaillé</h3>
-              <p className="mt-2 text-sm text-white/70 leading-relaxed">
+              <p className="mt-2 text-sm text-white/75 leading-relaxed">
                 Pour un chiffrage complet (options, scope, versions), utilise Contact.
               </p>
               <Link href="/contact" className={UI.btnPrimary + " mt-5 inline-flex w-full justify-center"}>
@@ -355,9 +363,9 @@ export default function BookingPage() {
         </div>
 
         {/* CTA FINAL */}
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl">
           <p className="text-2xl md:text-3xl font-bold text-white">Prêt à tourner quelque chose de fort ?</p>
-          <p className="mt-2 text-white/70 leading-relaxed">
+          <p className="mt-2 text-white/75 leading-relaxed">
             Dis-nous ton idée. On te répond avec une approche claire, un plan, et un rendu ciné.
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -371,11 +379,11 @@ export default function BookingPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 
-/* ===== atoms ===== */
+/* ===== atoms (aquarium) ===== */
 function Field({
   label,
   hint,
@@ -392,23 +400,23 @@ function Field({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/80 mb-2">
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
         {label}
       </label>
-      {hint ? <p className="mb-2 text-xs text-white/45">{hint}</p> : null}
+      {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <input
         {...props}
         id={id}
         type={type}
         aria-invalid={Boolean(error) || undefined}
         className={[
-          "w-full rounded-2xl bg-black/20 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
+          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-xl",
           error
-            ? "border-yellow-400/60 ring-1 ring-yellow-400/20"
-            : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10",
+            ? "border-cyan-300/60 ring-1 ring-cyan-300/20"
+            : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15",
         ].join(" ")}
       />
-      {error ? <p className="mt-2 text-xs text-yellow-400">{error}</p> : null}
+      {error ? <p className="mt-2 text-xs text-cyan-200">{error}</p> : null}
     </div>
   );
 }
@@ -428,18 +436,18 @@ function Select({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/80 mb-2">
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
         {label}
       </label>
-      {hint ? <p className="mb-2 text-xs text-white/45">{hint}</p> : null}
+      {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <select
         {...props}
         id={id}
-        className="w-full rounded-2xl bg-black/20 border border-white/10 px-4 py-3 text-sm text-white outline-none transition hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10"
+        className="w-full rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white outline-none transition backdrop-blur-xl hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15"
       >
         <option value="">Sélectionner…</option>
         {options.map((o) => (
-          <option key={o} value={o}>
+          <option key={o} value={o} className="bg-[#041224]">
             {o}
           </option>
         ))}
@@ -463,22 +471,22 @@ function Textarea({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/80 mb-2">
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
         {label}
       </label>
-      {hint ? <p className="mb-2 text-xs text-white/45">{hint}</p> : null}
+      {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <textarea
         {...props}
         id={id}
         aria-invalid={Boolean(error) || undefined}
         className={[
-          "w-full rounded-2xl bg-black/20 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
+          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-xl",
           error
-            ? "border-yellow-400/60 ring-1 ring-yellow-400/20"
-            : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10",
+            ? "border-cyan-300/60 ring-1 ring-cyan-300/20"
+            : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15",
         ].join(" ")}
       />
-      {error ? <p className="mt-2 text-xs text-yellow-400">{error}</p> : null}
+      {error ? <p className="mt-2 text-xs text-cyan-200">{error}</p> : null}
     </div>
   );
 }
@@ -487,8 +495,8 @@ function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
   return (
     <div
       className={[
-        "rounded-2xl border px-4 py-3",
-        type === "error" ? "border-yellow-400/35 bg-yellow-400/10" : "border-white/10 bg-white/5",
+        "rounded-2xl border px-4 py-3 backdrop-blur-xl",
+        type === "error" ? "border-cyan-300/35 bg-cyan-300/10" : "border-white/10 bg-white/6",
       ].join(" ")}
       role="status"
       aria-live="polite"

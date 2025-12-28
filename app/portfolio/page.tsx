@@ -178,49 +178,43 @@ function getFocusable(container: HTMLElement) {
 }
 
 /** ─────────────────────────────────────────────
- *  UI
+ *  UI (aquarium)
  *  ───────────────────────────────────────────── */
 const UI = {
   wrap: "max-w-6xl mx-auto px-6 lg:px-8",
   card:
-    "rounded-2xl border border-white/10 bg-white/[0.05] backdrop-blur-xl " +
-    "shadow-[0_18px_60px_rgba(0,0,0,0.45)]",
+    "rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl " +
+    "shadow-[0_18px_60px_rgba(0,8,22,0.45)]",
   cardHover:
-    "transition duration-200 hover:border-white/20 hover:bg-white/[0.07] hover:-translate-y-[1px]",
+    "transition duration-200 hover:border-white/20 hover:bg-white/[0.08] hover:-translate-y-[1px]",
   pill:
-    "inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70",
-  subtle: "text-white/70 leading-relaxed",
-  h1: "mt-6 text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-[-0.02em]",
+    "inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100/80 " +
+    "shadow-[0_0_38px_rgba(0,180,255,0.12)]",
+  subtle: "text-white/75 leading-relaxed",
+  h1:
+    "mt-6 text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-[-0.02em] " +
+    "drop-shadow-[0_12px_40px_rgba(0,180,255,0.18)]",
   h2: "text-2xl md:text-3xl font-semibold leading-tight tracking-[-0.01em]",
   btnPrimary:
-    "group relative inline-flex items-center justify-center rounded-full bg-[#F5C518] " +
-    "px-6 py-3 text-sm font-semibold text-black transition hover:opacity-95 " +
-    "shadow-[0_14px_40px_rgba(245,197,24,0.18)] overflow-hidden",
+    "group relative inline-flex items-center justify-center rounded-full bg-cyan-300 " +
+    "px-6 py-3 text-sm font-semibold text-[#001019] transition hover:opacity-95 " +
+    "shadow-[0_14px_44px_rgba(0,8,22,0.45)] overflow-hidden",
   btnShine:
     "pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r " +
-    "from-transparent via-white/25 to-transparent group-hover:translate-x-full transition duration-700",
+    "from-transparent via-white/35 to-transparent group-hover:translate-x-full transition duration-700",
   btnSecondary:
     "inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 " +
-    "px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10",
-  btnGoldOutline:
-    "inline-flex items-center justify-center rounded-full border border-[#F5C518] " +
-    "px-6 py-3 text-sm font-semibold text-[#F5C518] transition hover:bg-[#F5C518] hover:text-black",
+    "px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-cyan-300/35 hover:text-cyan-100",
+  btnAquaOutline:
+    "inline-flex items-center justify-center rounded-full border border-cyan-300 " +
+    "px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300 hover:text-[#001019]",
 };
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
     <div className={UI.pill}>
-      <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+      <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
       {children}
-    </div>
-  );
-}
-
-function Bullet({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex gap-3 text-sm text-white/80">
-      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-      <span className="leading-relaxed">{children}</span>
     </div>
   );
 }
@@ -285,10 +279,10 @@ export default function PortfolioPage() {
   // Smooth scroll
   useEffect(() => {
     const el = document.documentElement;
-    const prev = el.style.scrollBehavior;
+    const prevSB = el.style.scrollBehavior;
     el.style.scrollBehavior = "smooth";
     return () => {
-      el.style.scrollBehavior = prev;
+      el.style.scrollBehavior = prevSB;
     };
   }, []);
 
@@ -392,398 +386,398 @@ export default function PortfolioPage() {
   );
 
   return (
-    <main className="min-h-screen text-white relative">
-      <div className="relative">
-        {/* HERO */}
-        <section className={cn(UI.wrap, "pt-16 pb-10")}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-            <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
-              Portfolio
+    <div className="min-h-[calc(100vh-var(--nav-h))] text-white relative">
+      {/* HERO */}
+      <section className={cn(UI.wrap, "pt-16 pb-10 relative")}>
+        <div className="pointer-events-none absolute -top-10 left-[-12%] h-[360px] w-[360px] rounded-full blur-3xl opacity-25 bg-cyan-300/40" />
+        <div className="pointer-events-none absolute top-28 right-[-14%] h-[420px] w-[420px] rounded-full blur-3xl opacity-20 bg-blue-400/40" />
+
+        <div className={UI.pill}>
+          <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
+          <p className="text-[11px] font-semibold tracking-[0.25em] uppercase">Portfolio</p>
+        </div>
+
+        <h1 className={UI.h1}>
+          Projets{" "}
+          <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
+            visuels
+          </span>{" "}
+          & contenus qui performent.
+        </h1>
+
+        <p className={cn("mt-5 max-w-3xl text-base md:text-lg", UI.subtle)}>
+          Clips, événements, contenus marques — et séances photo premium. Tout est pensé pour être
+          beau, cohérent, et prêt pour tes plateformes.
+        </p>
+
+        <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <Link href="/booking" className={UI.btnPrimary}>
+            <span className={UI.btnShine} />
+            <span className="relative">Réserver</span>
+          </Link>
+
+          <Link href="/contact" className={UI.btnSecondary}>
+            Demander un devis
+          </Link>
+        </div>
+
+        <div className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+      </section>
+
+      {/* VIDEO SECTIONS */}
+      <section className={cn(UI.wrap, "pb-12 space-y-12")}>
+        {sections.map((sec) => (
+          <div key={sec.id} id={sec.id} className="space-y-5 scroll-mt-28">
+            <div className="space-y-2">
+              <h2 className={UI.h2}>{sec.title}</h2>
+              {sec.subtitle && (
+                <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>{sec.subtitle}</p>
+              )}
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {sec.items.map((it) => (
+                <div key={it.title} className={cn(UI.card, UI.cardHover, "p-7")}>
+                  <div className="flex items-start justify-between gap-4">
+                    <h3 className="text-xl md:text-2xl font-semibold leading-snug">{it.title}</h3>
+                    {it.tag && <span className={cn(UI.pill, "shrink-0")}>{it.tag}</span>}
+                  </div>
+
+                  <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>{it.desc}</p>
+
+                  {it.link && (
+                    <div className="mt-5">
+                      <a
+                        href={it.link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:opacity-90 transition"
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                        {it.link.label}
+                      </a>
+                    </div>
+                  )}
+
+                  <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+
+                  <div className="mt-5 flex gap-3">
+                    <Link href="/booking" className={UI.btnAquaOutline}>
+                      Réserver
+                    </Link>
+                    <Link href="/contact" className={UI.btnSecondary}>
+                      Brief / Devis
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* PHOTO */}
+      <section className={cn(UI.wrap, "pb-16 space-y-6")}>
+        <div className="space-y-2">
+          <h2 className={UI.h2}>Photo — séances premium</h2>
+          <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>
+            Galeries par style. Clique une photo pour ouvrir la visionneuse.
+            <span className="text-white/55"> (ESC • ← → • swipe mobile)</span>
+          </p>
+        </div>
+
+        {/* Sticky photo nav (no black) */}
+        <div className="sticky top-[64px] z-20 -mx-6 lg:-mx-8 px-6 lg:px-8 py-3 backdrop-blur-xl bg-[#041224]/35 border-y border-white/10">
+          <div className="flex flex-wrap gap-2">
+            {photoCategories.map((c) => {
+              const isActive = active === c.id;
+              return (
+                <a
+                  key={c.id}
+                  href={`#photo-${c.id}`}
+                  aria-current={isActive ? "true" : "false"}
+                  className={cn(
+                    "inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold border transition",
+                    isActive
+                      ? "bg-cyan-300 text-[#001019] border-cyan-300 shadow-[0_10px_30px_rgba(0,180,255,0.18)]"
+                      : "bg-white/5 text-white/80 border-white/15 hover:bg-white/10 hover:border-cyan-300/40 hover:text-cyan-100"
+                  )}
+                >
+                  {c.title}
+                  <span className={cn("ml-2", isActive ? "text-[#001019]/70" : "text-white/40")}>
+                    ({c.count})
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Categories */}
+        <div className="space-y-10 pt-2">
+          {photoCategories.map((cat) => {
+            const list = galleries[cat.id];
+
+            return (
+              <div key={cat.id} id={`photo-${cat.id}`} className="scroll-mt-44">
+                <div className={cn(UI.card, "p-7")}>
+                  <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                    <div className="max-w-3xl">
+                      <Badge>
+                        {cat.title} · {cat.count} photos
+                      </Badge>
+                      <h3 className="mt-3 text-xl md:text-2xl font-semibold">{cat.title}</h3>
+                      <p className={cn("mt-2 text-sm md:text-base", UI.subtle)}>{cat.desc}</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Link href="/booking" className={UI.btnPrimary}>
+                        <span className={UI.btnShine} />
+                        <span className="relative">Réserver une séance</span>
+                      </Link>
+                      <Link href="/contact" className={UI.btnAquaOutline}>
+                        Tarifs / Devis
+                      </Link>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+
+                  <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                    {list.map((img, idx) => (
+                      <button
+                        key={img.src}
+                        type="button"
+                        onClick={() => openLightbox(list, idx, cat.title)}
+                        className={cn(
+                          "group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-white/5",
+                          "transition hover:border-white/20 hover:-translate-y-[1px]"
+                        )}
+                        aria-label={`Ouvrir ${cat.title} — photo ${idx + 1}`}
+                      >
+                        <Image
+                          src={img.src}
+                          alt={img.alt}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#000f1f]/45 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                        <div className="absolute bottom-2 left-2 rounded-full border border-white/15 bg-[#041224]/40 px-2.5 py-1 text-[11px] text-white/85 opacity-0 group-hover:opacity-100 transition backdrop-blur">
+                          {idx + 1}/{list.length}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <p className="text-xs text-white/60 text-center">
+            Galeries en croissance — on ajoute du contenu régulièrement.
+          </p>
+        </div>
+      </section>
+
+      {/* CTA (no black) */}
+      <section className="border-t border-white/10 bg-[#041224]/30 backdrop-blur-xl">
+        <div
+          className={cn(
+            UI.wrap,
+            "py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
+          )}
+        >
+          <div className="max-w-2xl">
+            <h2 className={UI.h2}>
+              Un projet à tourner ? On livre un rendu{" "}
+              <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(0,180,255,0.18)]">
+                premium
+              </span>
+              .
+            </h2>
+            <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>
+              Réserve une date ou envoie ton brief. Réponse claire : scope, délais, livrables.
             </p>
           </div>
 
-          <h1 className={UI.h1}>
-            Projets{" "}
-            <span className="text-[#F5C518] drop-shadow-[0_0_22px_rgba(245,197,24,0.25)]">
-              visuels
-            </span>{" "}
-            & contenus qui performnent.
-          </h1>
-
-          <p className={cn("mt-5 max-w-3xl text-base md:text-lg", UI.subtle)}>
-            Clips, événements, contenus marques — et séances photo premium. Tout est pensé pour être
-            beau, cohérent, et prêt pour tes plateformes.
-          </p>
-
-          <div className="mt-8 flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Link href="/booking" className={UI.btnPrimary}>
               <span className={UI.btnShine} />
               <span className="relative">Réserver</span>
             </Link>
 
-            <Link href="/contact" className={UI.btnSecondary}>
-              Demander un devis
+            <Link href="/contact" className={UI.btnAquaOutline}>
+              Contact
             </Link>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
-        </section>
-
-        {/* VIDEO SECTIONS */}
-        <section className={cn(UI.wrap, "pb-12 space-y-12")}>
-          {sections.map((sec) => (
-            <div key={sec.id} id={sec.id} className="space-y-5 scroll-mt-28">
-              <div className="space-y-2">
-                <h2 className={UI.h2}>{sec.title}</h2>
-                {sec.subtitle && (
-                  <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>{sec.subtitle}</p>
-                )}
-              </div>
-
-              <div className="grid gap-6 md:grid-cols-2">
-                {sec.items.map((item) => (
-                  <div key={item.title} className={cn(UI.card, UI.cardHover, "p-7")}>
-                    <div className="flex items-start justify-between gap-4">
-                      <h3 className="text-xl md:text-2xl font-semibold leading-snug">
-                        {item.title}
-                      </h3>
-                      {item.tag && <span className={cn(UI.pill, "shrink-0")}>{item.tag}</span>}
-                    </div>
-
-                    <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>{item.desc}</p>
-
-                    {item.link && (
-                      <div className="mt-5">
-                        <a
-                          href={item.link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#F5C518] hover:opacity-90 transition"
-                        >
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-                          {item.link.label}
-                        </a>
-                      </div>
-                    )}
-
-                    <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
-
-                    <div className="mt-5 flex gap-3">
-                      <Link href="/booking" className={UI.btnGoldOutline}>
-                        Réserver
-                      </Link>
-                      <Link href="/contact" className={UI.btnSecondary}>
-                        Brief / Devis
-                      </Link>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </section>
-
-        {/* PHOTO */}
-        <section className={cn(UI.wrap, "pb-16 space-y-6")}>
-          <div className="space-y-2">
-            <h2 className={UI.h2}>Photo — séances premium</h2>
-            <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>
-              Galeries par style. Clique une photo pour ouvrir la visionneuse.
-              <span className="text-white/50"> (ESC • ← → • swipe mobile)</span>
-            </p>
-          </div>
-
-          {/* Sticky photo nav */}
-          <div className="sticky top-[64px] z-20 -mx-6 lg:-mx-8 px-6 lg:px-8 py-3 backdrop-blur-xl bg-black/30 border-y border-white/10">
-            <div className="flex flex-wrap gap-2">
-              {photoCategories.map((c) => {
-                const isActive = active === c.id;
-                return (
-                  <a
-                    key={c.id}
-                    href={`#photo-${c.id}`}
-                    aria-current={isActive ? "true" : "false"}
-                    className={cn(
-                      "inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold border transition",
-                      isActive
-                        ? "bg-[#F5C518] text-black border-[#F5C518] shadow-[0_10px_30px_rgba(245,197,24,0.15)]"
-                        : "bg-white/5 text-white/80 border-white/15 hover:bg-white/10 hover:border-[#F5C518]/40 hover:text-[#F5C518]"
-                    )}
-                  >
-                    {c.title}
-                    <span className={cn("ml-2", isActive ? "text-black/60" : "text-white/40")}>
-                      ({c.count})
-                    </span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Categories */}
-          <div className="space-y-10 pt-2">
-            {photoCategories.map((cat) => {
-              const list = galleries[cat.id];
-
-              return (
-                <div key={cat.id} id={`photo-${cat.id}`} className="scroll-mt-44">
-                  <div className={cn(UI.card, "p-7")}>
-                    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-                      <div className="max-w-3xl">
-                        <Badge>
-                          {cat.title} · {cat.count} photos
-                        </Badge>
-                        <h3 className="mt-3 text-xl md:text-2xl font-semibold">{cat.title}</h3>
-                        <p className={cn("mt-2 text-sm md:text-base", UI.subtle)}>{cat.desc}</p>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <Link href="/booking" className={UI.btnPrimary}>
-                          <span className={UI.btnShine} />
-                          <span className="relative">Réserver une séance</span>
-                        </Link>
-                        <Link href="/contact" className={UI.btnGoldOutline}>
-                          Tarifs / Devis
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
-
-                    <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                      {list.map((img, idx) => (
-                        <button
-                          key={img.src}
-                          type="button"
-                          onClick={() => openLightbox(list, idx, cat.title)}
-                          className={cn(
-                            "group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-black/25",
-                            "transition hover:border-white/20 hover:-translate-y-[1px]"
-                          )}
-                          aria-label={`Ouvrir ${cat.title} — photo ${idx + 1}`}
-                        >
-                          <Image
-                            src={img.src}
-                            alt={img.alt}
-                            fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-black/0 opacity-0 transition-opacity group-hover:opacity-100" />
-                          <div className="absolute bottom-2 left-2 rounded-full border border-white/15 bg-black/40 px-2.5 py-1 text-[11px] text-white/80 opacity-0 group-hover:opacity-100 transition">
-                            {idx + 1}/{list.length}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-
-            <p className="text-xs text-white/55 text-center">
-              Galeries en croissance — on ajoute du contenu régulièrement.
-            </p>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="border-t border-white/10 bg-black/25 backdrop-blur-xl">
-          <div className={cn(UI.wrap, "py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between")}>
-            <div className="max-w-2xl">
-              <h2 className={UI.h2}>
-                Un projet à tourner ? On livre un rendu{" "}
-                <span className="text-[#F5C518] drop-shadow-[0_0_18px_rgba(245,197,24,0.18)]">
-                  premium
-                </span>
-                .
-              </h2>
-              <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>
-                Réserve une date ou envoie ton brief. Réponse claire : scope, délais, livrables.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/booking" className={UI.btnPrimary}>
-                <span className={UI.btnShine} />
-                <span className="relative">Réserver</span>
-              </Link>
-
-              <Link href="/contact" className={UI.btnGoldOutline}>
-                Contact
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* LIGHTBOX */}
-        {lightbox && lightboxImage && (
+      {/* LIGHTBOX (no black) */}
+      {lightbox && lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 bg-[#020812]/80 p-3 sm:p-4 flex items-center justify-center backdrop-blur-xl"
+          onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Visionneuse d’images"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={() => {}}
+        >
           <div
-            className="fixed inset-0 z-50 bg-black/90 p-3 sm:p-4 flex items-center justify-center"
-            onClick={closeLightbox}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Visionneuse d’images"
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={() => {}}
+            ref={dialogRef}
+            className={cn(
+              "relative w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#041224]/55",
+              "shadow-[0_30px_120px_rgba(0,8,22,0.75)] backdrop-blur-xl"
+            )}
+            onClick={(e) => e.stopPropagation()}
           >
-            <div
-              ref={dialogRef}
-              className={cn(
-                "relative w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-black",
-                "shadow-[0_30px_120px_rgba(0,0,0,0.7)]"
-              )}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Topbar */}
-              <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3 sm:px-4 py-3 bg-black/60 backdrop-blur">
-                <div className="min-w-0">
-                  <p className="text-sm text-white/80 truncate">
-                    <span className="text-white/95 font-semibold">{lightbox.title}</span>{" "}
-                    <span className="text-white/40">
-                      — {lightbox.index + 1}/{lightbox.list.length}
-                    </span>
-                  </p>
-                  <p className="text-[12px] text-white/45 truncate">{lightboxImage.alt}</p>
-                </div>
+            {/* Topbar */}
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3 sm:px-4 py-3 bg-[#041224]/55 backdrop-blur">
+              <div className="min-w-0">
+                <p className="text-sm text-white/85 truncate">
+                  <span className="text-white font-semibold">{lightbox.title}</span>{" "}
+                  <span className="text-white/45">
+                    — {lightbox.index + 1}/{lightbox.list.length}
+                  </span>
+                </p>
+                <p className="text-[12px] text-white/55 truncate">{lightboxImage.alt}</p>
+              </div>
 
+              <div className="flex items-center gap-2">
+                <a
+                  href={lightboxImage.src}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                >
+                  Ouvrir
+                </a>
+
+                <button
+                  type="button"
+                  onClick={closeLightbox}
+                  ref={closeBtnRef}
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                  aria-label="Fermer la visionneuse"
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="relative">
+              <div className="relative aspect-[16/10]">
+                <Image
+                  src={lightboxImage.src}
+                  alt={lightboxImage.alt}
+                  fill
+                  className="object-contain select-none"
+                  priority
+                  sizes="100vw"
+                  draggable={false}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={prev}
+                className="absolute inset-y-0 left-0 w-[18%] sm:w-[16%] flex items-center justify-start p-3 text-white/75 hover:text-white transition"
+                aria-label="Image précédente"
+                title="Précédent (←)"
+              >
+                <span className="rounded-full border border-white/15 bg-[#041224]/40 px-3 py-2 backdrop-blur">
+                  ←
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={next}
+                className="absolute inset-y-0 right-0 w-[18%] sm:w-[16%] flex items-center justify-end p-3 text-white/75 hover:text-white transition"
+                aria-label="Image suivante"
+                title="Suivant (→)"
+              >
+                <span className="rounded-full border border-white/15 bg-[#041224]/40 px-3 py-2 backdrop-blur">
+                  →
+                </span>
+              </button>
+            </div>
+
+            {/* Thumbs */}
+            <div className="border-t border-white/10 bg-[#041224]/55 backdrop-blur px-3 sm:px-4 py-3">
+              <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={prev}
+                    className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                    aria-label="Précédent"
+                  >
+                    ←
+                  </button>
+                  <button
+                    type="button"
+                    onClick={next}
+                    className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                    aria-label="Suivant"
+                  >
+                    →
+                  </button>
+
                   <a
                     href={lightboxImage.src}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+                    className="sm:hidden rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
                   >
                     Ouvrir
                   </a>
-
-                  <button
-                    type="button"
-                    onClick={closeLightbox}
-                    ref={closeBtnRef}
-                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
-                    aria-label="Fermer la visionneuse"
-                  >
-                    Fermer
-                  </button>
                 </div>
+
+                <div className="text-xs text-white/55 hidden md:block">ESC • ← → • swipe</div>
               </div>
 
-              {/* Image */}
-              <div className="relative bg-black">
-                <div className="relative aspect-[16/10]">
-                  <Image
-                    src={lightboxImage.src}
-                    alt={lightboxImage.alt}
-                    fill
-                    className="object-contain select-none"
-                    priority
-                    sizes="100vw"
-                    draggable={false}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={prev}
-                  className="absolute inset-y-0 left-0 w-[18%] sm:w-[16%] flex items-center justify-start p-3 text-white/70 hover:text-white transition"
-                  aria-label="Image précédente"
-                  title="Précédent (←)"
-                >
-                  <span className="rounded-full border border-white/15 bg-black/35 px-3 py-2 backdrop-blur">
-                    ←
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={next}
-                  className="absolute inset-y-0 right-0 w-[18%] sm:w-[16%] flex items-center justify-end p-3 text-white/70 hover:text-white transition"
-                  aria-label="Image suivante"
-                  title="Suivant (→)"
-                >
-                  <span className="rounded-full border border-white/15 bg-black/35 px-3 py-2 backdrop-blur">
-                    →
-                  </span>
-                </button>
-              </div>
-
-              {/* Thumbs */}
-              <div className="border-t border-white/10 bg-black/60 backdrop-blur px-3 sm:px-4 py-3">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={prev}
-                      className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
-                      aria-label="Précédent"
-                    >
-                      ←
-                    </button>
-                    <button
-                      type="button"
-                      onClick={next}
-                      className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
-                      aria-label="Suivant"
-                    >
-                      →
-                    </button>
-
-                    <a
-                      href={lightboxImage.src}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="sm:hidden rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
-                    >
-                      Ouvrir
-                    </a>
-                  </div>
-
-                  <div className="text-xs text-white/45 hidden md:block">
-                    ESC • ← → • swipe
-                  </div>
-                </div>
-
-                <div className="mt-3 overflow-x-auto">
-                  <div className="flex gap-2 pb-1">
-                    {lightbox.list.map((img, idx) => {
-                      const isActive = idx === lightbox.index;
-                      return (
-                        <button
-                          key={img.src}
-                          type="button"
-                          onClick={() => jumpTo(idx)}
+              <div className="mt-3 overflow-x-auto">
+                <div className="flex gap-2 pb-1">
+                  {lightbox.list.map((img, idx) => {
+                    const isActive = idx === lightbox.index;
+                    return (
+                      <button
+                        key={img.src}
+                        type="button"
+                        onClick={() => jumpTo(idx)}
+                        className={cn(
+                          "relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-xl border transition",
+                          isActive
+                            ? "border-cyan-300 ring-2 ring-cyan-300/30"
+                            : "border-white/10 hover:border-white/25"
+                        )}
+                        aria-label={`Aller à la photo ${idx + 1}`}
+                        aria-current={isActive ? "true" : "false"}
+                      >
+                        <Image
+                          src={img.src}
+                          alt={img.alt}
+                          fill
                           className={cn(
-                            "relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-xl border transition",
-                            isActive
-                              ? "border-[#F5C518] ring-2 ring-[#F5C518]/30"
-                              : "border-white/10 hover:border-white/25"
+                            "object-cover",
+                            isActive ? "opacity-100" : "opacity-80 hover:opacity-95"
                           )}
-                          aria-label={`Aller à la photo ${idx + 1}`}
-                          aria-current={isActive ? "true" : "false"}
-                        >
-                          <Image
-                            src={img.src}
-                            alt={img.alt}
-                            fill
-                            className={cn(
-                              "object-cover",
-                              isActive ? "opacity-100" : "opacity-75 hover:opacity-95"
-                            )}
-                            sizes="80px"
-                          />
-                        </button>
-                      );
-                    })}
-                  </div>
+                          sizes="80px"
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
-    </main>
+        </div>
+      )}
+    </div>
   );
 }

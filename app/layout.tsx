@@ -21,7 +21,8 @@ const DEFAULT_DESCRIPTION =
   "Studio créatif & label à Lévis (Québec). Vidéo, photo, post-production, contenus réseaux sociaux et stratégie.";
 
 export const viewport: Viewport = {
-  themeColor: "#0B0B0E",
+  // pas de noir “visible”, mais on garde un thème cohérent pour mobile/SEO
+  themeColor: "#0A0F1F",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -38,10 +39,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="bg-[#0B0B0E]">
-      <body className="min-h-screen bg-[#0B0B0E] text-white antialiased">
-        {/* ✅ BACKGROUND GLOBAL (toutes les pages) */}
-        <WorkBackground count={11} intervalMs={7000} />
+    <html lang="fr" className="bg-transparent">
+      <body className="min-h-screen bg-transparent text-white antialiased overflow-x-hidden">
+        {/* ✅ AQUARIUM BACKGROUND GLOBAL (derrière tout, sans zones noires) */}
+        <div className="fixed inset-0 -z-10">
+          <WorkBackground count={11} intervalMs={7000} />
+        </div>
 
         {/* UX */}
         <TopProgress />
@@ -55,7 +58,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
 
         {/* contenu */}
-        <main className="pt-[var(--nav-h)] relative z-0">
+        <main className="pt-[var(--nav-h)] relative z-0 bg-transparent">
           <PageTransition>{children}</PageTransition>
         </main>
 

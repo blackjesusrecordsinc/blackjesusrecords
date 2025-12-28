@@ -67,46 +67,56 @@ const item: Variants = {
 
 const UI = {
   pill:
-    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20",
+    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full " +
+    "bg-cyan-300/10 border border-cyan-300/20 " +
+    "shadow-[0_0_40px_rgba(0,180,255,0.12)]",
   card:
-    "rounded-2xl border border-white/10 bg-white/5 p-6 " +
-    "shadow-[0_18px_50px_rgba(0,0,0,0.25)] hover:border-yellow-400/35 transition",
+    "rounded-2xl border border-white/10 bg-white/6 p-6 " +
+    "shadow-[0_18px_55px_rgba(0,8,22,0.35)] " +
+    "hover:border-cyan-300/35 hover:bg-white/8 transition",
   btnPrimary:
-    "group relative px-8 py-4 bg-yellow-400 text-black font-semibold rounded-lg overflow-hidden transition-all " +
-    "hover:scale-[1.02] active:scale-95 shadow-[0_12px_40px_rgba(0,0,0,0.35)]",
+    "group relative px-8 py-4 bg-cyan-300 text-[#001019] font-semibold rounded-lg overflow-hidden transition-all " +
+    "hover:scale-[1.02] active:scale-95 shadow-[0_14px_50px_rgba(0,8,22,0.45)]",
   btnPrimaryGlow:
-    "absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity",
+    "absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-300 opacity-0 group-hover:opacity-100 transition-opacity",
   btnSecondary:
-    "px-8 py-4 border border-white/20 text-white font-medium rounded-lg hover:border-yellow-400 hover:text-yellow-400 transition-all",
+    "px-8 py-4 border border-white/20 text-white font-medium rounded-lg " +
+    "hover:border-cyan-300 hover:text-cyan-200 transition-all",
   sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
+  titleGlow:
+    "drop-shadow-[0_10px_40px_rgba(0,180,255,0.25)]",
 };
 
 export default function ServicesPage() {
   return (
-    <main className="min-h-screen">
-      {/* HEADER (style Home) */}
+    <div className="min-h-[calc(100vh-var(--nav-h))]">
+      {/* HEADER */}
       <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        {/* light blobs (aquarium) */}
+        <div className="pointer-events-none absolute -top-12 left-[-10%] h-[360px] w-[360px] rounded-full blur-3xl opacity-25 bg-cyan-300/40" />
+        <div className="pointer-events-none absolute top-28 right-[-12%] h-[420px] w-[420px] rounded-full blur-3xl opacity-20 bg-blue-400/40" />
+
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
           <motion.div variants={item} className={UI.pill}>
-            <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
-            <span className="text-xs uppercase tracking-widest text-yellow-400">
+            <span className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse" />
+            <span className="text-xs uppercase tracking-widest text-cyan-200">
               Services — Black Jesus Records
             </span>
           </motion.div>
 
           <motion.div variants={item}>
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+            <h1 className={`text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight ${UI.titleGlow}`}>
               Une offre claire.{" "}
               <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
                   Une exécution propre.
                 </span>
-                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-yellow-400/10 blur-xl opacity-70" />
+                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-cyan-300/12 blur-xl opacity-70" />
               </span>
             </h1>
           </motion.div>
 
-          <motion.p variants={item} className="text-base md:text-lg text-white/70 leading-relaxed max-w-3xl">
+          <motion.p variants={item} className="text-base md:text-lg text-white/75 leading-relaxed max-w-3xl">
             Du tournage à la livraison : on cadre le scope, on produit, on livre des formats prêts à publier
             (YouTube / Reels / TikTok). Même direction artistique, même standard premium.
           </motion.p>
@@ -140,25 +150,26 @@ export default function ServicesPage() {
                 <div className={UI.card}>
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-white font-semibold text-lg">{s.title}</p>
-                    <span className="text-white/50 group-hover:text-yellow-400 transition">→</span>
+                    <span className="text-white/55 group-hover:text-cyan-200 transition">→</span>
                   </div>
 
-                  <p className="mt-2 text-sm text-white/60">{s.tag}</p>
-                  <p className="mt-3 text-sm text-white/70 leading-relaxed">{s.desc}</p>
+                  <p className="mt-2 text-sm text-white/65">{s.tag}</p>
+                  <p className="mt-3 text-sm text-white/75 leading-relaxed">{s.desc}</p>
 
                   <motion.div
                     whileHover={{ scale: 1.01 }}
                     transition={{ type: "spring", stiffness: 260, damping: 18 }}
                     className="mt-5 h-24 rounded-xl border border-white/10 overflow-hidden relative"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/14 via-purple-500/10 to-pink-500/10" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-300/14 via-blue-400/10 to-purple-400/10" />
                     <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(rgba(255,255,255,0.65)_1px,transparent_1px)] [background-size:22px_22px]" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+                    {/* fade bas -> haut sans noir */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#000f1f]/45 to-transparent" />
                   </motion.div>
 
-                  <p className="mt-5 text-xs text-white/55">
+                  <p className="mt-5 text-xs text-white/60">
                     Détails, livrables et process →{" "}
-                    <span className="text-yellow-400/90 font-medium">voir la page</span>
+                    <span className="text-cyan-200 font-medium">voir la page</span>
                   </p>
                 </div>
               </Link>
@@ -168,9 +179,11 @@ export default function ServicesPage() {
 
         {/* CTA FINAL */}
         <div className="mt-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
-            <p className="text-2xl md:text-3xl font-bold text-white">On te cadre un plan clair.</p>
-            <p className="mt-2 text-white/70 leading-relaxed max-w-3xl">
+          <div className="rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_55px_rgba(0,8,22,0.35)]">
+            <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-[0_10px_40px_rgba(0,180,255,0.18)]">
+              On te cadre un plan clair.
+            </p>
+            <p className="mt-2 text-white/75 leading-relaxed max-w-3xl">
               Tu nous dis l’objectif + la plateforme finale. On revient avec un scope, des livrables, un délai.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
@@ -185,6 +198,6 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
