@@ -1,8 +1,15 @@
 // app/layout.tsx
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+import TopProgress from "@/components/TopProgress";
+import RouteLoader from "@/components/RouteLoader";
+import CursorGlow from "@/components/CursorGlow";
+import PageTransition from "@/components/PageTransition";
+
 import { Analytics } from "@vercel/analytics/react";
 
 const SITE_NAME = "Black Jesus Records";
@@ -39,17 +46,25 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className="bg-[#0B0B0E]">
       <body className="min-h-screen bg-[#0B0B0E] text-white antialiased">
+        {/* UX layers (global) */}
+        <TopProgress />
+        <RouteLoader />
+        <CursorGlow />
+
         <Navbar />
-        <main className="pt-24">{children}</main>
+
+        <main className="pt-24">
+          <PageTransition>{children}</PageTransition>
+        </main>
+
         <Footer />
+
+        {/* Vercel analytics */}
+        <Analytics />
       </body>
     </html>
   );

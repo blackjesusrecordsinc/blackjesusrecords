@@ -14,3 +14,10 @@ body {
 html {
   color-scheme: dark;
 }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 110px;
+}
+* {
+  -webkit-tap-highlight-color: transparent;
+}
