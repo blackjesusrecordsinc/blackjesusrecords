@@ -11,7 +11,7 @@ const PRIMARY: NavItem[] = [
   { href: "/", label: "Accueil" },
   { href: "/#services", label: "Services" },
   { href: "/#portfolio", label: "Portfolio" },
-  { href: "/booking", label: "Réserver" },
+  // ✅ On enlève "/booking" ici (sinon doublon avec le CTA)
   { href: "/contact", label: "Contact" },
 ];
 
@@ -39,7 +39,9 @@ function isSamePageHashNav(href: string) {
   try {
     const next = new URL(href, window.location.href);
     const cur = new URL(window.location.href);
-    return next.pathname === cur.pathname && !!next.hash && next.search === cur.search;
+    return (
+      next.pathname === cur.pathname && !!next.hash && next.search === cur.search
+    );
   } catch {
     return false;
   }
@@ -135,6 +137,11 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", onDown);
   }, [moreOpen]);
 
+  // ✅ Ferme le dropdown “Plus” quand tu changes de route
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [pathname]);
+
   const onNavClick = async (href: string) => {
     setMoreOpen(false);
 
@@ -167,6 +174,12 @@ export default function Navbar() {
     router.push(href);
   };
 
+  const isActive = (href: string) => {
+    const path = getPath(href);
+    if (path === "/") return pathname === "/";
+    return pathname === path;
+  };
+
   const transparent = pathname === "/" && heroMode && !scrolled;
   const headerClass = [
     "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
@@ -184,7 +197,13 @@ export default function Navbar() {
           onClick={() => onNavClick("/")}
         >
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-white/5">
-            <Image src="/logo_bjr.png" alt="Black Jesus Records" fill className="object-cover" priority />
+            <Image
+              src="/logo_bjr.png"
+              alt="Black Jesus Records"
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
 
           <div className="leading-tight">
@@ -197,23 +216,40 @@ export default function Navbar() {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-6 text-sm">
-          {primary.map((it) => (
-            <button
-              key={it.href}
-              type="button"
-              onClick={() => onNavClick(it.href)}
-              className="text-white/80 hover:text-yellow-400 transition"
-            >
-              {it.label}
-            </button>
-          ))}
+          {primary.map((it) => {
+            const active = isActive(it.href);
+            return (
+              <button
+                key={it.href}
+                type="button"
+                onClick={() => onNavClick(it.href)}
+                className={[
+                  "relative py-2 transition",
+                  active ? "text-yellow-400" : "text-white/80 hover:text-yellow-400",
+                ].join(" ")}
+              >
+                {it.label}
+                <span
+                  className={[
+                    "absolute -bottom-1 left-0 h-0.5 w-full bg-yellow-400 transition-transform origin-left",
+                    active ? "scale-x-100" : "scale-x-0",
+                  ].join(" ")}
+                />
+              </button>
+            );
+          })}
 
           {/* Plus dropdown */}
           <div className="relative" ref={moreRef}>
             <button
               type="button"
               onClick={() => setMoreOpen((v) => !v)}
-              className="inline-flex items-center gap-2 text-white/80 hover:text-yellow-400 transition"
+              className={[
+                "inline-flex items-center gap-2 transition",
+                more.some((x) => isActive(x.href))
+                  ? "text-yellow-400"
+                  : "text-white/80 hover:text-yellow-400",
+              ].join(" ")}
               aria-expanded={moreOpen}
               aria-label="Plus"
             >
@@ -230,22 +266,30 @@ export default function Navbar() {
                   transition={{ duration: 0.14 }}
                   className="absolute right-0 mt-3 w-56 rounded-2xl border border-white/10 bg-black/80 backdrop-blur-xl overflow-hidden shadow-xl"
                 >
-                  {more.map((it) => (
-                    <button
-                      key={it.href}
-                      type="button"
-                      onClick={() => onNavClick(it.href)}
-                      className="w-full text-left px-4 py-3 text-sm text-white/80 hover:text-yellow-400 hover:bg-white/5 transition"
-                    >
-                      {it.label}
-                    </button>
-                  ))}
+                  {more.map((it) => {
+                    const active = isActive(it.href);
+                    return (
+                      <button
+                        key={it.href}
+                        type="button"
+                        onClick={() => onNavClick(it.href)}
+                        className={[
+                          "w-full text-left px-4 py-3 text-sm transition",
+                          active
+                            ? "text-yellow-400 bg-white/5"
+                            : "text-white/80 hover:text-yellow-400 hover:bg-white/5",
+                        ].join(" ")}
+                      >
+                        {it.label}
+                      </button>
+                    );
+                  })}
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* CTA */}
+          {/* ✅ CTA (seul “Réserver” visible) */}
           <button
             type="button"
             onClick={() => onNavClick("/booking")}
@@ -290,7 +334,9 @@ export default function Navbar() {
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 26 }}
+              transition={
+                reduce ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 26 }
+              }
             >
               <div className="pt-6 px-6 pb-6 h-full overflow-y-auto">
                 <div className="flex items-center justify-between">
