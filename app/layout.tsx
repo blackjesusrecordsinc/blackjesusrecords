@@ -9,7 +9,7 @@ import TopProgress from "@/components/TopProgress";
 import RouteLoader from "@/components/RouteLoader";
 import CursorGlow from "@/components/CursorGlow";
 import PageTransition from "@/components/PageTransition";
-import GlobalBackground from "@/components/GlobalBackground";
+import WorkBackground from "@/components/WorkBackground";
 
 import { Analytics } from "@vercel/analytics/react";
 import { Suspense } from "react";
@@ -30,29 +30,23 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: SITE_NAME,
-  title: {
-    default: DEFAULT_TITLE,
-    template: `%s | ${SITE_NAME}`,
-  },
+  title: { default: DEFAULT_TITLE, template: `%s | ${SITE_NAME}` },
   description: DEFAULT_DESCRIPTION,
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
-      <body className="min-h-screen text-white antialiased relative">
-        {/* 🎬 BACKGROUND GLOBAL VIVANT */}
-        <GlobalBackground />
+    <html lang="fr" className="bg-[#0B0B0E]">
+      <body className="min-h-screen bg-[#0B0B0E] text-white antialiased">
+        {/* ✅ BACKGROUND GLOBAL (toutes les pages) */}
+        <WorkBackground count={11} intervalMs={7000} />
 
-        {/* UX layers */}
+        {/* UX */}
         <TopProgress />
 
+        {/* ✅ Obligatoire (RouteLoader utilise useSearchParams) */}
         <Suspense fallback={null}>
           <RouteLoader />
         </Suspense>
@@ -61,7 +55,7 @@ export default function RootLayout({
         <Navbar />
 
         {/* contenu */}
-        <main className="pt-16 relative z-10">
+        <main className="pt-16 relative z-0">
           <PageTransition>{children}</PageTransition>
         </main>
 
