@@ -5,122 +5,140 @@ import Link from "next/link";
 
 export default function AboutPage() {
   return (
-    <main className="bg-[#0B0B0E] text-white">
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#F5C518]/10 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,197,24,0.08),transparent_55%)]" />
-        </div>
-
-        <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-20">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/70">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+    <main className="min-h-screen px-6 pt-10 pb-20">
+      <section className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+          <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
             À propos
-          </div>
-
-          <h1 className="mt-6 text-4xl md:text-6xl font-bold tracking-tight leading-tight">
-            Une vision <span className="text-[#F5C518]">créative</span>,  
-            <br className="hidden sm:block" />
-            ancrée dans le réel.
-          </h1>
-
-          <p className="mt-6 max-w-2xl text-base md:text-lg text-white/70 leading-relaxed">
-            Black Jesus Records est un studio créatif et un label indépendant basé à
-            Lévis (Québec). On crée des images, du son et des stratégies pour des
-            projets qui veulent marquer.
           </p>
         </div>
-      </section>
 
-      {/* STORY */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
-        <div className="grid gap-12 md:grid-cols-2">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-              D’où on vient
-            </h2>
-            <p className="mt-4 text-white/70 leading-relaxed">
-              Black Jesus Records est né d’un besoin simple : créer sans compromis.
-              Un espace où l’image, le son et l’identité avancent ensemble, sans
-              recettes génériques ni solutions copiées-collées.
-            </p>
-            <p className="mt-4 text-white/70 leading-relaxed">
-              Le projet a grandi sur le terrain : clips, shootings, événements,
-              post-production, stratégie. Chaque mandat a forgé une méthode
-              rigoureuse, orientée résultat et cohérence.
-            </p>
+        <h1 className="mt-5 text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+          Une équipe <span className="text-[#F5C518]">studio</span>. Un standard{" "}
+          <span className="text-[#F5C518]">label</span>.
+        </h1>
+
+        <p className="mt-5 max-w-3xl text-base md:text-lg text-white/70 leading-relaxed">
+          Black Jesus Records est un studio créatif & label basé à Lévis (Québec). Notre job : produire des
+          images et des livrables propres, cohérents et efficaces — pour les artistes, les marques et les événements.
+        </p>
+
+        {/* Cards */}
+        <div className="mt-10 grid gap-6 lg:grid-cols-12">
+          <div className="lg:col-span-8">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-7 md:p-8">
+              <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
+                Notre approche
+              </h2>
+
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                {[
+                  {
+                    t: "Direction créative",
+                    d: "Mood, références, plan de tournage. On fixe un style net avant de filmer.",
+                  },
+                  {
+                    t: "Production propre",
+                    d: "Stabilisation, lumière, son, cadence. Rien n’est “au hasard”.",
+                  },
+                  {
+                    t: "Post-production premium",
+                    d: "Montage rythmé, look cohérent, exports optimisés YouTube / Reels / TikTok.",
+                  },
+                  {
+                    t: "Livraison & standards",
+                    d: "Délais clairs, versions finales propres, formats réseaux prêts à poster.",
+                  },
+                ].map((x) => (
+                  <div
+                    key={x.t}
+                    className="rounded-2xl border border-white/10 bg-black/20 p-5"
+                  >
+                    <p className="text-sm font-semibold text-white">{x.t}</p>
+                    <p className="mt-2 text-sm text-white/70 leading-relaxed">{x.d}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-7 flex flex-col sm:flex-row gap-3">
+                <Link
+                  href="/booking"
+                  className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-7 py-3 text-sm font-semibold text-black transition hover:opacity-90"
+                >
+                  Réserver une date
+                </Link>
+                <Link
+                  href="/services"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-7 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                >
+                  Voir les services
+                </Link>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-[#14141A] p-8">
-            <h3 className="text-xl font-semibold">Ce qui nous guide</h3>
-            <ul className="mt-6 space-y-4 text-white/80 text-sm">
-              <li>• Qualité visuelle et sonore niveau label</li>
-              <li>• Direction artistique claire et assumée</li>
-              <li>• Process simple, efficace, sans bullshit</li>
-              <li>• Respect du temps, des délais et des budgets</li>
-            </ul>
+          {/* Right */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-7">
+              <h3 className="text-xl font-semibold tracking-tight">Fondateur</h3>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                Emmanuel Ramazani Kibanda — vision créative, production terrain, focus sur des livrables
+                qui font pro partout (site, réseaux, YouTube).
+              </p>
+
+              <div className="mt-5 space-y-3 text-sm text-white/80">
+                {[
+                  "Basé à Lévis — Québec & International",
+                  "Workflow orienté performance (réseaux + YouTube)",
+                  "Qualité d’image, cohérence, livraison propre",
+                ].map((t) => (
+                  <div key={t} className="flex gap-3">
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                    <span className="leading-relaxed">{t}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-black/20 p-7">
+              <h3 className="text-lg font-semibold">Besoin d’un devis précis ?</h3>
+              <p className="mt-2 text-sm text-white/70 leading-relaxed">
+                Si tu veux un scope complet (options, livrables, délais), passe par Contact.
+              </p>
+              <Link
+                href="/contact"
+                className="mt-5 inline-flex w-full items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition hover:bg-[#F5C518] hover:text-black"
+              >
+                Contact
+              </Link>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* FOUNDER */}
-      <section className="border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-6 py-20 grid gap-12 md:grid-cols-2">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-              Le fondateur
-            </h2>
-            <p className="mt-4 text-white/70 leading-relaxed">
-              Emmanuel Ramazani Kibanda, réalisateur et entrepreneur créatif.
-              Parcours autodidacte, vision internationale, approche terrain.
-            </p>
-            <p className="mt-4 text-white/70 leading-relaxed">
-              Son objectif : bâtir des projets solides, crédibles et durables,
-              capables de rivaliser avec des structures établies — sans perdre
-              l’authenticité.
-            </p>
-          </div>
+        {/* Bottom */}
+        <div className="mt-10 rounded-3xl border border-white/10 bg-black/20 p-7 md:p-8">
+          <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
+            Ce qu’on livre, concrètement
+          </h2>
+          <p className="mt-3 text-sm md:text-base text-white/70 leading-relaxed max-w-3xl">
+            Un rendu propre et cohérent, pensé pour la plateforme finale — pas juste “une vidéo”.
+          </p>
 
-          <div className="rounded-3xl border border-white/10 bg-[#121216] p-8">
-            <h3 className="text-xl font-semibold">Notre positionnement</h3>
-            <p className="mt-4 text-white/70 leading-relaxed">
-              Studio + label + stratégie.  
-              Un seul interlocuteur pour gérer l’image d’un projet de A à Z.
-            </p>
-            <p className="mt-4 text-white/70 leading-relaxed">
-              On travaille avec des artistes, des marques et des structures qui
-              prennent leur image au sérieux.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="border-t border-white/10 bg-[#121216]">
-        <div className="max-w-6xl mx-auto px-6 py-16 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-              Travaillons ensemble
-            </h2>
-            <p className="mt-3 text-white/70">
-              Un projet clair commence par une bonne discussion.
-            </p>
-          </div>
-
-          <div className="flex gap-3">
-            <Link
-              href="/booking"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black hover:opacity-90 transition"
-            >
-              Réserver une date
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] hover:bg-[#F5C518] hover:text-black transition"
-            >
-              Contact
-            </Link>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[
+              "16:9 YouTube (master propre)",
+              "9:16 Reels/TikTok (versions cut)",
+              "Thumbnails / exports optimisés",
+            ].map((t) => (
+              <div
+                key={t}
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/80"
+              >
+                {t}
+              </div>
+            ))}
           </div>
         </div>
       </section>

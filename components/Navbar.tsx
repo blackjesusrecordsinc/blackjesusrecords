@@ -7,14 +7,43 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 type NavItem = { href: string; label: string };
 
-const NAV: NavItem[] = [
+const PRIMARY: NavItem[] = [
   { href: "/", label: "Accueil" },
-  { href: "/services", label: "Services" },
-  { href: "/portfolio", label: "Portfolio" },
-  { href: "/label", label: "Label" },
-  { href: "/post-production", label: "Post-production" },
-  { href: "/a-propos", label: "À propos" },
+  { href: "/#services", label: "Services" },
+  { href: "/#portfolio", label: "Portfolio" },
+  { href: "/booking", label: "Réserver" },
+  { href: "/contact", label: "Contact" },
 ];
+
+const MORE: NavItem[] = [
+  { href: "/a-propos", label: "À propos" },
+  { href: "/post-production", label: "Post-production" },
+  { href: "/label", label: "Label" },
+];
+
+function getHash(href: string) {
+  const idx = href.indexOf("#");
+  return idx >= 0 ? href.slice(idx + 1) : "";
+}
+function getPath(href: string) {
+  const idx = href.indexOf("#");
+  return idx >= 0 ? href.slice(0, idx) || "/" : href;
+}
+function scrollToId(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  return true;
+}
+function isSamePageHashNav(href: string) {
+  try {
+    const next = new URL(href, window.location.href);
+    const cur = new URL(window.location.href);
+    return next.pathname === cur.pathname && !!next.hash && next.search === cur.search;
+  } catch {
+    return false;
+  }
+}
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -22,20 +51,53 @@ export default function Navbar() {
   const reduce = useReducedMotion();
 
   const [open, setOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [heroMode, setHeroMode] = useState(false);
+
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const moreRef = useRef<HTMLDivElement | null>(null);
 
-  const items = useMemo(() => NAV, []);
+  const primary = useMemo(() => PRIMARY, []);
+  const more = useMemo(() => MORE, []);
 
-  /* Scroll background */
+  // Scroll style
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  /* Lock body scroll mobile */
+  // Hero reactive (home only)
+  useEffect(() => {
+    if (pathname !== "/") {
+      setHeroMode(false);
+      return;
+    }
+    const hero = document.getElementById("top");
+    if (!hero) {
+      setHeroMode(false);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => setHeroMode(entry.isIntersecting),
+      { root: null, rootMargin: "-10% 0px -72% 0px", threshold: [0, 0.15, 0.35] }
+    );
+    io.observe(hero);
+    return () => io.disconnect();
+  }, [pathname]);
+
+  // Close mobile on desktop
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) setOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  // Lock scroll on mobile menu
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -45,139 +107,230 @@ export default function Navbar() {
     };
   }, [open]);
 
-  const isActive = (href: string) => pathname === href;
+  // Escape close
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        setMoreOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
+  // Focus close button
+  useEffect(() => {
+    if (open) setTimeout(() => closeBtnRef.current?.focus(), 20);
+  }, [open]);
+
+  // Close “Plus” when clicking outside
+  useEffect(() => {
+    if (!moreOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!moreRef.current) return;
+      if (!moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [moreOpen]);
+
+  const onNavClick = async (href: string) => {
+    setMoreOpen(false);
+
+    const hash = getHash(href);
+    const path = getPath(href);
+
+    // Same page hash scroll
+    if (hash && pathname === path) {
+      setOpen(false);
+      if (!isSamePageHashNav(href)) window.history.pushState(null, "", `#${hash}`);
+      scrollToId(hash);
+      return;
+    }
+
+    // Go to home then scroll
+    if (hash && path === "/" && pathname !== "/") {
+      setOpen(false);
+      router.push(`/#${hash}`);
+
+      let t = 0;
+      const tries = 18;
+      const interval = window.setInterval(() => {
+        t += 1;
+        if (scrollToId(hash) || t >= tries) window.clearInterval(interval);
+      }, 90);
+      return;
+    }
+
+    setOpen(false);
+    router.push(href);
+  };
+
+  const transparent = pathname === "/" && heroMode && !scrolled;
   const headerClass = [
     "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-    scrolled
-      ? "bg-black/85 backdrop-blur-xl border-b border-white/10"
-      : "bg-transparent",
+    transparent ? "bg-transparent" : "bg-black/70 backdrop-blur-xl border-b border-white/10",
   ].join(" ");
 
   return (
     <header className={headerClass}>
-      <nav className="max-w-7xl mx-auto h-16 md:h-20 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* LOGO */}
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Brand */}
         <button
-          onClick={() => router.push("/")}
-          className="flex items-center gap-3"
+          type="button"
+          className="flex items-center gap-3 group text-left"
+          aria-label="Accueil — Black Jesus Records"
+          onClick={() => onNavClick("/")}
         >
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-white/5">
-            <Image
-              src="/logo_bjr.png"
-              alt="Black Jesus Records"
-              fill
-              priority
-              className="object-cover"
-            />
+            <Image src="/logo_bjr.png" alt="Black Jesus Records" fill className="object-cover" priority />
           </div>
-          <div className="leading-tight text-left">
-            <div className="uppercase tracking-wider font-bold text-sm">
+
+          <div className="leading-tight">
+            <div className="font-bold tracking-wider uppercase text-sm group-hover:text-yellow-400 transition-colors">
               Black Jesus Records
             </div>
-            <div className="text-xs text-white/60">
-              Studio créatif & label
-            </div>
+            <div className="text-[11px] text-white/60">Studio créatif & label</div>
           </div>
         </button>
 
-        {/* DESKTOP NAV */}
-        <ul className="hidden md:flex items-center gap-7 text-sm">
-          {items.map((it) => {
-            const active = isActive(it.href);
-            return (
-              <li key={it.href}>
-                <button
-                  onClick={() => router.push(it.href)}
-                  className={[
-                    "relative py-2 transition-colors",
-                    active
-                      ? "text-yellow-400 font-medium"
-                      : "text-white/80 hover:text-yellow-400",
-                  ].join(" ")}
-                >
-                  {it.label}
-                  <span
-                    className={[
-                      "absolute left-0 -bottom-1 h-0.5 w-full bg-yellow-400 transition-transform origin-left",
-                      active ? "scale-x-100" : "scale-x-0",
-                    ].join(" ")}
-                  />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-6 text-sm">
+          {primary.map((it) => (
+            <button
+              key={it.href}
+              type="button"
+              onClick={() => onNavClick(it.href)}
+              className="text-white/80 hover:text-yellow-400 transition"
+            >
+              {it.label}
+            </button>
+          ))}
 
-        {/* DESKTOP CTA */}
-        <div className="hidden md:flex items-center gap-3">
+          {/* Plus dropdown */}
+          <div className="relative" ref={moreRef}>
+            <button
+              type="button"
+              onClick={() => setMoreOpen((v) => !v)}
+              className="inline-flex items-center gap-2 text-white/80 hover:text-yellow-400 transition"
+              aria-expanded={moreOpen}
+              aria-label="Plus"
+            >
+              Plus
+              <span className="text-white/50">▾</span>
+            </button>
+
+            <AnimatePresence>
+              {moreOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.14 }}
+                  className="absolute right-0 mt-3 w-56 rounded-2xl border border-white/10 bg-black/80 backdrop-blur-xl overflow-hidden shadow-xl"
+                >
+                  {more.map((it) => (
+                    <button
+                      key={it.href}
+                      type="button"
+                      onClick={() => onNavClick(it.href)}
+                      className="w-full text-left px-4 py-3 text-sm text-white/80 hover:text-yellow-400 hover:bg-white/5 transition"
+                    >
+                      {it.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* CTA */}
           <button
-            onClick={() => router.push("/booking")}
-            className="px-4 py-2 rounded-xl bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition"
+            type="button"
+            onClick={() => onNavClick("/booking")}
+            className="ml-2 inline-flex items-center justify-center px-4 py-2 rounded-xl bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition-colors"
           >
             Réserver
           </button>
-          <button
-            onClick={() => router.push("/contact")}
-            className="px-4 py-2 rounded-xl border border-white/15 text-white/85 hover:border-white/30"
-          >
-            Contact
-          </button>
         </div>
 
-        {/* MOBILE BURGER */}
+        {/* Mobile button */}
         <button
-          className="md:hidden w-11 h-11 rounded-xl border border-white/10 bg-white/5"
+          className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
           onClick={() => setOpen((v) => !v)}
+          aria-label="Menu"
+          aria-expanded={open}
         >
-          ☰
+          <div className="flex flex-col gap-1.5 w-5">
+            <span className={["h-0.5 bg-white transition-all", open ? "rotate-45 translate-y-2" : ""].join(" ")} />
+            <span className={["h-0.5 bg-white transition-all", open ? "opacity-0" : "opacity-100"].join(" ")} />
+            <span className={["h-0.5 bg-white transition-all", open ? "-rotate-45 -translate-y-2" : ""].join(" ")} />
+          </div>
         </button>
       </nav>
 
-      {/* MOBILE MENU */}
+      {/* Mobile overlay + drawer */}
       <AnimatePresence>
         {open && (
           <>
-            <motion.div
-              className="fixed inset-0 bg-black/60 z-40"
+            <motion.button
+              type="button"
+              aria-label="Fermer"
               onClick={() => setOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
             />
 
             <motion.aside
-              className="fixed top-0 right-0 w-[85vw] max-w-sm h-full bg-black border-l border-white/10 z-50"
+              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/90 backdrop-blur-xl border-l border-white/10 z-50 md:hidden"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={
-                reduce ? { duration: 0 } : { type: "spring", damping: 26 }
-              }
+              transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 26 }}
             >
-              <div className="p-6 space-y-3">
-                {items.map((it) => (
+              <div className="pt-6 px-6 pb-6 h-full overflow-y-auto">
+                <div className="flex items-center justify-between">
+                  <div className="text-white/70 text-sm">Navigation</div>
                   <button
-                    key={it.href}
-                    onClick={() => {
-                      setOpen(false);
-                      router.push(it.href);
-                    }}
-                    className="block w-full text-left py-3 px-4 rounded-xl border border-white/10 hover:text-yellow-400"
+                    ref={closeBtnRef}
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition text-white"
+                    aria-label="Fermer le menu"
                   >
-                    {it.label}
+                    ✕
                   </button>
-                ))}
+                </div>
 
-                <button
-                  onClick={() => {
-                    setOpen(false);
-                    router.push("/booking");
-                  }}
-                  className="w-full mt-6 py-3 rounded-xl bg-yellow-400 text-black font-semibold"
-                >
-                  Réserver une date
-                </button>
+                <div className="mt-6 space-y-2">
+                  {[...primary, ...more].map((it) => (
+                    <button
+                      key={it.href}
+                      type="button"
+                      onClick={() => onNavClick(it.href)}
+                      className="w-full text-left py-3 px-4 rounded-xl transition border border-white/10 text-white/85 hover:text-yellow-400 hover:bg-white/5 hover:border-white/15"
+                    >
+                      {it.label}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-8 p-4 rounded-2xl border border-yellow-400/20 bg-yellow-400/5">
+                  <button
+                    type="button"
+                    onClick={() => onNavClick("/booking")}
+                    className="block w-full text-center py-3 rounded-xl bg-yellow-400 text-black font-semibold hover:bg-yellow-300 transition-colors"
+                  >
+                    Réserver une date
+                  </button>
+                  <p className="mt-3 text-xs text-white/60 text-center">
+                    Réponse 24–48h (jours ouvrables)
+                  </p>
+                </div>
               </div>
             </motion.aside>
           </>
