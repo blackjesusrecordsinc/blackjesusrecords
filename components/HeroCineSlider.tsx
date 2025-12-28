@@ -17,13 +17,26 @@ export default function HeroCineSlider({
   intervalMs = 8000,
   fadeSeconds = 1.15,
   onIndexChange,
+
+  // ✅ nouveaux réglages “premium”
+  darkness = 0.56, // plus haut = plus sombre (0.45–0.65 recommandé)
+  vignette = 0.55, // force du vignettage (0.35–0.65)
+  glow = 0.10, // halo doré (0.06–0.14)
+  grain = 0.10, // grain (0.06–0.12)
+  showDots = true,
 }: {
   className?: string;
-  count?: number; // nombre d'images
+  count?: number;
   ext?: ".jpg" | ".png" | ".jpeg";
   intervalMs?: number;
   fadeSeconds?: number;
   onIndexChange?: (index: number) => void;
+
+  darkness?: number;
+  vignette?: number;
+  glow?: number;
+  grain?: number;
+  showDots?: boolean;
 }) {
   const reduce = useReducedMotion();
   const [i, setI] = useState(0);
@@ -34,7 +47,7 @@ export default function HeroCineSlider({
     return Array.from({ length: Math.max(2, count) }, (_, idx) => {
       const n = idx + 1;
       return {
-        src: `/work/${pad2(n)}${ext}`,
+        src: `/work/${pad2(n)}${ext}`, // /public/work/01.jpg ...
         alt: `Black Jesus Records — Work ${pad2(n)}`,
       };
     });
@@ -71,9 +84,6 @@ export default function HeroCineSlider({
     onIndexChange?.(i);
   }, [i, onIndexChange]);
 
-  // prefetch next slide (perfs)
-  const nextSrc = slides[(i + 1) % slides.length]?.src;
-
   // swipe mobile
   const startX = useRef<number | null>(null);
   const onTouchStart = (e: React.TouchEvent) => {
@@ -92,6 +102,14 @@ export default function HeroCineSlider({
 
   const current = slides[i];
 
+  // clamp petit safety
+  const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+  const d = clamp01(darkness);
+  const v = clamp01(vignette);
+  const g = clamp01(glow);
+  const gr = clamp01(grain);
+
   return (
     <div
       className={`absolute inset-0 ${className}`}
@@ -100,11 +118,6 @@ export default function HeroCineSlider({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {/* prefetch next */}
-      {nextSrc ? (
-        <link rel="preload" as="image" href={nextSrc} />
-      ) : null}
-
       <AnimatePresence mode="wait">
         <motion.div
           key={current.src}
@@ -118,11 +131,7 @@ export default function HeroCineSlider({
             className="absolute inset-0"
             initial={reduce ? { scale: 1, x: 0, y: 0 } : { scale: ken.s0, x: ken.x0, y: ken.y0 }}
             animate={reduce ? { scale: 1, x: 0, y: 0 } : { scale: ken.s1, x: ken.x1, y: ken.y1 }}
-            transition={
-              reduce
-                ? { duration: 0 }
-                : { duration: intervalMs / 1000 + 1, ease: "easeInOut" }
-            }
+            transition={reduce ? { duration: 0 } : { duration: intervalMs / 1000 + 1, ease: "easeInOut" }}
           >
             <Image
               src={current.src}
@@ -136,16 +145,42 @@ export default function HeroCineSlider({
         </motion.div>
       </AnimatePresence>
 
-      {/* overlays ciné */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/45 to-black/85" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(255,215,0,0.10),_rgba(0,0,0,0.82))]" />
-      <div className="absolute inset-0 [box-shadow:inset_0_0_140px_rgba(0,0,0,0.65)]" />
+      {/* ✅ overlays réglables (plus “image visible”) */}
+      {/* scrim global (assure la lisibilité) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `linear-gradient(to bottom,
+            rgba(0,0,0,${Math.max(0.35, d + 0.10)}) 0%,
+            rgba(0,0,0,${Math.max(0.18, d - 0.20)}) 45%,
+            rgba(0,0,0,${Math.max(0.35, d + 0.14)}) 100%)`,
+        }}
+      />
+
+      {/* glow doré léger (ciné) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at center,
+            rgba(255, 215, 0, ${g}) 0%,
+            rgba(0,0,0, ${Math.max(0.55, d + 0.18)}) 78%)`,
+        }}
+      />
+
+      {/* vignette (moins violent que ton 140px) */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          boxShadow: `inset 0 0 120px rgba(0,0,0,${v})`,
+        }}
+      />
 
       {/* grain film */}
       <motion.div
         aria-hidden
-        className="absolute inset-0 opacity-[0.10] mix-blend-overlay pointer-events-none"
+        className="absolute inset-0 mix-blend-overlay pointer-events-none"
         style={{
+          opacity: gr,
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E\")",
         }}
@@ -154,25 +189,26 @@ export default function HeroCineSlider({
       />
 
       {/* scanlines */}
-      <div className="absolute inset-0 opacity-[0.06] pointer-events-none [background-image:linear-gradient(to_bottom,rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:100%_7px]" />
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none [background-image:linear-gradient(to_bottom,rgba(255,255,255,0.18)_1px,transparent_1px)] [background-size:100%_7px]" />
 
-      {/* mini progress dots */}
-      <div className="absolute bottom-6 left-6 flex items-center gap-2">
-        {slides.slice(0, Math.min(slides.length, 10)).map((s, idx) => (
-          <button
-            key={s.src}
-            type="button"
-            onClick={() => setI(idx)}
-            className={`h-2.5 w-2.5 rounded-full transition ${
-              idx === i ? "bg-yellow-400" : "bg-white/25 hover:bg-white/40"
-            }`}
-            aria-label={`Slide ${idx + 1}`}
-          />
-        ))}
-      </div>
+      {/* dots */}
+      {showDots && (
+        <div className="absolute bottom-6 left-6 flex items-center gap-2">
+          {slides.slice(0, Math.min(slides.length, 10)).map((s, idx) => (
+            <button
+              key={s.src}
+              type="button"
+              onClick={() => setI(idx)}
+              className={`h-2.5 w-2.5 rounded-full transition ${
+                idx === i ? "bg-yellow-400" : "bg-white/25 hover:bg-white/40"
+              }`}
+              aria-label={`Slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
 
-      {/* hint swipe mobile */}
-      <div className="absolute bottom-6 right-6 text-[11px] text-white/55 hidden sm:block">
+      <div className="absolute bottom-6 right-6 text-[11px] text-white/55 hidden sm:block pointer-events-none">
         Hover = pause · Swipe = change
       </div>
     </div>

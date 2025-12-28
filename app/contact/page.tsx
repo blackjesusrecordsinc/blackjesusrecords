@@ -4,6 +4,7 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
+import HeroCineSlider from "@/components/HeroCineSlider";
 
 type FormState = {
   name: string;
@@ -50,12 +51,7 @@ const container: Variants = {
 
 const item: Variants = {
   hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
-  },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const UI = {
@@ -88,19 +84,13 @@ function buildPrefill(service: string) {
 
   const s = service.toLowerCase();
   if (s.includes("post")) {
-    return (
-      "Objectif:\n- \n\nFootage:\n- Caméra / drone / audio séparé ?\n\nDurée finale:\n- \n\nFormats:\n- 16:9 / 9:16 / 1:1\n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- "
-    );
+    return "Objectif:\n- \n\nFootage:\n- Caméra / drone / audio séparé ?\n\nDurée finale:\n- \n\nFormats:\n- 16:9 / 9:16 / 1:1\n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- ";
   }
   if (s.includes("photo")) {
-    return (
-      "Type de séance:\n- (portrait / corporate / food / couple)\n\nRendu voulu:\n- (clean / editorial / ciné)\n\nNombre d’images:\n- \n\nLieu:\n- \n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- "
-    );
+    return "Type de séance:\n- (portrait / corporate / food / couple)\n\nRendu voulu:\n- (clean / editorial / ciné)\n\nNombre d’images:\n- \n\nLieu:\n- \n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- ";
   }
   if (s.includes("vidéo") || s.includes("video")) {
-    return (
-      "Type:\n- (clip / corporate / événement / pub)\n\nDurée:\n- \n\nPlateforme:\n- \n\nLieu + date:\n- \n\nRéférences (liens):\n- \n\nLivrables:\n- (YouTube + vertical, etc.)\n\nNotes:\n- "
-    );
+    return "Type:\n- (clip / corporate / événement / pub)\n\nDurée:\n- \n\nPlateforme:\n- \n\nLieu + date:\n- \n\nRéférences (liens):\n- \n\nLivrables:\n- (YouTube + vertical, etc.)\n\nNotes:\n- ";
   }
   return base;
 }
@@ -193,52 +183,46 @@ export default function ContactPage() {
   );
 
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))]">
-      {/* HEADER */}
-      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
-        <div className="pointer-events-none absolute -top-10 left-[-10%] h-[340px] w-[340px] rounded-full blur-3xl opacity-25 bg-cyan-300/40" />
-        <div className="pointer-events-none absolute top-28 right-[-12%] h-[420px] w-[420px] rounded-full blur-3xl opacity-20 bg-blue-400/40" />
+    <main className="min-h-[calc(100vh-var(--nav-h))]">
+      {/* HERO */}
+      <section className="relative min-h-[62vh] flex items-center overflow-hidden">
+        <HeroCineSlider count={10} ext=".jpg" intervalMs={8000} darkness={0.58} vignette={0.52} glow={0.10} grain={0.10} />
 
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-          <motion.div variants={item} className={UI.pill}>
-            <span className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse" />
-            <span className="text-xs uppercase tracking-widest text-cyan-100">Contact</span>
-          </motion.div>
+        <div className="relative max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-16">
+          <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+            <motion.div variants={item} className={UI.pill}>
+              <span className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse" />
+              <span className="text-xs uppercase tracking-widest text-cyan-100">Contact</span>
+            </motion.div>
 
-          <motion.div variants={item}>
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight drop-shadow-[0_12px_40px_rgba(0,180,255,0.18)]">
+            <motion.h1 variants={item} className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
               Parle-nous de ton{" "}
-              <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
-                  projet
-                </span>
-                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-cyan-300/12 blur-xl opacity-70" />
+              <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
+                projet
               </span>
               .
-            </h1>
+            </motion.h1>
+
+            <motion.p variants={item} className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
+              Un brief clair = une réponse claire. Clip, photo, post-prod, web ou stratégie : on te cadre le scope,
+              les délais et les livrables.
+            </motion.p>
+
+            <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
+              <Link href="/booking" className={UI.btnPrimary}>
+                <span className={UI.btnPrimaryGlow} />
+                <span className="relative z-10">Réserver un appel</span>
+              </Link>
+              <Link href="/services" className={UI.btnSecondary}>Voir les services</Link>
+            </motion.div>
+
+            <motion.div variants={item} className={UI.sep} />
           </motion.div>
-
-          <motion.p variants={item} className="text-base md:text-lg text-white/75 leading-relaxed max-w-3xl">
-            Un brief clair = une réponse claire. Clip, photo, post-prod, web ou stratégie :
-            on te cadre le scope, les délais et les livrables.
-          </motion.p>
-
-          <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
-            <Link href="/booking" className={UI.btnPrimary}>
-              <span className={UI.btnPrimaryGlow} />
-              <span className="relative z-10">Réserver un appel</span>
-            </Link>
-            <Link href="/services" className={UI.btnSecondary}>
-              Voir les services
-            </Link>
-          </motion.div>
-
-          <motion.div variants={item} className={UI.sep} />
-        </motion.div>
+        </div>
       </section>
 
       {/* CONTENT */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 pt-10">
         <div className="grid gap-6 lg:grid-cols-12">
           {/* FORM */}
           <motion.div
@@ -251,7 +235,7 @@ export default function ContactPage() {
             <motion.div variants={item} className={UI.card}>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Formulaire</h2>
+                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">Formulaire</h2>
                   <p className="mt-2 text-sm md:text-base text-white/75 leading-relaxed">
                     Va droit au but. Si tu veux, utilise un modèle “brief” en 1 clic.
                   </p>
@@ -270,7 +254,7 @@ export default function ContactPage() {
                     onClick={() => onQuickFill(x.t === "Clip / vidéo" ? "Production vidéo" : x.t)}
                     className="group rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-left transition hover:border-cyan-300/35 hover:bg-white/8"
                   >
-                    <p className="text-sm font-semibold">
+                    <p className="text-sm font-semibold text-white">
                       {x.t} <span className="text-cyan-200">→</span>
                     </p>
                     <p className="mt-1 text-xs text-white/60 leading-relaxed">{x.d}</p>
@@ -280,79 +264,25 @@ export default function ContactPage() {
 
               <form onSubmit={onSubmit} className="mt-8 space-y-6" noValidate>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Field
-                    label="Nom complet *"
-                    name="name"
-                    value={form.name}
-                    onChange={onChange}
-                    required
-                    error={errors.name}
-                    autoComplete="name"
-                    placeholder="Ex. Emmanuel Kibanda"
-                  />
-                  <Field
-                    label="Email *"
-                    type="email"
-                    name="email"
-                    value={form.email}
-                    onChange={onChange}
-                    required
-                    error={errors.email}
-                    autoComplete="email"
-                    placeholder="Ex. nom@domaine.com"
-                  />
+                  <Field label="Nom complet *" name="name" value={form.name} onChange={onChange} required error={errors.name} autoComplete="name" placeholder="Ex. Emmanuel Kibanda" />
+                  <Field label="Email *" type="email" name="email" value={form.email} onChange={onChange} required error={errors.email} autoComplete="email" placeholder="Ex. nom@domaine.com" />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Field
-                    label="Téléphone"
-                    name="phone"
-                    value={form.phone}
-                    onChange={onChange}
-                    autoComplete="tel"
-                    placeholder="Optionnel"
-                  />
-                  <Select
-                    label="Type de service"
-                    name="service"
-                    value={form.service}
-                    onChange={onChange}
-                    options={SERVICES as unknown as string[]}
-                    hint="Choisis si tu sais déjà."
-                  />
+                  <Field label="Téléphone" name="phone" value={form.phone} onChange={onChange} autoComplete="tel" placeholder="Optionnel" />
+                  <Select label="Type de service" name="service" value={form.service} onChange={onChange} options={SERVICES as unknown as string[]} hint="Choisis si tu sais déjà." />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <Field label="Date souhaitée" type="date" name="date" value={form.date} onChange={onChange} />
                   <div className="md:col-span-2">
-                    <Field
-                      label="Lieu"
-                      name="location"
-                      value={form.location}
-                      onChange={onChange}
-                      placeholder="Ville, studio, extérieur…"
-                    />
+                    <Field label="Lieu" name="location" value={form.location} onChange={onChange} placeholder="Ville, studio, extérieur…" />
                   </div>
                 </div>
 
-                <Field
-                  label="Budget approximatif"
-                  name="budget"
-                  value={form.budget}
-                  onChange={onChange}
-                  placeholder="Ex. 800 $, 1500 $, à discuter…"
-                />
+                <Field label="Budget approximatif" name="budget" value={form.budget} onChange={onChange} placeholder="Ex. 800 $, 1500 $, à discuter…" />
 
-                <Textarea
-                  label="Message *"
-                  name="message"
-                  id="message"
-                  value={form.message}
-                  onChange={onChange}
-                  required
-                  error={errors.message}
-                  placeholder="Objectif, références, plateforme cible, délais…"
-                />
+                <Textarea label="Message *" name="message" id="message" value={form.message} onChange={onChange} required error={errors.message} placeholder="Objectif, références, plateforme cible, délais…" />
 
                 <div ref={firstErrorRef}>
                   {error && <Feedback type="error" text={error} />}
@@ -382,9 +312,9 @@ export default function ContactPage() {
             className="lg:col-span-4 space-y-6"
           >
             <motion.div variants={item} className={UI.card}>
-              <h3 className="text-xl font-semibold tracking-tight">Notre approche</h3>
+              <h3 className="text-xl font-semibold tracking-tight text-white">Notre approche</h3>
               <p className="mt-2 text-sm text-white/75 leading-relaxed">
-                On ne “prend pas” un projet. On le cadre, on le produit, on le livre propre.
+                On cadre le projet, on produit, on livre propre.
               </p>
 
               <ul className="mt-5 space-y-3 text-sm text-white/85">
@@ -413,7 +343,7 @@ export default function ContactPage() {
             </motion.div>
 
             <motion.div variants={item} className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl">
-              <h3 className="text-lg font-semibold">Info utile</h3>
+              <h3 className="text-lg font-semibold text-white">Info utile</h3>
               <p className="mt-2 text-sm text-white/75 leading-relaxed">
                 Plus ton message est précis, plus vite on peut te répondre.
               </p>
@@ -439,9 +369,7 @@ export default function ContactPage() {
           <p className="text-2xl md:text-3xl font-bold text-white">Réponse rapide, cadre clair.</p>
           <p className="mt-2 text-white/75 leading-relaxed">Les projets structurés sont traités en priorité.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <Link href="/services" className={UI.btnSecondary}>
-              Voir les services
-            </Link>
+            <Link href="/services" className={UI.btnSecondary}>Voir les services</Link>
             <Link href="/booking" className={UI.btnPrimary}>
               <span className={UI.btnPrimaryGlow} />
               <span className="relative z-10">Réserver</span>
@@ -449,11 +377,11 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
 
-/* ========= UI ATOMS ========= */
+/* ===== UI ATOMS ===== */
 
 function cn(...c: Array<string | false | null | undefined>) {
   return c.filter(Boolean).join(" ");
@@ -473,9 +401,7 @@ function Field({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
-        {label}
-      </label>
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">{label}</label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <input
         {...props}
@@ -489,11 +415,7 @@ function Field({
             : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15"
         )}
       />
-      {error ? (
-        <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">
-          {error}
-        </p>
-      ) : null}
+      {error ? <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">{error}</p> : null}
     </div>
   );
 }
@@ -512,9 +434,7 @@ function Select({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
-        {label}
-      </label>
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">{label}</label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <select
         {...props}
@@ -523,9 +443,7 @@ function Select({
       >
         <option value="">Sélectionner…</option>
         {options.map((o) => (
-          <option key={o} value={o} className="bg-[#041224]">
-            {o}
-          </option>
+          <option key={o} value={o} className="bg-[#041224]">{o}</option>
         ))}
       </select>
     </div>
@@ -546,9 +464,7 @@ function Textarea({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
-        {label}
-      </label>
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">{label}</label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <textarea
         {...props}
@@ -563,11 +479,7 @@ function Textarea({
             : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15"
         )}
       />
-      {error ? (
-        <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">
-          {error}
-        </p>
-      ) : null}
+      {error ? <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">{error}</p> : null}
     </div>
   );
 }
@@ -577,9 +489,7 @@ function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
     <div
       className={[
         "rounded-2xl border px-4 py-3 backdrop-blur-xl",
-        type === "error"
-          ? "border-cyan-300/35 bg-cyan-300/10"
-          : "border-white/10 bg-white/6",
+        type === "error" ? "border-cyan-300/35 bg-cyan-300/10" : "border-white/10 bg-white/6",
       ].join(" ")}
       role="status"
       aria-live="polite"

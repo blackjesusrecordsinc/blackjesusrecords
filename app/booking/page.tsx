@@ -5,6 +5,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 
+import HeroCineSlider from "@/components/HeroCineSlider";
+
+/* ================= TYPES ================= */
 type Status = null | "loading" | "success" | "error";
 
 type BookingPayload = {
@@ -16,9 +19,10 @@ type BookingPayload = {
   location: string;
   budget: string;
   message: string;
-  company?: string; // honeypot
+  company?: string;
 };
 
+/* ================= UTILS ================= */
 function toStr(v: FormDataEntryValue | null) {
   return typeof v === "string" ? v.trim() : "";
 }
@@ -26,6 +30,7 @@ function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
 }
 
+/* ================= DATA ================= */
 const SERVICES = [
   "Clip musical",
   "Événement",
@@ -43,24 +48,25 @@ const QUICK = [
     title: "Clip musical",
     hint: "YouTube + versions verticales",
     message:
-      "Objectif:\n- \n\nStyle / références (liens):\n- \n\nLieu + date:\n- \n\nLivrables:\n- 16:9 (YouTube)\n- 9:16 (Reels/TikTok)\n\nBudget:\n- \n\nNotes:\n- ",
+      "Objectif:\n-\n\nStyle / références:\n-\n\nLieu + date:\n-\n\nLivrables:\n- 16:9\n- 9:16\n\nBudget:\n-\n\nNotes:\n-",
   },
   {
     id: "event",
     title: "Événement",
     hint: "Highlights + aftermovie",
     message:
-      "Type d’événement:\n- \n\nLieu + date + horaires:\n- \n\nMoments clés:\n- \n\nLivrables:\n- Aftermovie\n- Highlights (vertical)\n\nRéférences (liens):\n- \n\nBudget:\n- \n\nNotes:\n- ",
+      "Type d’événement:\n-\n\nLieu + date:\n-\n\nMoments clés:\n-\n\nLivrables:\n- Aftermovie\n- Vertical\n\nBudget:\n-\n\nNotes:\n-",
   },
   {
     id: "post",
     title: "Post-production",
     hint: "Montage / look / audio",
     message:
-      "Type:\n- montage / color / audio\n\nDurée finale:\n- \n\nFormats:\n- 16:9 / 9:16 / 1:1\n\nDeadline:\n- \n\nRéférences (liens):\n- \n\nNotes:\n- ",
+      "Type:\n- Montage / Color / Audio\n\nDurée:\n-\n\nFormats:\n- 16:9 / 9:16\n\nDeadline:\n-\n\nNotes:\n-",
   },
 ] as const;
 
+/* ================= ANIM ================= */
 const container: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
@@ -76,25 +82,22 @@ const item: Variants = {
   },
 };
 
-/** AQUARIUM UI (zéro noir) */
+/* ================= UI ================= */
 const UI = {
   pill:
-    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full " +
-    "bg-cyan-300/10 border border-cyan-300/25 shadow-[0_0_40px_rgba(0,180,255,0.12)]",
+    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-300/10 border border-cyan-300/25",
   card:
-    "rounded-2xl border border-white/10 bg-white/6 p-6 " +
-    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl",
+    "rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,8,22,0.35)]",
   btnPrimary:
-    "group relative px-7 py-3 rounded-lg bg-cyan-300 text-[#001019] font-semibold overflow-hidden transition " +
-    "hover:scale-[1.02] active:scale-95 shadow-[0_14px_52px_rgba(0,8,22,0.45)]",
+    "group relative px-7 py-3 rounded-lg bg-cyan-300 text-[#001019] font-semibold overflow-hidden transition hover:scale-[1.02] active:scale-95",
   btnPrimaryGlow:
-    "absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-300 opacity-0 group-hover:opacity-100 transition-opacity",
+    "absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-300 opacity-0 group-hover:opacity-100",
   btnSecondary:
-    "px-7 py-3 rounded-lg border border-white/20 text-white font-medium " +
-    "hover:border-cyan-300 hover:text-cyan-100 transition",
+    "px-7 py-3 rounded-lg border border-white/20 text-white hover:border-cyan-300 transition",
   sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
 };
 
+/* ================= PAGE ================= */
 export default function BookingPage() {
   const [status, setStatus] = useState<Status>(null);
   const [errorMsg, setErrorMsg] = useState("");
@@ -106,9 +109,9 @@ export default function BookingPage() {
 
   const validate = useCallback((p: BookingPayload) => {
     const e: Record<string, string> = {};
-    if (!p.name || p.name.length < 2) e.name = "Nom requis.";
-    if (!p.email || !isEmail(p.email)) e.email = "Email invalide.";
-    if (!p.message || p.message.trim().length < 20) e.message = "Détails requis (min. 20 caractères).";
+    if (!p.name || p.name.length < 2) e.name = "Nom requis";
+    if (!p.email || !isEmail(p.email)) e.email = "Email invalide";
+    if (!p.message || p.message.length < 20) e.message = "Détails requis (min 20 caractères)";
     return e;
   }, []);
 
@@ -121,10 +124,9 @@ export default function BookingPage() {
 
     const serviceEl = form.querySelector<HTMLSelectElement>('select[name="service"]');
     const msgEl = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
-
     if (serviceEl) serviceEl.value = service;
-    if (msgEl) {
-      msgEl.value = msgEl.value.trim() ? msgEl.value : message;
+    if (msgEl && !msgEl.value.trim()) {
+      msgEl.value = message;
       msgEl.focus();
     }
   }, []);
@@ -136,9 +138,7 @@ export default function BookingPage() {
       setErrorMsg("");
       setFieldErrors({});
 
-      const form = e.currentTarget;
-      const fd = new FormData(form);
-
+      const fd = new FormData(e.currentTarget);
       const payload: BookingPayload = {
         name: toStr(fd.get("name")),
         email: toStr(fd.get("email")),
@@ -155,8 +155,8 @@ export default function BookingPage() {
       if (Object.keys(errs).length) {
         setStatus("error");
         setFieldErrors(errs);
-        setErrorMsg("Corrige les champs requis et renvoie.");
-        setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+        setErrorMsg("Corrige les champs requis.");
+        feedbackRef.current?.scrollIntoView({ behavior: "smooth" });
         return;
       }
 
@@ -167,287 +167,110 @@ export default function BookingPage() {
           body: JSON.stringify(payload),
         });
 
-        const data = await res.json().catch(() => null);
-        if (!res.ok) {
-          setStatus("error");
-          setErrorMsg(data?.error || "Erreur serveur. Réessaie plus tard.");
-          return;
-        }
-
+        if (!res.ok) throw new Error();
         setStatus("success");
-        form.reset();
-        setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+        e.currentTarget.reset();
       } catch {
         setStatus("error");
-        setErrorMsg("Erreur de connexion. Réessaie plus tard.");
-        setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+        setErrorMsg("Erreur serveur. Réessaie plus tard.");
       }
     },
     [validate]
   );
 
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))]">
-      {/* HEADER */}
-      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
-        {/* aquarium glows */}
-        <div className="pointer-events-none absolute -top-12 left-[-10%] h-[360px] w-[360px] rounded-full blur-3xl opacity-25 bg-cyan-300/40" />
-        <div className="pointer-events-none absolute top-24 right-[-12%] h-[440px] w-[440px] rounded-full blur-3xl opacity-20 bg-blue-400/40" />
+    <main className="relative min-h-screen text-white">
+      {/* ===== BACKGROUND GLOBAL (IDENTIQUE AUX AUTRES PAGES) ===== */}
+      <div className="fixed inset-0 z-0">
+        <HeroCineSlider count={11} ext=".jpg" intervalMs={8000} />
+      </div>
+      <div className="fixed inset-0 z-[1] bg-black/65 backdrop-blur-[2px]" />
 
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-          <motion.div variants={item} className={UI.pill}>
-            <span className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse" />
-            <span className="text-xs uppercase tracking-widest text-cyan-100">Réservation</span>
-          </motion.div>
+      {/* ===== CONTENT ===== */}
+      <div className="relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20">
+          <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
+            <motion.div variants={item} className={UI.pill}>
+              <span className="w-2 h-2 bg-cyan-300 rounded-full" />
+              <span className="text-xs uppercase tracking-widest text-cyan-100">Réservation</span>
+            </motion.div>
 
-          <motion.div variants={item}>
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight drop-shadow-[0_12px_40px_rgba(0,180,255,0.18)]">
+            <motion.h1 variants={item} className="text-4xl md:text-6xl font-bold">
               Réserver une{" "}
-              <span className="relative inline-block">
-                <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
-                  date
-                </span>
-                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-cyan-300/12 blur-xl opacity-70" />
+              <span className="bg-gradient-to-r from-cyan-200 to-blue-200 bg-clip-text text-transparent">
+                date
               </span>
-              .
-            </h1>
-          </motion.div>
+            </motion.h1>
 
-          <motion.p variants={item} className="text-base md:text-lg text-white/75 leading-relaxed max-w-3xl">
-            Envoie l’essentiel. On revient avec une proposition claire : disponibilité, logistique, livrables et délais.
-          </motion.p>
+            <motion.p variants={item} className="text-white/75 max-w-3xl">
+              Envoie l’essentiel. On revient avec une proposition claire et réaliste.
+            </motion.p>
 
-          <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
-            <Link href="/contact" className={UI.btnSecondary}>
-              Passer par Contact
-            </Link>
-            <Link href="/services" className={UI.btnSecondary}>
-              Voir les services
-            </Link>
-          </motion.div>
+            <motion.div variants={item} className={UI.sep} />
 
-          <motion.div variants={item} className={UI.sep} />
-        </motion.div>
-      </section>
-
-      {/* CONTENT */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="grid gap-6 lg:grid-cols-12">
-          {/* FORM */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-120px" }}
-            className="lg:col-span-8"
-          >
+            {/* ===== FORM ===== */}
             <motion.div variants={item} className={UI.card}>
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Réservation rapide</h2>
-                  <p className="mt-2 text-sm md:text-base text-white/75 leading-relaxed">
-                    Clique un modèle pour remplir le brief en 10 secondes.
-                  </p>
-                </div>
-                <span className="shrink-0 hidden sm:inline-flex items-center rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs text-white/70">
-                  Réponse 24–48h
-                </span>
-              </div>
-
-              {/* Templates */}
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                {QUICK.map((x) => (
-                  <button
-                    key={x.id}
-                    type="button"
-                    onClick={() => applyTemplate(x.title, x.message)}
-                    className="group rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-left transition hover:border-cyan-300/35 hover:bg-white/8"
-                  >
-                    <p className="text-sm font-semibold">
-                      {x.title} <span className="text-cyan-200">→</span>
-                    </p>
-                    <p className="mt-1 text-xs text-white/60 leading-relaxed">{x.hint}</p>
-                  </button>
-                ))}
-              </div>
-
-              <form ref={formRef} className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
-                {/* Honeypot */}
-                <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-5" noValidate>
+                <input name="company" className="hidden" tabIndex={-1} />
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Field label="Nom complet *" name="name" placeholder="Ex. Emmanuel Kibanda" error={fieldErrors.name} />
-                  <Field label="Email *" name="email" type="email" placeholder="Ex. contact@..." error={fieldErrors.email} />
+                  <Field label="Nom *" name="name" error={fieldErrors.name} />
+                  <Field label="Email *" name="email" type="email" error={fieldErrors.email} />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <Field label="Téléphone" name="phone" placeholder="Optionnel" />
-                  <Select label="Type de service" name="service" options={services} hint="Si tu hésites, laisse vide." />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <Field label="Date souhaitée" name="date" type="date" />
-                  <Field label="Lieu" name="location" placeholder="Ex. Lévis, Québec, Montréal..." />
-                </div>
-
-                <Field label="Budget (approx.)" name="budget" placeholder="Ex. 800 $, 1500 $, à discuter…" />
+                <Select label="Service" name="service" options={services} />
 
                 <Textarea
-                  label="Détails du projet *"
+                  label="Détails *"
                   name="message"
                   rows={6}
-                  placeholder="Objectif, style, références, plateforme finale, délais…"
                   error={fieldErrors.message}
-                  hint="Ajoute 1 lien (YouTube/IG) + la plateforme finale (YouTube, TikTok, etc.)."
                 />
 
                 <div ref={feedbackRef}>
-                  {status === "error" && <Feedback type="error" text={`❌ ${errorMsg || "Erreur. Réessaie."}`} />}
-                  {status === "success" && <Feedback type="success" text="✅ Demande envoyée. On te revient rapidement." />}
+                  {status === "error" && <Feedback type="error" text={errorMsg} />}
+                  {status === "success" && (
+                    <Feedback type="success" text="Demande envoyée. On te revient rapidement." />
+                  )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <button type="submit" disabled={status === "loading"} className={UI.btnPrimary}>
-                    <span className={UI.btnPrimaryGlow} />
-                    <span className="relative z-10">{status === "loading" ? "Envoi…" : "Envoyer la demande"}</span>
-                  </button>
-
-                  <Link href="/contact" className={UI.btnSecondary}>
-                    Passer par Contact
-                  </Link>
-                </div>
+                <button type="submit" className={UI.btnPrimary}>
+                  <span className={UI.btnPrimaryGlow} />
+                  <span className="relative z-10">
+                    {status === "loading" ? "Envoi…" : "Envoyer"}
+                  </span>
+                </button>
               </form>
             </motion.div>
           </motion.div>
-
-          {/* SIDE */}
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-120px" }}
-            className="lg:col-span-4 space-y-6"
-          >
-            <motion.div variants={item} className={UI.card}>
-              <h3 className="text-xl font-semibold tracking-tight">Ce qu’on confirme</h3>
-              <p className="mt-2 text-sm text-white/75 leading-relaxed">
-                Une proposition réaliste selon ton objectif et la plateforme finale.
-              </p>
-
-              <div className="mt-5 space-y-3 text-sm text-white/85">
-                {[
-                  "Disponibilité & logistique (date / lieu)",
-                  "Style & références visuelles",
-                  "Livrables (YouTube / Reels / TikTok)",
-                  "Délais de livraison",
-                ].map((t) => (
-                  <div key={t} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-300" />
-                    <span className="leading-relaxed">{t}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div variants={item} className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl">
-              <h3 className="text-lg font-semibold">Devis détaillé</h3>
-              <p className="mt-2 text-sm text-white/75 leading-relaxed">
-                Pour un chiffrage complet (options, scope, versions), utilise Contact.
-              </p>
-              <Link href="/contact" className={UI.btnPrimary + " mt-5 inline-flex w-full justify-center"}>
-                <span className={UI.btnPrimaryGlow} />
-                <span className="relative z-10">Contact</span>
-              </Link>
-            </motion.div>
-          </motion.div>
         </div>
-
-        {/* CTA FINAL */}
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl">
-          <p className="text-2xl md:text-3xl font-bold text-white">Prêt à tourner quelque chose de fort ?</p>
-          <p className="mt-2 text-white/75 leading-relaxed">
-            Dis-nous ton idée. On te répond avec une approche claire, un plan, et un rendu ciné.
-          </p>
-          <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <Link href="/booking" className={UI.btnPrimary}>
-              <span className={UI.btnPrimaryGlow} />
-              <span className="relative z-10">Réserver</span>
-            </Link>
-            <Link href="/contact" className={UI.btnSecondary}>
-              Contact
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </main>
   );
 }
 
-/* ===== atoms (aquarium) ===== */
-function Field({
-  label,
-  hint,
-  error,
-  className,
-  type = "text",
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
-  hint?: string;
-  error?: string;
-  className?: string;
-}) {
-  const id = (props.id || props.name || label).toString();
+/* ================= ATOMS ================= */
+function Field({ label, error, ...props }: any) {
   return (
-    <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
-        {label}
-      </label>
-      {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
+    <div>
+      <label className="block mb-2 text-sm">{label}</label>
       <input
         {...props}
-        id={id}
-        type={type}
-        aria-invalid={Boolean(error) || undefined}
-        className={[
-          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-xl",
-          error
-            ? "border-cyan-300/60 ring-1 ring-cyan-300/20"
-            : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15",
-        ].join(" ")}
+        className="w-full rounded-xl bg-white/6 border border-white/10 px-4 py-3 text-white"
       />
-      {error ? <p className="mt-2 text-xs text-cyan-200">{error}</p> : null}
+      {error && <p className="text-xs text-cyan-300 mt-1">{error}</p>}
     </div>
   );
 }
 
-function Select({
-  label,
-  hint,
-  options,
-  className,
-  ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> & {
-  label: string;
-  hint?: string;
-  options: string[];
-  className?: string;
-}) {
-  const id = (props.id || props.name || label).toString();
+function Select({ label, options, ...props }: any) {
   return (
-    <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
-        {label}
-      </label>
-      {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
-      <select
-        {...props}
-        id={id}
-        className="w-full rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white outline-none transition backdrop-blur-xl hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15"
-      >
+    <div>
+      <label className="block mb-2 text-sm">{label}</label>
+      <select {...props} className="w-full rounded-xl bg-white/6 border border-white/10 px-4 py-3">
         <option value="">Sélectionner…</option>
-        {options.map((o) => (
-          <option key={o} value={o} className="bg-[#041224]">
+        {options.map((o: string) => (
+          <option key={o} value={o} className="bg-black">
             {o}
           </option>
         ))}
@@ -456,52 +279,23 @@ function Select({
   );
 }
 
-function Textarea({
-  label,
-  hint,
-  error,
-  className,
-  ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
-  label: string;
-  hint?: string;
-  error?: string;
-  className?: string;
-}) {
-  const id = (props.id || props.name || label).toString();
+function Textarea({ label, error, ...props }: any) {
   return (
-    <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
-        {label}
-      </label>
-      {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
+    <div>
+      <label className="block mb-2 text-sm">{label}</label>
       <textarea
         {...props}
-        id={id}
-        aria-invalid={Boolean(error) || undefined}
-        className={[
-          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-xl",
-          error
-            ? "border-cyan-300/60 ring-1 ring-cyan-300/20"
-            : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15",
-        ].join(" ")}
+        className="w-full rounded-xl bg-white/6 border border-white/10 px-4 py-3 text-white"
       />
-      {error ? <p className="mt-2 text-xs text-cyan-200">{error}</p> : null}
+      {error && <p className="text-xs text-cyan-300 mt-1">{error}</p>}
     </div>
   );
 }
 
 function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
   return (
-    <div
-      className={[
-        "rounded-2xl border px-4 py-3 backdrop-blur-xl",
-        type === "error" ? "border-cyan-300/35 bg-cyan-300/10" : "border-white/10 bg-white/6",
-      ].join(" ")}
-      role="status"
-      aria-live="polite"
-    >
-      <p className="text-sm text-white/90">{text}</p>
+    <div className="rounded-xl border border-white/10 bg-white/6 px-4 py-3">
+      <p className="text-sm">{text}</p>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import HeroCineSlider from "@/components/HeroCineSlider";
 
 type Service = {
   id: "montage" | "color" | "audio";
@@ -63,55 +64,25 @@ const packs: Pack[] = [
   {
     title: "Essentiel",
     label: "Réseaux sociaux",
-    desc: "Rapide, propre, efficace. Idéal pour formats courts.",
-    bullets: ["Montage + export optimisé", "1 format (vertical ou horizontal)", "1 révision incluse"],
+    desc: "Rapide, propre, efficace.",
+    bullets: ["Montage + export", "1 format", "1 révision"],
   },
   {
     title: "Premium",
     label: "Le plus demandé",
-    desc: "Montage + look + audio pour un rendu cohérent et solide.",
-    bullets: ["Montage complet", "Color grading cohérent", "2 formats livrés", "2 révisions incluses"],
+    desc: "Montage + look + audio.",
+    bullets: ["Montage", "Color grading", "2 formats", "2 révisions"],
     highlight: true,
   },
   {
     title: "Signature",
     label: "Clips / corporate",
-    desc: "Rendu haut de gamme, direction claire, finitions avancées.",
-    bullets: ["Montage narratif avancé", "Étalonnage précis", "Audio travaillé", "3 révisions"],
+    desc: "Rendu haut de gamme.",
+    bullets: ["Montage avancé", "Étalonnage précis", "Audio travaillé", "3 révisions"],
   },
 ];
 
 const cn = (...c: Array<string | false | undefined>) => c.filter(Boolean).join(" ");
-
-const UI = {
-  wrap: "max-w-6xl mx-auto px-6 lg:px-8",
-  card:
-    "rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl " +
-    "shadow-[0_18px_60px_rgba(0,8,22,0.45)]",
-  hover:
-    "transition duration-200 hover:border-white/20 hover:bg-white/[0.08] hover:-translate-y-[1px]",
-  pill:
-    "inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100/80 " +
-    "shadow-[0_0_38px_rgba(0,180,255,0.12)]",
-  subtle: "text-white/75 leading-relaxed",
-  h1:
-    "text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-[-0.02em] " +
-    "drop-shadow-[0_12px_40px_rgba(0,180,255,0.18)]",
-  h2: "text-2xl md:text-3xl font-semibold tracking-[-0.01em]",
-  btnPrimary:
-    "group relative inline-flex items-center justify-center rounded-full bg-cyan-300 " +
-    "px-6 py-3 text-sm font-semibold text-[#001019] hover:opacity-95 transition overflow-hidden " +
-    "shadow-[0_14px_44px_rgba(0,8,22,0.45)]",
-  btnShine:
-    "pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r " +
-    "from-transparent via-white/35 to-transparent group-hover:translate-x-full transition duration-700",
-  btnSecondary:
-    "inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 " +
-    "px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 hover:border-cyan-300/35 hover:text-cyan-100 transition",
-  btnAquaOutline:
-    "inline-flex items-center justify-center rounded-full border border-cyan-300 " +
-    "px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300 hover:text-[#001019]",
-};
 
 export default function PostProductionPage() {
   const [active, setActive] = useState<string>("montage");
@@ -126,8 +97,8 @@ export default function PostProductionPage() {
     observerRef.current?.disconnect();
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        const best = entries.find((e) => e.isIntersecting);
-        if (best?.target?.id) setActive(best.target.id);
+        const visible = entries.find((e) => e.isIntersecting);
+        if (visible?.target?.id) setActive(visible.target.id);
       },
       { rootMargin: "-30% 0px -60% 0px" }
     );
@@ -137,147 +108,96 @@ export default function PostProductionPage() {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))] text-white relative">
-      {/* HERO */}
-      <section className={cn(UI.wrap, "pt-16 pb-12 relative")}>
-        <div className="pointer-events-none absolute -top-10 left-[-12%] h-[360px] w-[360px] rounded-full blur-3xl opacity-25 bg-cyan-300/40" />
-        <div className="pointer-events-none absolute top-28 right-[-14%] h-[420px] w-[420px] rounded-full blur-3xl opacity-20 bg-blue-400/40" />
+    <main className="relative min-h-screen text-white">
+      {/* ✅ BACKGROUND PHOTO SLIDER (COMME LES AUTRES PAGES) */}
+      <div className="fixed inset-0 z-0">
+        <HeroCineSlider count={11} ext=".jpg" intervalMs={8000} />
+      </div>
 
-        <div className={UI.pill}>
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
-          Post-production
-        </div>
+      {/* ✅ OVERLAY POUR LISIBILITÉ */}
+      <div className="fixed inset-0 z-[1] bg-black/65 backdrop-blur-[2px]" />
 
-        <h1 className={cn(UI.h1, "mt-6")}>
+      {/* CONTENT */}
+      <div className="relative z-10 max-w-6xl mx-auto px-6 lg:px-8 pt-24 pb-20">
+        <h1 className="text-4xl md:text-6xl font-extrabold">
           Post-production{" "}
           <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
             premium
           </span>
-          , sans perte de temps.
         </h1>
 
-        <p className={cn("mt-5 max-w-3xl text-base md:text-lg", UI.subtle)}>
+        <p className="mt-4 max-w-3xl text-white/75 text-lg">
           Tu envoies tes images. On livre un rendu propre, cohérent et prêt à publier.
         </p>
 
-        <div className="mt-8 flex gap-3 flex-col sm:flex-row">
-          <Link href="/booking" className={UI.btnPrimary}>
-            <span className={UI.btnShine} />
-            <span className="relative">Réserver</span>
+        <div className="mt-8 flex gap-3">
+          <Link href="/booking" className="px-6 py-3 rounded-full bg-cyan-300 text-black font-semibold">
+            Réserver
           </Link>
-          <Link href="/contact" className={UI.btnSecondary}>
-            Demander un devis
+          <Link href="/contact" className="px-6 py-3 rounded-full border border-white/20">
+            Devis
           </Link>
         </div>
 
-        <div className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
-      </section>
+        {/* SERVICES */}
+        <section className="mt-20 space-y-10">
+          {services.map((s) => (
+            <div key={s.id} id={s.id} className="rounded-2xl bg-white/5 border border-white/10 p-8">
+              <span className="text-cyan-300 text-xs font-semibold">{s.tag}</span>
+              <h2 className="mt-2 text-2xl font-semibold">{s.title}</h2>
+              <p className="mt-2 text-white/75">{s.desc}</p>
 
-      {/* SERVICES */}
-      <section className={cn(UI.wrap, "space-y-10 pb-12")}>
-        {services.map((s) => (
-          <div key={s.id} id={s.id} className="scroll-mt-40">
-            <div className={cn(UI.card, UI.hover, "p-7")}>
-              <div className="flex items-start justify-between gap-4">
-                <div className="max-w-3xl">
-                  <div className={UI.pill}>
-                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
-                    {s.tag}
-                    <span className="ml-2 text-[11px] text-white/50">
-                      {active === s.id ? "· section active" : ""}
-                    </span>
-                  </div>
-                  <h2 className={cn(UI.h2, "mt-3")}>{s.title}</h2>
-                  <p className={cn("mt-2", UI.subtle)}>{s.desc}</p>
-                </div>
-              </div>
-
-              <div className="mt-6 grid md:grid-cols-2 gap-2">
+              <ul className="mt-4 grid md:grid-cols-2 gap-2 text-sm">
                 {s.bullets.map((b) => (
-                  <div key={b} className="flex gap-3 text-sm text-white/85">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-300" />
-                    <span>{b}</span>
-                  </div>
+                  <li key={b} className="flex gap-2">
+                    <span className="text-cyan-300">•</span>
+                    {b}
+                  </li>
                 ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* PACKS */}
-      <section id="packs" className={cn(UI.wrap, "pb-16 scroll-mt-40")}>
-        <h2 className={UI.h2}>
-          Offres{" "}
-          <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
-            claires
-          </span>
-        </h2>
-
-        <div className="mt-6 grid md:grid-cols-3 gap-6">
-          {packs.map((p) => (
-            <div
-              key={p.title}
-              className={cn(
-                UI.card,
-                "p-7",
-                p.highlight && "border-cyan-300/70 bg-cyan-300/[0.08]"
-              )}
-            >
-              <h3 className="text-xl font-semibold">{p.title}</h3>
-              <p className={cn("text-xs", p.highlight ? "text-cyan-200/80" : "text-white/55")}>
-                {p.label}
-              </p>
-
-              <p className={cn("mt-3 text-sm", UI.subtle)}>{p.desc}</p>
-
-              <div className="mt-4 space-y-2">
-                {p.bullets.map((b) => (
-                  <div key={b} className="flex gap-3 text-sm text-white/85">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-300" />
-                    <span>{b}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-6">
-                <Link
-                  href="/contact"
-                  className={cn(UI.btnSecondary, p.highlight && "bg-cyan-300 text-[#001019] border-none")}
-                >
-                  Choisir {p.title}
-                </Link>
-              </div>
+              </ul>
             </div>
           ))}
-        </div>
-      </section>
+        </section>
 
-      {/* CTA (no black) */}
-      <section className="border-t border-white/10 bg-[#041224]/30 backdrop-blur-xl">
-        <div className={cn(UI.wrap, "py-14 flex flex-col md:flex-row gap-6 justify-between")}>
-          <div className="max-w-2xl">
-            <h2 className={UI.h2}>
-              Besoin d’un rendu{" "}
-              <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
-                pro
-              </span>{" "}
-              rapidement ?
-            </h2>
-            <p className={cn("mt-3", UI.subtle)}>Envoie ton projet. On répond avec une direction claire.</p>
-          </div>
+        {/* PACKS */}
+        <section id="packs" className="mt-24">
+          <h2 className="text-3xl font-bold mb-8">Offres</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {packs.map((p) => (
+              <div
+                key={p.title}
+                className={cn(
+                  "rounded-2xl p-8 border",
+                  p.highlight
+                    ? "bg-cyan-300/15 border-cyan-300"
+                    : "bg-white/5 border-white/10"
+                )}
+              >
+                <h3 className="text-xl font-semibold">{p.title}</h3>
+                <p className="text-sm text-white/60">{p.label}</p>
 
-          <div className="flex gap-3 flex-col sm:flex-row">
-            <Link href="/booking" className={UI.btnPrimary}>
-              <span className={UI.btnShine} />
-              <span className="relative">Réserver</span>
-            </Link>
-            <Link href="/contact" className={UI.btnAquaOutline}>
-              Contact
-            </Link>
+                <p className="mt-3 text-white/75">{p.desc}</p>
+
+                <ul className="mt-4 space-y-2 text-sm">
+                  {p.bullets.map((b) => (
+                    <li key={b} className="flex gap-2">
+                      <span className="text-cyan-300">•</span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href="/contact"
+                  className="mt-6 inline-block px-5 py-2 rounded-full bg-white/10 hover:bg-cyan-300 hover:text-black transition"
+                >
+                  Choisir
+                </Link>
+              </div>
+            ))}
           </div>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </main>
   );
 }

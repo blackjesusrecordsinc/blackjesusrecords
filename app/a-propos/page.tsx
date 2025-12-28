@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
-
 import HeroCineSlider from "@/components/HeroCineSlider";
 
 const container: Variants = {
@@ -13,12 +12,7 @@ const container: Variants = {
 
 const item: Variants = {
   hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
-  },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
 };
 
 const glowPulse: Variants = {
@@ -32,8 +26,7 @@ const UI = {
     "bg-cyan-300/10 border border-cyan-300/25 shadow-[0_0_40px_rgba(0,180,255,0.12)]",
   card:
     "rounded-2xl border border-white/10 bg-white/6 p-6 " +
-    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl " +
-    "hover:border-cyan-300/25 transition",
+    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl hover:border-cyan-300/25 transition",
   sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
   btnPrimary:
     "group relative px-8 py-4 bg-cyan-300 text-[#001019] font-semibold rounded-lg overflow-hidden transition-all " +
@@ -52,38 +45,33 @@ const proof = [
 ];
 
 const cards = [
-  {
-    title: "Studio",
-    tag: "Image · Son · Post-prod",
-    desc: "Tournage, lumière, montage, étalonnage, sound polish : un workflow rapide, stable et pro.",
-  },
-  {
-    title: "Label",
-    tag: "Développement",
-    desc: "Identité visuelle, contenus, stratégie de sortie : on construit un univers crédible et durable.",
-  },
-  {
-    title: "Delivery",
-    tag: "Ready-to-post",
-    desc: "Formats (16:9 / 9:16), titres safe, exports propres : livré prêt à publier, sans friction.",
-  },
+  { title: "Studio", tag: "Image · Son · Post-prod", desc: "Tournage, lumière, montage, étalonnage, sound polish : un workflow rapide, stable et pro." },
+  { title: "Label", tag: "Développement", desc: "Identité visuelle, contenus, stratégie de sortie : on construit un univers crédible et durable." },
+  { title: "Delivery", tag: "Ready-to-post", desc: "Formats (16:9 / 9:16), exports propres : livré prêt à publier, sans friction." },
 ];
 
 const approach = [
   { t: "Cadre clair", d: "On clarifie le scope, les livrables, les délais. Pas de zone grise." },
-  { t: "Direction", d: "Références, intention, rythme, style : une cohérence visuelle du début à la fin." },
+  { t: "Direction", d: "Références, intention, rythme, style : cohérence visuelle du début à la fin." },
   { t: "Exécution", d: "Production + post-production propres, optimisées pour la plateforme finale." },
   { t: "Livraison", d: "Exports propres + versions utiles (YouTube + vertical) + rendu publiable." },
 ];
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-[calc(100vh-var(--nav-h))]">
       {/* HERO */}
-      <section className="relative min-h-[92vh] flex items-center overflow-hidden scroll-mt-28">
-        <HeroCineSlider count={11} ext=".jpg" intervalMs={8000} />
+      <section className="relative min-h-[92vh] flex items-center overflow-hidden">
+        <HeroCineSlider
+          count={11}
+          ext=".jpg"
+          intervalMs={8000}
+          darkness={0.56}
+          vignette={0.52}
+          glow={0.10}
+          grain={0.10}
+        />
 
-        {/* aquarium glows */}
         <motion.div
           aria-hidden
           variants={glowPulse}
@@ -99,10 +87,8 @@ export default function AboutPage() {
           className="pointer-events-none absolute -bottom-28 -right-28 h-96 w-96 rounded-full bg-blue-400/14 blur-3xl"
         />
 
-        {/* voile aquarium (pas de noir sec) */}
-        <div className="pointer-events-none absolute inset-0 backdrop-blur-[2px]" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#061428]/35 via-[#020b1a]/25 to-[#020b1a]/45" />
-        <div className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay bg-[url('/noise.png')]" />
+        {/* voile léger (pas trop) */}
+        <div className="pointer-events-none absolute inset-0 backdrop-blur-[1.5px]" />
 
         <div className="relative max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20">
           <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
@@ -122,9 +108,9 @@ export default function AboutPage() {
               pensée pour livrer.
             </motion.h1>
 
-            <motion.p variants={item} className="text-base md:text-lg text-white/75 leading-relaxed max-w-3xl">
+            <motion.p variants={item} className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
               Black Jesus Records est un <strong>studio créatif</strong> & <strong>label</strong> basé à Lévis (Québec).
-              Notre focus : une image forte, une exécution propre et des livrables optimisés pour YouTube et les réseaux.
+              Notre focus : image forte, exécution propre, livrables optimisés YouTube & réseaux.
             </motion.p>
 
             <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 pt-2">
@@ -143,7 +129,7 @@ export default function AboutPage() {
       </section>
 
       {/* PREUVE */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14 scroll-mt-28">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <motion.div
           variants={container}
           initial="hidden"
@@ -164,10 +150,10 @@ export default function AboutPage() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-120px" }}
-          className="mt-8 rounded-2xl border border-cyan-300/25 bg-cyan-300/8 p-6 md:p-8 backdrop-blur-xl"
+          className="mt-8 rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-6 md:p-8 backdrop-blur-xl"
         >
           <p className="text-white/90 italic text-base md:text-lg leading-relaxed">
-            “On veut du solide : une direction claire, un rendu propre, et une livraison dans les délais.”
+            “Direction claire. Rendu propre. Livraison dans les délais.”
           </p>
           <p className="mt-3 text-sm text-white/60">— Black Jesus Records</p>
         </motion.div>
@@ -219,18 +205,14 @@ export default function AboutPage() {
             Emmanuel Ramazani Kibanda
           </motion.h2>
 
-          <motion.p variants={item} className="mt-2 text-white/75 max-w-3xl leading-relaxed">
+          <motion.p variants={item} className="mt-2 text-white/80 max-w-3xl leading-relaxed">
             Fondateur de Black Jesus Records. Réalisation, direction artistique et production.
-            Objectif : livrer une qualité premium, sans blabla, avec une identité qui marque.
+            Objectif : qualité premium, identité forte, livraison propre.
           </motion.p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {approach.map((a) => (
-              <motion.div
-                key={a.t}
-                variants={item}
-                className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl"
-              >
+              <motion.div key={a.t} variants={item} className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl">
                 <p className="text-white font-semibold">{a.t}</p>
                 <p className="mt-2 text-sm text-white/75 leading-relaxed">{a.d}</p>
               </motion.div>
@@ -238,12 +220,8 @@ export default function AboutPage() {
           </div>
 
           <motion.div variants={item} className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link href="/contact" className={UI.btnSecondary}>
-              Contact
-            </Link>
-            <Link href="/services" className={UI.btnSecondary}>
-              Services
-            </Link>
+            <Link href="/contact" className={UI.btnSecondary}>Contact</Link>
+            <Link href="/services" className={UI.btnSecondary}>Services</Link>
             <Link href="/booking" className={UI.btnPrimary}>
               <span className={UI.btnPrimaryGlow} />
               <span className="relative z-10">Réserver une date</span>
@@ -253,19 +231,15 @@ export default function AboutPage() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 scroll-mt-28">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
         <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }}>
           <motion.div
             variants={item}
             className="rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl"
           >
             <div>
-              <p className="text-2xl md:text-3xl font-bold text-white">
-                Prêt à faire passer ton image au niveau supérieur ?
-              </p>
-              <p className="mt-2 text-white/75 leading-relaxed">
-                Dis-nous ton objectif. On te répond avec une approche claire, un plan, et un rendu ciné.
-              </p>
+              <p className="text-2xl md:text-3xl font-bold text-white">Prêt à faire passer ton image au niveau supérieur ?</p>
+              <p className="mt-2 text-white/80 leading-relaxed">Dis-nous ton objectif. On répond avec un cadre clair et un rendu ciné.</p>
               <p className="mt-3 text-sm text-white/55">Réponse rapide · Plan clair · Livraison propre</p>
             </div>
 
@@ -274,9 +248,7 @@ export default function AboutPage() {
                 <span className={UI.btnPrimaryGlow} />
                 <span className="relative z-10">Réserver</span>
               </Link>
-              <Link href="/contact" className={UI.btnSecondary}>
-                Contact
-              </Link>
+              <Link href="/contact" className={UI.btnSecondary}>Contact</Link>
             </div>
           </motion.div>
         </motion.div>

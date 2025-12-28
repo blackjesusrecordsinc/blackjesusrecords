@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
-
 import HeroCineSlider from "@/components/HeroCineSlider";
 
 const container: Variants = {
@@ -31,11 +30,12 @@ const UI = {
     "inline-flex items-center gap-2 px-4 py-1.5 rounded-full " +
     "bg-cyan-300/10 border border-cyan-300/25 shadow-[0_0_40px_rgba(0,180,255,0.12)]",
   card:
-    "rounded-2xl border border-white/10 bg-white/6 p-6 " +
-    "shadow-[0_18px_55px_rgba(0,8,22,0.35)] hover:border-cyan-300/35 hover:bg-white/8 transition",
+    "rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl " +
+    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] " +
+    "hover:border-cyan-300/25 hover:bg-white/8 transition",
   btnPrimary:
     "group relative px-8 py-4 bg-cyan-300 text-[#001019] font-semibold rounded-lg overflow-hidden transition-all " +
-    "hover:scale-[1.02] active:scale-95 shadow-[0_14px_50px_rgba(0,8,22,0.45)]",
+    "hover:scale-[1.02] active:scale-95 shadow-[0_14px_52px_rgba(0,8,22,0.45)]",
   btnPrimaryGlow:
     "absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-300 opacity-0 group-hover:opacity-100 transition-opacity",
   btnSecondary:
@@ -71,14 +71,22 @@ const steps = [
 
 export default function LabelPage() {
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))]">
+    <main className="min-h-[calc(100vh-var(--nav-h))]">
       {/* HERO */}
-      <section className="relative min-h-[92vh] flex items-center overflow-hidden scroll-mt-28">
+      <section className="relative min-h-[92vh] flex items-center overflow-hidden">
         {/* background slideshow premium (public/work) */}
-        <HeroCineSlider count={11} ext=".jpg" intervalMs={8000} />
+        <HeroCineSlider
+          count={11}
+          ext=".jpg"
+          intervalMs={8000}
+          darkness={0.56}
+          vignette={0.52}
+          glow={0.10}
+          grain={0.10}
+        />
 
-        {/* aquarium overlays (pas noir) */}
-        <div className="pointer-events-none absolute inset-0 backdrop-blur-[2px]" />
+        {/* aquarium overlays (pas noir sec) */}
+        <div className="pointer-events-none absolute inset-0 backdrop-blur-[1.5px]" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#061428]/35 via-[#020b1a]/22 to-[#020b1a]/45" />
 
         {/* floating glow */}
@@ -118,7 +126,7 @@ export default function LabelPage() {
               et livre du propre.
             </motion.h1>
 
-            <motion.p variants={item} className="text-base md:text-lg text-white/75 leading-relaxed max-w-3xl">
+            <motion.p variants={item} className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
               Black Jesus Records : développement d’artistes, image, contenu, direction artistique et stratégie.
               Pas de blabla — du rendu, du cadre, et une identité qui marque.
             </motion.p>
@@ -139,7 +147,7 @@ export default function LabelPage() {
       </section>
 
       {/* PILLARS */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
           variants={container}
           initial="hidden"
@@ -159,7 +167,6 @@ export default function LabelPage() {
               <div className="mt-5 h-24 rounded-xl border border-white/10 overflow-hidden relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-300/14 via-blue-400/10 to-purple-400/10" />
                 <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(rgba(255,255,255,0.65)_1px,transparent_1px)] [background-size:22px_22px]" />
-                {/* fade sans noir */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#000f1f]/45 to-transparent" />
               </div>
             </motion.div>
@@ -174,7 +181,7 @@ export default function LabelPage() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: "-120px" }}
-          className="rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_55px_rgba(0,8,22,0.35)]"
+          className="rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,8,22,0.35)]"
         >
           <motion.div variants={item} className={UI.pill}>
             <span className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse" />
@@ -184,7 +191,7 @@ export default function LabelPage() {
           <motion.h2 variants={item} className="mt-4 text-2xl md:text-3xl font-bold text-white">
             Comment on travaille
           </motion.h2>
-          <motion.p variants={item} className="mt-2 text-white/75 max-w-3xl leading-relaxed">
+          <motion.p variants={item} className="mt-2 text-white/80 max-w-3xl leading-relaxed">
             On garde tout simple : cadre → production → livraison. Objectif : un rendu cohérent et publiable.
           </motion.p>
 
@@ -212,6 +219,6 @@ export default function LabelPage() {
           </motion.div>
         </motion.div>
       </section>
-    </div>
+    </main>
   );
 }

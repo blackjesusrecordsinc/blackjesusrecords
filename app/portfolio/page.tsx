@@ -5,6 +5,8 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image";
 import Link from "next/link";
 
+import HeroCineSlider from "@/components/HeroCineSlider";
+
 type PortfolioItem = {
   title: string;
   desc: string;
@@ -45,9 +47,7 @@ type LightboxState = {
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 
-/** ─────────────────────────────────────────────
- *  DATA
- *  ───────────────────────────────────────────── */
+/* ───────────────────────── DATA ───────────────────────── */
 const sections: PortfolioSection[] = [
   {
     id: "clips",
@@ -177,51 +177,40 @@ function getFocusable(container: HTMLElement) {
   );
 }
 
-/** ─────────────────────────────────────────────
- *  UI (aquarium)
- *  ───────────────────────────────────────────── */
+/* ───────────────────────── UI TOKENS (match Accueil) ───────────────────────── */
 const UI = {
-  wrap: "max-w-6xl mx-auto px-6 lg:px-8",
-  card:
-    "rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl " +
-    "shadow-[0_18px_60px_rgba(0,8,22,0.45)]",
-  cardHover:
-    "transition duration-200 hover:border-white/20 hover:bg-white/[0.08] hover:-translate-y-[1px]",
+  wrap: "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8",
   pill:
-    "inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100/80 " +
-    "shadow-[0_0_38px_rgba(0,180,255,0.12)]",
+    "inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20",
+  card:
+    "rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_18px_60px_rgba(0,0,0,0.35)]",
+  cardHover:
+    "transition duration-200 hover:border-white/20 hover:bg-white/7 hover:-translate-y-[1px]",
   subtle: "text-white/75 leading-relaxed",
-  h1:
-    "mt-6 text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-[-0.02em] " +
-    "drop-shadow-[0_12px_40px_rgba(0,180,255,0.18)]",
   h2: "text-2xl md:text-3xl font-semibold leading-tight tracking-[-0.01em]",
   btnPrimary:
-    "group relative inline-flex items-center justify-center rounded-full bg-cyan-300 " +
-    "px-6 py-3 text-sm font-semibold text-[#001019] transition hover:opacity-95 " +
-    "shadow-[0_14px_44px_rgba(0,8,22,0.45)] overflow-hidden",
+    "group relative inline-flex items-center justify-center rounded-full bg-yellow-400 px-6 py-3 text-sm font-semibold text-black transition hover:opacity-95 shadow-[0_14px_44px_rgba(0,0,0,0.45)] overflow-hidden",
   btnShine:
-    "pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r " +
-    "from-transparent via-white/35 to-transparent group-hover:translate-x-full transition duration-700",
+    "pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/35 to-transparent group-hover:translate-x-full transition duration-700",
   btnSecondary:
-    "inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 " +
-    "px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-cyan-300/35 hover:text-cyan-100",
-  btnAquaOutline:
-    "inline-flex items-center justify-center rounded-full border border-cyan-300 " +
-    "px-6 py-3 text-sm font-semibold text-cyan-200 transition hover:bg-cyan-300 hover:text-[#001019]",
+    "inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10 hover:border-yellow-400/40 hover:text-yellow-200",
+  btnOutline:
+    "inline-flex items-center justify-center rounded-full border border-yellow-400/70 bg-transparent px-6 py-3 text-sm font-semibold text-yellow-200 transition hover:bg-yellow-400 hover:text-black",
+  sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
 };
 
 function Badge({ children }: { children: React.ReactNode }) {
   return (
     <div className={UI.pill}>
-      <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
-      {children}
+      <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" />
+      <p className="text-[11px] font-semibold tracking-[0.22em] uppercase text-yellow-200/90">
+        {children}
+      </p>
     </div>
   );
 }
 
-/** ─────────────────────────────────────────────
- *  PAGE
- *  ───────────────────────────────────────────── */
+/* ───────────────────────── PAGE ───────────────────────── */
 export default function PortfolioPage() {
   const galleries = useMemo(() => {
     const record: Record<PhotoCategoryKey, GalleryImage[]> = {
@@ -386,94 +375,108 @@ export default function PortfolioPage() {
   );
 
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))] text-white relative">
-      {/* HERO */}
-      <section className={cn(UI.wrap, "pt-16 pb-10 relative")}>
-        <div className="pointer-events-none absolute -top-10 left-[-12%] h-[360px] w-[360px] rounded-full blur-3xl opacity-25 bg-cyan-300/40" />
-        <div className="pointer-events-none absolute top-28 right-[-14%] h-[420px] w-[420px] rounded-full blur-3xl opacity-20 bg-blue-400/40" />
+    <main className="min-h-screen text-white relative">
+      {/* HERO (comme Accueil) */}
+      <section className="relative min-h-[58vh] flex items-center overflow-hidden">
+        <HeroCineSlider count={10} ext=".jpg" intervalMs={8000} />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-black/75 backdrop-blur-[2px]" />
+        <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 h-80 w-80 rounded-full bg-yellow-400/12 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-28 -right-28 h-96 w-96 rounded-full bg-purple-500/12 blur-3xl" />
 
-        <div className={UI.pill}>
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
-          <p className="text-[11px] font-semibold tracking-[0.25em] uppercase">Portfolio</p>
+        <div className="relative z-10 w-full">
+          <div className={cn(UI.wrap, "pt-24 pb-14")}>
+            <div className="space-y-6">
+              <div className={UI.pill}>
+                <span className="h-2 w-2 rounded-full bg-yellow-400 animate-pulse" />
+                <span className="text-xs uppercase tracking-widest text-yellow-300">Portfolio</span>
+              </div>
+
+              <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-tight">
+                Projets{" "}
+                <span className="bg-gradient-to-r from-yellow-300 to-yellow-200 bg-clip-text text-transparent">
+                  visuels
+                </span>{" "}
+                & contenus qui performent.
+              </h1>
+
+              <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
+                Clips, événements, contenus marques — et séances photo premium. Tout est pensé pour être cohérent,
+                ciné et prêt à publier.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Link href="/booking" className={UI.btnPrimary}>
+                  <span className={UI.btnShine} />
+                  <span className="relative">Réserver</span>
+                </Link>
+                <Link href="/contact" className={UI.btnSecondary}>
+                  Brief / devis
+                </Link>
+              </div>
+
+              <div className={UI.sep} />
+            </div>
+          </div>
         </div>
-
-        <h1 className={UI.h1}>
-          Projets{" "}
-          <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
-            visuels
-          </span>{" "}
-          & contenus qui performent.
-        </h1>
-
-        <p className={cn("mt-5 max-w-3xl text-base md:text-lg", UI.subtle)}>
-          Clips, événements, contenus marques — et séances photo premium. Tout est pensé pour être
-          beau, cohérent, et prêt pour tes plateformes.
-        </p>
-
-        <div className="mt-8 flex flex-col sm:flex-row gap-3">
-          <Link href="/booking" className={UI.btnPrimary}>
-            <span className={UI.btnShine} />
-            <span className="relative">Réserver</span>
-          </Link>
-
-          <Link href="/contact" className={UI.btnSecondary}>
-            Demander un devis
-          </Link>
-        </div>
-
-        <div className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
       </section>
 
       {/* VIDEO SECTIONS */}
-      <section className={cn(UI.wrap, "pb-12 space-y-12")}>
-        {sections.map((sec) => (
-          <div key={sec.id} id={sec.id} className="space-y-5 scroll-mt-28">
-            <div className="space-y-2">
-              <h2 className={UI.h2}>{sec.title}</h2>
-              {sec.subtitle && (
-                <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>{sec.subtitle}</p>
-              )}
-            </div>
+      <section className={cn(UI.wrap, "pb-14 -mt-8")}>
+        <div className="space-y-12">
+          {sections.map((sec) => (
+            <div key={sec.id} id={sec.id} className="space-y-5 scroll-mt-28">
+              <div className="space-y-2">
+                <h2 className={UI.h2}>{sec.title}</h2>
+                {sec.subtitle && (
+                  <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>{sec.subtitle}</p>
+                )}
+              </div>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              {sec.items.map((it) => (
-                <div key={it.title} className={cn(UI.card, UI.cardHover, "p-7")}>
-                  <div className="flex items-start justify-between gap-4">
-                    <h3 className="text-xl md:text-2xl font-semibold leading-snug">{it.title}</h3>
-                    {it.tag && <span className={cn(UI.pill, "shrink-0")}>{it.tag}</span>}
-                  </div>
-
-                  <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>{it.desc}</p>
-
-                  {it.link && (
-                    <div className="mt-5">
-                      <a
-                        href={it.link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-sm font-semibold text-cyan-200 hover:opacity-90 transition"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
-                        {it.link.label}
-                      </a>
+              <div className="grid gap-6 md:grid-cols-2">
+                {sec.items.map((it) => (
+                  <div key={it.title} className={cn(UI.card, UI.cardHover, "p-7")}>
+                    <div className="flex items-start justify-between gap-4">
+                      <h3 className="text-xl md:text-2xl font-semibold leading-snug">{it.title}</h3>
+                      {it.tag && (
+                        <span className={cn(UI.pill, "shrink-0")}>
+                          <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" />
+                          <span className="text-xs text-yellow-200/90">{it.tag}</span>
+                        </span>
+                      )}
                     </div>
-                  )}
 
-                  <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+                    <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>{it.desc}</p>
 
-                  <div className="mt-5 flex gap-3">
-                    <Link href="/booking" className={UI.btnAquaOutline}>
-                      Réserver
-                    </Link>
-                    <Link href="/contact" className={UI.btnSecondary}>
-                      Brief / Devis
-                    </Link>
+                    {it.link && (
+                      <div className="mt-5">
+                        <a
+                          href={it.link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-yellow-200 hover:opacity-90 transition"
+                        >
+                          <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" />
+                          {it.link.label}
+                        </a>
+                      </div>
+                    )}
+
+                    <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+
+                    <div className="mt-5 flex flex-col sm:flex-row gap-3">
+                      <Link href="/booking" className={UI.btnOutline}>
+                        Réserver
+                      </Link>
+                      <Link href="/contact" className={UI.btnSecondary}>
+                        Brief / Devis
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </section>
 
       {/* PHOTO */}
@@ -482,12 +485,12 @@ export default function PortfolioPage() {
           <h2 className={UI.h2}>Photo — séances premium</h2>
           <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>
             Galeries par style. Clique une photo pour ouvrir la visionneuse.
-            <span className="text-white/55"> (ESC • ← → • swipe mobile)</span>
+            <span className="text-white/55"> (ESC • ← → • swipe)</span>
           </p>
         </div>
 
-        {/* Sticky photo nav (no black) */}
-        <div className="sticky top-[64px] z-20 -mx-6 lg:-mx-8 px-6 lg:px-8 py-3 backdrop-blur-xl bg-[#041224]/35 border-y border-white/10">
+        {/* Sticky photo nav */}
+        <div className="sticky top-[64px] z-20 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-3 backdrop-blur-xl bg-black/35 border-y border-white/10">
           <div className="flex flex-wrap gap-2">
             {photoCategories.map((c) => {
               const isActive = active === c.id;
@@ -499,12 +502,12 @@ export default function PortfolioPage() {
                   className={cn(
                     "inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold border transition",
                     isActive
-                      ? "bg-cyan-300 text-[#001019] border-cyan-300 shadow-[0_10px_30px_rgba(0,180,255,0.18)]"
-                      : "bg-white/5 text-white/80 border-white/15 hover:bg-white/10 hover:border-cyan-300/40 hover:text-cyan-100"
+                      ? "bg-yellow-400 text-black border-yellow-400 shadow-[0_10px_30px_rgba(0,0,0,0.25)]"
+                      : "bg-white/5 text-white/80 border-white/15 hover:bg-white/10 hover:border-yellow-400/40 hover:text-yellow-200"
                   )}
                 >
                   {c.title}
-                  <span className={cn("ml-2", isActive ? "text-[#001019]/70" : "text-white/40")}>
+                  <span className={cn("ml-2", isActive ? "text-black/70" : "text-white/40")}>
                     ({c.count})
                   </span>
                 </a>
@@ -535,13 +538,13 @@ export default function PortfolioPage() {
                         <span className={UI.btnShine} />
                         <span className="relative">Réserver une séance</span>
                       </Link>
-                      <Link href="/contact" className={UI.btnAquaOutline}>
+                      <Link href="/contact" className={UI.btnOutline}>
                         Tarifs / Devis
                       </Link>
                     </div>
                   </div>
 
-                  <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+                  <div className={cn("mt-6", UI.sep)} />
 
                   <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                     {list.map((img, idx) => (
@@ -562,8 +565,8 @@ export default function PortfolioPage() {
                           className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
                           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#000f1f]/45 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                        <div className="absolute bottom-2 left-2 rounded-full border border-white/15 bg-[#041224]/40 px-2.5 py-1 text-[11px] text-white/85 opacity-0 group-hover:opacity-100 transition backdrop-blur">
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                        <div className="absolute bottom-2 left-2 rounded-full border border-white/15 bg-black/35 px-2.5 py-1 text-[11px] text-white/85 opacity-0 group-hover:opacity-100 transition backdrop-blur">
                           {idx + 1}/{list.length}
                         </div>
                       </button>
@@ -575,29 +578,24 @@ export default function PortfolioPage() {
           })}
 
           <p className="text-xs text-white/60 text-center">
-            Galeries en croissance — on ajoute du contenu régulièrement.
+            Galeries en croissance — ajout régulier de contenu.
           </p>
         </div>
       </section>
 
-      {/* CTA (no black) */}
-      <section className="border-t border-white/10 bg-[#041224]/30 backdrop-blur-xl">
-        <div
-          className={cn(
-            UI.wrap,
-            "py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
-          )}
-        >
+      {/* CTA */}
+      <section className="border-t border-white/10 bg-white/5 backdrop-blur-xl">
+        <div className={cn(UI.wrap, "py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between")}>
           <div className="max-w-2xl">
             <h2 className={UI.h2}>
               Un projet à tourner ? On livre un rendu{" "}
-              <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent drop-shadow-[0_0_18px_rgba(0,180,255,0.18)]">
+              <span className="bg-gradient-to-r from-yellow-300 to-yellow-200 bg-clip-text text-transparent">
                 premium
               </span>
               .
             </h2>
             <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>
-              Réserve une date ou envoie ton brief. Réponse claire : scope, délais, livrables.
+              Réserve une date ou envoie ton brief. On répond avec un scope clair, des délais, et des livrables précis.
             </p>
           </div>
 
@@ -606,18 +604,17 @@ export default function PortfolioPage() {
               <span className={UI.btnShine} />
               <span className="relative">Réserver</span>
             </Link>
-
-            <Link href="/contact" className={UI.btnAquaOutline}>
+            <Link href="/contact" className={UI.btnOutline}>
               Contact
             </Link>
           </div>
         </div>
       </section>
 
-      {/* LIGHTBOX (no black) */}
+      {/* LIGHTBOX */}
       {lightbox && lightboxImage && (
         <div
-          className="fixed inset-0 z-50 bg-[#020812]/80 p-3 sm:p-4 flex items-center justify-center backdrop-blur-xl"
+          className="fixed inset-0 z-50 bg-black/80 p-3 sm:p-4 flex items-center justify-center backdrop-blur-xl"
           onClick={closeLightbox}
           role="dialog"
           aria-modal="true"
@@ -629,13 +626,13 @@ export default function PortfolioPage() {
           <div
             ref={dialogRef}
             className={cn(
-              "relative w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#041224]/55",
-              "shadow-[0_30px_120px_rgba(0,8,22,0.75)] backdrop-blur-xl"
+              "relative w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-black/35",
+              "shadow-[0_30px_120px_rgba(0,0,0,0.75)] backdrop-blur-xl"
             )}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Topbar */}
-            <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3 sm:px-4 py-3 bg-[#041224]/55 backdrop-blur">
+            <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3 sm:px-4 py-3 bg-black/35 backdrop-blur">
               <div className="min-w-0">
                 <p className="text-sm text-white/85 truncate">
                   <span className="text-white font-semibold">{lightbox.title}</span>{" "}
@@ -689,7 +686,7 @@ export default function PortfolioPage() {
                 aria-label="Image précédente"
                 title="Précédent (←)"
               >
-                <span className="rounded-full border border-white/15 bg-[#041224]/40 px-3 py-2 backdrop-blur">
+                <span className="rounded-full border border-white/15 bg-black/35 px-3 py-2 backdrop-blur">
                   ←
                 </span>
               </button>
@@ -701,14 +698,14 @@ export default function PortfolioPage() {
                 aria-label="Image suivante"
                 title="Suivant (→)"
               >
-                <span className="rounded-full border border-white/15 bg-[#041224]/40 px-3 py-2 backdrop-blur">
+                <span className="rounded-full border border-white/15 bg-black/35 px-3 py-2 backdrop-blur">
                   →
                 </span>
               </button>
             </div>
 
             {/* Thumbs */}
-            <div className="border-t border-white/10 bg-[#041224]/55 backdrop-blur px-3 sm:px-4 py-3">
+            <div className="border-t border-white/10 bg-black/35 backdrop-blur px-3 sm:px-4 py-3">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <button
@@ -753,7 +750,7 @@ export default function PortfolioPage() {
                         className={cn(
                           "relative h-14 w-14 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-xl border transition",
                           isActive
-                            ? "border-cyan-300 ring-2 ring-cyan-300/30"
+                            ? "border-yellow-400 ring-2 ring-yellow-400/30"
                             : "border-white/10 hover:border-white/25"
                         )}
                         aria-label={`Aller à la photo ${idx + 1}`}
@@ -763,10 +760,7 @@ export default function PortfolioPage() {
                           src={img.src}
                           alt={img.alt}
                           fill
-                          className={cn(
-                            "object-cover",
-                            isActive ? "opacity-100" : "opacity-80 hover:opacity-95"
-                          )}
+                          className={cn("object-cover", isActive ? "opacity-100" : "opacity-80 hover:opacity-95")}
                           sizes="80px"
                         />
                       </button>
@@ -778,6 +772,6 @@ export default function PortfolioPage() {
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
