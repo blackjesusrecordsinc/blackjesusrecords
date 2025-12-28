@@ -8,8 +8,8 @@ import Link from "next/link";
 type PortfolioItem = {
   title: string;
   desc: string;
-  link?: { href: string; label: string };
   tag?: string;
+  link?: { href: string; label: string };
 };
 
 type PortfolioSection = {
@@ -45,70 +45,70 @@ type LightboxState = {
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 
-const SNAPPR_FEATURED_URL =
-  "https://www.snappr.com/best-photographers/quebec-city-qc";
-
+/** ─────────────────────────────────────────────
+ *  DATA
+ *  ───────────────────────────────────────────── */
 const sections: PortfolioSection[] = [
   {
     id: "clips",
-    title: "Clips & projets d'artistes",
+    title: "Clips & artistes",
     subtitle:
-      "Formats pensés pour YouTube et les réseaux : identité visuelle, rythme, narration et performance.",
+      "Rythme, identité, performance — optimisé YouTube + réseaux. Du contenu qui a un impact.",
     items: [
       {
-        title: "Clip – Shégué (rap / street)",
+        title: "Shégué — Clip / univers street",
         desc:
-          "Clip rap / street tourné en extérieur, ambiance nocturne, plans stabilisés et images serrées sur l’artiste. Pensé pour YouTube et les réseaux.",
+          "Direction visuelle, tournage stabilisé, image contrastée, montage serré. Pensé pour performer sur YouTube et en formats courts.",
+        tag: "Clip",
         link: {
           href: "https://youtube.com/@shegue242?si=xPnxWCIG98q8bohh",
-          label: "Voir la chaîne YouTube de Shégué",
+          label: "Voir Shégué sur YouTube",
         },
-        tag: "Clip",
       },
       {
         title: "Session studio filmée",
         desc:
-          "Performance filmée en studio avec éclairage contrôlé, plusieurs angles caméra et audio propre. Idéal pour montrer le talent brut d’un artiste.",
+          "Performance captée en studio : éclairage contrôlé, multi-angles, rendu propre. Idéal pour présenter un artiste sans filtre.",
         tag: "Studio",
       },
     ],
   },
   {
-    id: "events-video",
-    title: "Événements & aftermovies",
+    id: "events",
+    title: "Événements",
     subtitle:
-      "Captation discrète, émotion, montage dynamique et sound design pour revivre l’événement.",
+      "Captation discrète, montage émotionnel ou dynamique, livraison prête à partager.",
     items: [
       {
         title: "Mariage / événement privé",
         desc:
-          "Captation des moments forts, discours et détails, montée ensuite en film émotionnel. Livraison optimisée pour le partage et l’archivage.",
+          "Les moments forts, les détails, l’émotion. Film final livré en formats partage + archive.",
         tag: "Événement",
       },
       {
-        title: "Aftermovie de soirée / show",
+        title: "Aftermovie (show / soirée)",
         desc:
-          "Résumé dynamique d’une soirée, d’un concert ou d’un festival : énergie du public, moments clés sur scène, détails visuels et sound design.",
+          "Résumé énergique : public, scène, ambiance, sound design. Un rendu qui donne envie de revivre l’événement.",
         tag: "Aftermovie",
       },
     ],
   },
   {
-    id: "brand-video",
-    title: "Contenus pour marques & entreprises",
+    id: "brands",
+    title: "Marques & entreprises",
     subtitle:
-      "Formats qui convertissent : attention immédiate, message clair, rendu premium et cohérence avec la marque.",
+      "Formats courts qui captent l’attention : message clair, esthétique premium, cohérence de marque.",
     items: [
       {
-        title: "Vidéo réseaux sociaux",
+        title: "Reels / TikTok / Shorts",
         desc:
-          "Formats verticaux courts (TikTok, Reels, Shorts) : hook fort, texte à l’écran, montage rapide et transitions propres pour capter l’attention.",
+          "Hook rapide, rythme maîtrisé, texte à l’écran, transitions propres. Conçu pour convertir.",
         tag: "Social",
       },
       {
-        title: "Présentation d’entreprise",
+        title: "Vidéo corporate",
         desc:
-          "Vidéo qui présente l’activité, l’histoire et l’équipe. Utilisable sur le site web, LinkedIn et en pitch commercial.",
+          "Présentation d’entreprise : activité, équipe, service, valeurs. Parfait pour site web, LinkedIn et pitch.",
         tag: "Corporate",
       },
     ],
@@ -119,51 +119,42 @@ const photoCategories: PhotoCategory[] = [
   {
     id: "portrait",
     title: "Portrait",
-    desc:
-      "Portraits studio & lifestyle pensés pour le branding, la presse et les réseaux. Lumière maîtrisée, rendu premium.",
+    desc: "Branding, presse, réseaux : lumière maîtrisée, rendu clean, image qui inspire confiance.",
     count: 19,
-  },
-  {
-    id: "food",
-    title: "Food",
-    desc:
-      "Photographie culinaire qui met en valeur texture, couleur et appétence. Idéal pour menus, réseaux et publicité.",
-    count: 9,
-  },
-  {
-    id: "couple",
-    title: "Couple",
-    desc:
-      "Séances couple naturelles, centrées sur la complicité et l’émotion. Direction & retouches propres.",
-    count: 2,
-  },
-  {
-    id: "corporate",
-    title: "Entreprises / Corporate",
-    desc:
-      "Images pro pour commerces & entreprises (salon, équipe, locaux, services). Parfait pour site web & Google Business.",
-    count: 4,
   },
   {
     id: "editorial",
     title: "Editorial",
-    desc:
-      "Direction artistique, style, intention. Pour une identité visuelle forte et des images signature.",
+    desc: "Direction artistique, intention, image signature. Pour un univers fort.",
     count: 18,
+  },
+  {
+    id: "corporate",
+    title: "Corporate",
+    desc: "Équipe, locaux, services, produits : des images pro pour site web & Google Business.",
+    count: 4,
+  },
+  {
+    id: "food",
+    title: "Food",
+    desc: "Texture, couleur, appétence. Menus, réseaux, pubs — rendu premium.",
+    count: 9,
   },
   {
     id: "family",
     title: "Family",
-    desc: "Moments sincères, famille & enfants. Galerie en cours d’enrichissement.",
+    desc: "Moments sincères, naturel, émotion. Galerie en croissance.",
     count: 10,
+  },
+  {
+    id: "couple",
+    title: "Couple",
+    desc: "Complicité, émotion, direction légère. Retouches propres.",
+    count: 2,
   },
 ];
 
-const buildGallery = (
-  cat: PhotoCategoryKey,
-  count: number,
-  title: string
-): GalleryImage[] =>
+const buildGallery = (cat: PhotoCategoryKey, count: number, title: string): GalleryImage[] =>
   Array.from({ length: count }, (_, i) => {
     const n = i + 1;
     return {
@@ -186,30 +177,57 @@ function getFocusable(container: HTMLElement) {
   );
 }
 
+/** ─────────────────────────────────────────────
+ *  UI
+ *  ───────────────────────────────────────────── */
 const UI = {
+  wrap: "max-w-6xl mx-auto px-6 lg:px-8",
   card:
-    "rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur " +
-    "shadow-[0_10px_40px_rgba(0,0,0,0.45)]",
+    "rounded-2xl border border-white/10 bg-white/[0.05] backdrop-blur-xl " +
+    "shadow-[0_18px_60px_rgba(0,0,0,0.45)]",
   cardHover:
-    "transition duration-200 hover:border-white/20 hover:bg-white/[0.06] hover:-translate-y-[1px]",
+    "transition duration-200 hover:border-white/20 hover:bg-white/[0.07] hover:-translate-y-[1px]",
   pill:
     "inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70",
-  subtleText: "text-white/70 leading-relaxed",
-  buttonPrimary:
+  subtle: "text-white/70 leading-relaxed",
+  h1: "mt-6 text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-[-0.02em]",
+  h2: "text-2xl md:text-3xl font-semibold leading-tight tracking-[-0.01em]",
+  btnPrimary:
     "group relative inline-flex items-center justify-center rounded-full bg-[#F5C518] " +
     "px-6 py-3 text-sm font-semibold text-black transition hover:opacity-95 " +
     "shadow-[0_14px_40px_rgba(245,197,24,0.18)] overflow-hidden",
-  buttonPrimaryShine:
+  btnShine:
     "pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r " +
     "from-transparent via-white/25 to-transparent group-hover:translate-x-full transition duration-700",
-  buttonSecondary:
+  btnSecondary:
     "inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 " +
     "px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10",
-  buttonOutlineGold:
+  btnGoldOutline:
     "inline-flex items-center justify-center rounded-full border border-[#F5C518] " +
     "px-6 py-3 text-sm font-semibold text-[#F5C518] transition hover:bg-[#F5C518] hover:text-black",
 };
 
+function Badge({ children }: { children: React.ReactNode }) {
+  return (
+    <div className={UI.pill}>
+      <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+      {children}
+    </div>
+  );
+}
+
+function Bullet({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex gap-3 text-sm text-white/80">
+      <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+      <span className="leading-relaxed">{children}</span>
+    </div>
+  );
+}
+
+/** ─────────────────────────────────────────────
+ *  PAGE
+ *  ───────────────────────────────────────────── */
 export default function PortfolioPage() {
   const galleries = useMemo(() => {
     const record: Record<PhotoCategoryKey, GalleryImage[]> = {
@@ -224,48 +242,11 @@ export default function PortfolioPage() {
     return record;
   }, []);
 
+  // Lightbox
   const [lightbox, setLightbox] = useState<LightboxState>(null);
-  const overlayRef = useRef<HTMLDivElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const lastTriggerRef = useRef<HTMLElement | null>(null);
-
-  const [active, setActive] = useState<PhotoCategoryKey>("portrait");
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  useEffect(() => {
-    const el = document.documentElement;
-    const prev = el.style.scrollBehavior;
-    el.style.scrollBehavior = "smooth";
-    return () => {
-      el.style.scrollBehavior = prev;
-    };
-  }, []);
-
-  useEffect(() => {
-    const targets = photoCategories
-      .map((c) => document.getElementById(`photo-${c.id}`))
-      .filter((x): x is HTMLElement => Boolean(x));
-
-    observerRef.current?.disconnect();
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        const best = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
-
-        const id = best?.target?.id;
-        if (!id) return;
-
-        const key = id.replace("photo-", "") as PhotoCategoryKey;
-        setActive(key);
-      },
-      { root: null, threshold: [0.2, 0.4, 0.65], rootMargin: "-20% 0px -60% 0px" }
-    );
-
-    targets.forEach((t) => observerRef.current?.observe(t));
-    return () => observerRef.current?.disconnect();
-  }, []);
 
   const openLightbox = useCallback((list: GalleryImage[], index: number, title: string) => {
     lastTriggerRef.current = document.activeElement as HTMLElement | null;
@@ -274,9 +255,7 @@ export default function PortfolioPage() {
 
   const closeLightbox = useCallback(() => {
     setLightbox(null);
-    setTimeout(() => {
-      lastTriggerRef.current?.focus?.();
-    }, 0);
+    setTimeout(() => lastTriggerRef.current?.focus?.(), 0);
   }, []);
 
   const prev = useCallback(() => {
@@ -303,12 +282,52 @@ export default function PortfolioPage() {
 
   const lightboxImage = lightbox ? lightbox.list[lightbox.index] : null;
 
+  // Smooth scroll
+  useEffect(() => {
+    const el = document.documentElement;
+    const prev = el.style.scrollBehavior;
+    el.style.scrollBehavior = "smooth";
+    return () => {
+      el.style.scrollBehavior = prev;
+    };
+  }, []);
+
+  // Photo scrollspy
+  const [active, setActive] = useState<PhotoCategoryKey>("portrait");
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    const targets = photoCategories
+      .map((c) => document.getElementById(`photo-${c.id}`))
+      .filter((x): x is HTMLElement => Boolean(x));
+
+    if (!targets.length) return;
+
+    observerRef.current?.disconnect();
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        const best = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => (b.intersectionRatio ?? 0) - (a.intersectionRatio ?? 0))[0];
+
+        const id = best?.target?.id;
+        if (!id) return;
+        const key = id.replace("photo-", "") as PhotoCategoryKey;
+        setActive(key);
+      },
+      { root: null, threshold: [0.2, 0.45, 0.65], rootMargin: "-20% 0px -60% 0px" }
+    );
+
+    targets.forEach((t) => observerRef.current?.observe(t));
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  // Lightbox keyboard + focus trap + scroll lock
   useEffect(() => {
     if (!lightbox) return;
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
     setTimeout(() => closeBtnRef.current?.focus?.(), 0);
 
     const onKey = (e: KeyboardEvent) => {
@@ -321,7 +340,7 @@ export default function PortfolioPage() {
         if (!dialog) return;
 
         const focusables = getFocusable(dialog);
-        if (focusables.length === 0) return;
+        if (!focusables.length) return;
 
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
@@ -345,15 +364,12 @@ export default function PortfolioPage() {
     };
   }, [lightbox, closeLightbox, prev, next]);
 
+  // Mobile swipe
   const touchRef = useRef<{ x: number; y: number; t: number } | null>(null);
 
   const onTouchStart = useCallback((e: React.TouchEvent) => {
     const t = e.touches[0];
     touchRef.current = { x: t.clientX, y: t.clientY, t: Date.now() };
-  }, []);
-
-  const onTouchEnd = useCallback(() => {
-    // no-op
   }, []);
 
   const onTouchMove = useCallback(
@@ -376,18 +392,10 @@ export default function PortfolioPage() {
   );
 
   return (
-    <main className="min-h-screen text-white font-sans bg-[#0B0B0E] relative overflow-hidden">
-      {/* halo + texture (label-grade) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#F5C518]/10 blur-[120px]" />
-        <div className="absolute top-0 right-0 h-[420px] w-[420px] rounded-full bg-white/5 blur-[120px]" />
-        <div className="absolute inset-0 opacity-[0.06] [background-image:radial-gradient(white_1px,transparent_1px)] [background-size:22px_22px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/35" />
-      </div>
-
+    <main className="min-h-screen text-white relative">
       <div className="relative">
-        {/* Header */}
-        <section className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-10">
+        {/* HERO */}
+        <section className={cn(UI.wrap, "pt-16 pb-10")}>
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
             <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
@@ -395,48 +403,26 @@ export default function PortfolioPage() {
             </p>
           </div>
 
-          <h1 className="mt-6 text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-[-0.02em]">
-            Projets & formats{" "}
+          <h1 className={UI.h1}>
+            Projets{" "}
             <span className="text-[#F5C518] drop-shadow-[0_0_22px_rgba(245,197,24,0.25)]">
-              cinématographiques
-            </span>
-            .
+              visuels
+            </span>{" "}
+            & contenus qui performnent.
           </h1>
 
-          <p className={cn("mt-5 max-w-3xl text-base md:text-lg", UI.subtleText)}>
-            Une sélection de formats que Black Jesus Records peut réaliser : clips rap / street,
-            contenus pour marques, mariages et événements — et maintenant{" "}
-            <span className="text-white">séances photo professionnelles</span>.
+          <p className={cn("mt-5 max-w-3xl text-base md:text-lg", UI.subtle)}>
+            Clips, événements, contenus marques — et séances photo premium. Tout est pensé pour être
+            beau, cohérent, et prêt pour tes plateformes.
           </p>
 
-          {/* Snappr badge */}
-          <div className="mt-6">
-            <div className={cn(UI.card, "px-4 py-3 sm:px-5 sm:py-4")}>
-              <div className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-[#F5C518]" />
-                <p className="text-sm text-white/80">
-                  Featured as one of{" "}
-                  <a
-                    href={SNAPPR_FEATURED_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[#F5C518] hover:opacity-90 transition"
-                  >
-                    Quebec City’s highest-rated photographers
-                  </a>
-                  .
-                </p>
-              </div>
-            </div>
-          </div>
-
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Link href="/booking" className={UI.buttonPrimary}>
-              <span className={UI.buttonPrimaryShine} />
-              <span className="relative">Réserver une date</span>
+            <Link href="/booking" className={UI.btnPrimary}>
+              <span className={UI.btnShine} />
+              <span className="relative">Réserver</span>
             </Link>
 
-            <Link href="/contact" className={UI.buttonSecondary}>
+            <Link href="/contact" className={UI.btnSecondary}>
               Demander un devis
             </Link>
           </div>
@@ -444,18 +430,14 @@ export default function PortfolioPage() {
           <div className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
         </section>
 
-        {/* Sections vidéo */}
-        <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-12 space-y-12">
+        {/* VIDEO SECTIONS */}
+        <section className={cn(UI.wrap, "pb-12 space-y-12")}>
           {sections.map((sec) => (
             <div key={sec.id} id={sec.id} className="space-y-5 scroll-mt-28">
               <div className="space-y-2">
-                <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.01em]">
-                  {sec.title}
-                </h2>
+                <h2 className={UI.h2}>{sec.title}</h2>
                 {sec.subtitle && (
-                  <p className={cn("text-sm md:text-base max-w-3xl", UI.subtleText)}>
-                    {sec.subtitle}
-                  </p>
+                  <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>{sec.subtitle}</p>
                 )}
               </div>
 
@@ -466,14 +448,10 @@ export default function PortfolioPage() {
                       <h3 className="text-xl md:text-2xl font-semibold leading-snug">
                         {item.title}
                       </h3>
-                      {item.tag && (
-                        <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
-                          {item.tag}
-                        </span>
-                      )}
+                      {item.tag && <span className={cn(UI.pill, "shrink-0")}>{item.tag}</span>}
                     </div>
 
-                    <p className={cn("mt-3 text-sm md:text-base", UI.subtleText)}>{item.desc}</p>
+                    <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>{item.desc}</p>
 
                     {item.link && (
                       <div className="mt-5">
@@ -489,7 +467,16 @@ export default function PortfolioPage() {
                       </div>
                     )}
 
-                    <div className="mt-6 h-px w-full bg-white/10" />
+                    <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
+
+                    <div className="mt-5 flex gap-3">
+                      <Link href="/booking" className={UI.btnGoldOutline}>
+                        Réserver
+                      </Link>
+                      <Link href="/contact" className={UI.btnSecondary}>
+                        Brief / Devis
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -498,19 +485,17 @@ export default function PortfolioPage() {
         </section>
 
         {/* PHOTO */}
-        <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-16 space-y-6">
+        <section className={cn(UI.wrap, "pb-16 space-y-6")}>
           <div className="space-y-2">
-            <h2 className="text-2xl md:text-3xl font-semibold tracking-[-0.01em]">
-              Séance photo professionnelle
-            </h2>
-            <p className={cn("text-sm md:text-base max-w-3xl", UI.subtleText)}>
-              Sous-catégories claires, galerie par style, rendu uniforme.
-              <span className="text-white/50"> Clique une photo (ESC • ← → • swipe mobile).</span>
+            <h2 className={UI.h2}>Photo — séances premium</h2>
+            <p className={cn("text-sm md:text-base max-w-3xl", UI.subtle)}>
+              Galeries par style. Clique une photo pour ouvrir la visionneuse.
+              <span className="text-white/50"> (ESC • ← → • swipe mobile)</span>
             </p>
           </div>
 
-          {/* Nav sticky (ancres) */}
-          <div className="sticky top-[68px] z-20 -mx-6 lg:-mx-8 px-6 lg:px-8 py-3 backdrop-blur bg-[#0B0B0E]/70 border-y border-white/10">
+          {/* Sticky photo nav */}
+          <div className="sticky top-[64px] z-20 -mx-6 lg:-mx-8 px-6 lg:px-8 py-3 backdrop-blur-xl bg-black/30 border-y border-white/10">
             <div className="flex flex-wrap gap-2">
               {photoCategories.map((c) => {
                 const isActive = active === c.id;
@@ -536,7 +521,7 @@ export default function PortfolioPage() {
             </div>
           </div>
 
-          {/* Cards catégories */}
+          {/* Categories */}
           <div className="space-y-10 pt-2">
             {photoCategories.map((cat) => {
               const list = galleries[cat.id];
@@ -545,26 +530,20 @@ export default function PortfolioPage() {
                 <div key={cat.id} id={`photo-${cat.id}`} className="scroll-mt-44">
                   <div className={cn(UI.card, "p-7")}>
                     <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-                      <div>
-                        <div className={UI.pill}>
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                      <div className="max-w-3xl">
+                        <Badge>
                           {cat.title} · {cat.count} photos
-                        </div>
-
+                        </Badge>
                         <h3 className="mt-3 text-xl md:text-2xl font-semibold">{cat.title}</h3>
-
-                        <p className={cn("mt-2 text-sm md:text-base max-w-3xl", UI.subtleText)}>
-                          {cat.desc}
-                        </p>
+                        <p className={cn("mt-2 text-sm md:text-base", UI.subtle)}>{cat.desc}</p>
                       </div>
 
                       <div className="flex flex-col sm:flex-row gap-3">
-                        <Link href="/booking" className={UI.buttonPrimary}>
-                          <span className={UI.buttonPrimaryShine} />
+                        <Link href="/booking" className={UI.btnPrimary}>
+                          <span className={UI.btnShine} />
                           <span className="relative">Réserver une séance</span>
                         </Link>
-
-                        <Link href="/contact" className={UI.buttonOutlineGold}>
+                        <Link href="/contact" className={UI.btnGoldOutline}>
                           Tarifs / Devis
                         </Link>
                       </div>
@@ -572,7 +551,6 @@ export default function PortfolioPage() {
 
                     <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent" />
 
-                    {/* Grid */}
                     <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                       {list.map((img, idx) => (
                         <button
@@ -580,7 +558,7 @@ export default function PortfolioPage() {
                           type="button"
                           onClick={() => openLightbox(list, idx, cat.title)}
                           className={cn(
-                            "group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-black/30",
+                            "group relative aspect-[4/5] overflow-hidden rounded-xl border border-white/10 bg-black/25",
                             "transition hover:border-white/20 hover:-translate-y-[1px]"
                           )}
                           aria-label={`Ouvrir ${cat.title} — photo ${idx + 1}`}
@@ -605,38 +583,35 @@ export default function PortfolioPage() {
             })}
 
             <p className="text-xs text-white/55 text-center">
-              <strong>Galeries en cours d’enrichissement.</strong> D’autres photos seront ajoutées progressivement.
-              <br />
-              Fichiers optimisés web (JPEG) pour un affichage rapide sur mobile et desktop.
+              Galeries en croissance — on ajoute du contenu régulièrement.
             </p>
           </div>
         </section>
 
-        {/* CTA bas */}
-        <section className="border-t border-white/10 bg-[#0D0D10]">
-          <div className="max-w-6xl mx-auto px-6 lg:px-8 py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        {/* CTA */}
+        <section className="border-t border-white/10 bg-black/25 backdrop-blur-xl">
+          <div className={cn(UI.wrap, "py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between")}>
             <div className="max-w-2xl">
-              <h2 className="text-2xl md:text-3xl font-semibold leading-tight tracking-[-0.01em]">
-                Tu veux qu’on transforme ton idée en{" "}
+              <h2 className={UI.h2}>
+                Un projet à tourner ? On livre un rendu{" "}
                 <span className="text-[#F5C518] drop-shadow-[0_0_18px_rgba(245,197,24,0.18)]">
-                  contenu fort
-                </span>{" "}
-                ?
+                  premium
+                </span>
+                .
               </h2>
-              <p className={cn("mt-3 text-sm md:text-base", UI.subtleText)}>
-                Réserve une date ou décris ton projet. On te propose une approche claire,
-                un rendu premium et une livraison adaptée à tes plateformes.
+              <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>
+                Réserve une date ou envoie ton brief. Réponse claire : scope, délais, livrables.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link href="/booking" className={UI.buttonPrimary}>
-                <span className={UI.buttonPrimaryShine} />
-                <span className="relative">Réserver une date</span>
+              <Link href="/booking" className={UI.btnPrimary}>
+                <span className={UI.btnShine} />
+                <span className="relative">Réserver</span>
               </Link>
 
-              <Link href="/contact" className={UI.buttonOutlineGold}>
-                Parler de votre projet
+              <Link href="/contact" className={UI.btnGoldOutline}>
+                Contact
               </Link>
             </div>
           </div>
@@ -645,7 +620,6 @@ export default function PortfolioPage() {
         {/* LIGHTBOX */}
         {lightbox && lightboxImage && (
           <div
-            ref={overlayRef}
             className="fixed inset-0 z-50 bg-black/90 p-3 sm:p-4 flex items-center justify-center"
             onClick={closeLightbox}
             role="dialog"
@@ -653,7 +627,7 @@ export default function PortfolioPage() {
             aria-label="Visionneuse d’images"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
+            onTouchEnd={() => {}}
           >
             <div
               ref={dialogRef}
@@ -663,6 +637,7 @@ export default function PortfolioPage() {
               )}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Topbar */}
               <div className="flex items-center justify-between gap-3 border-b border-white/10 px-3 sm:px-4 py-3 bg-black/60 backdrop-blur">
                 <div className="min-w-0">
                   <p className="text-sm text-white/80 truncate">
@@ -696,6 +671,7 @@ export default function PortfolioPage() {
                 </div>
               </div>
 
+              {/* Image */}
               <div className="relative bg-black">
                 <div className="relative aspect-[16/10]">
                   <Image
@@ -734,6 +710,7 @@ export default function PortfolioPage() {
                 </button>
               </div>
 
+              {/* Thumbs */}
               <div className="border-t border-white/10 bg-black/60 backdrop-blur px-3 sm:px-4 py-3">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
@@ -765,7 +742,7 @@ export default function PortfolioPage() {
                   </div>
 
                   <div className="text-xs text-white/45 hidden md:block">
-                    ESC pour fermer • ← → pour naviguer • swipe mobile
+                    ESC • ← → • swipe
                   </div>
                 </div>
 

@@ -1,8 +1,9 @@
-// app/booking/page.tsx
 "use client";
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
 type Status = null | "loading" | "success" | "error";
 
@@ -60,6 +61,36 @@ const QUICK = [
   },
 ] as const;
 
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const UI = {
+  pill:
+    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20",
+  card:
+    "rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_18px_50px_rgba(0,0,0,0.25)]",
+  btnPrimary:
+    "group relative px-7 py-3 rounded-lg bg-yellow-400 text-black font-semibold overflow-hidden transition " +
+    "hover:scale-[1.02] active:scale-95 shadow-[0_12px_40px_rgba(0,0,0,0.35)]",
+  btnPrimaryGlow:
+    "absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity",
+  btnSecondary:
+    "px-7 py-3 rounded-lg border border-white/20 text-white font-medium hover:border-yellow-400 hover:text-yellow-400 transition",
+  sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
+};
+
 export default function BookingPage() {
   const [status, setStatus] = useState<Status>(null);
   const [errorMsg, setErrorMsg] = useState("");
@@ -94,88 +125,118 @@ export default function BookingPage() {
     }
   }, []);
 
-  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setStatus("loading");
-    setErrorMsg("");
-    setFieldErrors({});
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setStatus("loading");
+      setErrorMsg("");
+      setFieldErrors({});
 
-    const form = e.currentTarget;
-    const fd = new FormData(form);
+      const form = e.currentTarget;
+      const fd = new FormData(form);
 
-    const payload: BookingPayload = {
-      name: toStr(fd.get("name")),
-      email: toStr(fd.get("email")),
-      phone: toStr(fd.get("phone")),
-      service: toStr(fd.get("service")),
-      date: toStr(fd.get("date")),
-      location: toStr(fd.get("location")),
-      budget: toStr(fd.get("budget")),
-      message: toStr(fd.get("message")),
-      company: toStr(fd.get("company")),
-    };
+      const payload: BookingPayload = {
+        name: toStr(fd.get("name")),
+        email: toStr(fd.get("email")),
+        phone: toStr(fd.get("phone")),
+        service: toStr(fd.get("service")),
+        date: toStr(fd.get("date")),
+        location: toStr(fd.get("location")),
+        budget: toStr(fd.get("budget")),
+        message: toStr(fd.get("message")),
+        company: toStr(fd.get("company")),
+      };
 
-    const errs = validate(payload);
-    if (Object.keys(errs).length) {
-      setStatus("error");
-      setFieldErrors(errs);
-      setErrorMsg("Corrige les champs requis et renvoie.");
-      setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json().catch(() => null);
-      if (!res.ok) {
+      const errs = validate(payload);
+      if (Object.keys(errs).length) {
         setStatus("error");
-        setErrorMsg(data?.error || "Erreur serveur. Réessaie plus tard.");
+        setFieldErrors(errs);
+        setErrorMsg("Corrige les champs requis et renvoie.");
+        setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
         return;
       }
 
-      setStatus("success");
-      form.reset();
-      setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
-    } catch {
-      setStatus("error");
-      setErrorMsg("Erreur de connexion. Réessaie plus tard.");
-      setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
-    }
-  }, [validate]);
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          setStatus("error");
+          setErrorMsg(data?.error || "Erreur serveur. Réessaie plus tard.");
+          return;
+        }
+
+        setStatus("success");
+        form.reset();
+        setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+      } catch {
+        setStatus("error");
+        setErrorMsg("Erreur de connexion. Réessaie plus tard.");
+        setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+      }
+    },
+    [validate]
+  );
 
   return (
-    <main className="min-h-screen px-6 pt-10 pb-20">
-      <section className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-          <p className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
-            Réservation
-          </p>
-        </div>
+    <main className="min-h-screen">
+      {/* HEADER (style Home) */}
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+          <motion.div variants={item} className={UI.pill}>
+            <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+            <span className="text-xs uppercase tracking-widest text-yellow-400">Réservation</span>
+          </motion.div>
 
-        <h1 className="mt-5 text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
-          Réserver une <span className="text-[#F5C518]">date</span>.
-        </h1>
+          <motion.div variants={item}>
+            <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+              Réserver une{" "}
+              <span className="relative inline-block">
+                <span className="bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent">
+                  date
+                </span>
+                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-yellow-400/10 blur-xl opacity-70" />
+              </span>
+              .
+            </h1>
+          </motion.div>
 
-        <p className="mt-5 max-w-3xl text-base md:text-lg text-white/70 leading-relaxed">
-          Envoie l’essentiel. On revient avec une proposition claire : disponibilité, logistique, livrables et délais.
-        </p>
+          <motion.p variants={item} className="text-base md:text-lg text-white/70 leading-relaxed max-w-3xl">
+            Envoie l’essentiel. On revient avec une proposition claire : disponibilité, logistique, livrables et délais.
+          </motion.p>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-12">
-          {/* Form */}
-          <div className="lg:col-span-8">
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-7 md:p-8">
+          <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
+            <Link href="/contact" className={UI.btnSecondary}>
+              Passer par Contact
+            </Link>
+            <Link href="/services" className={UI.btnSecondary}>
+              Voir les services
+            </Link>
+          </motion.div>
+
+          <motion.div variants={item} className={UI.sep} />
+        </motion.div>
+      </section>
+
+      {/* CONTENT */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* FORM */}
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-120px" }}
+            className="lg:col-span-8"
+          >
+            <motion.div variants={item} className={UI.card}>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">
-                    Réservation rapide
-                  </h2>
+                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Réservation rapide</h2>
                   <p className="mt-2 text-sm md:text-base text-white/70 leading-relaxed">
                     Clique un modèle pour remplir le brief en 10 secondes.
                   </p>
@@ -195,7 +256,7 @@ export default function BookingPage() {
                     className="group rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-left transition hover:border-white/20 hover:bg-white/5"
                   >
                     <p className="text-sm font-semibold">
-                      {x.title} <span className="text-[#F5C518]">→</span>
+                      {x.title} <span className="text-yellow-400">→</span>
                     </p>
                     <p className="mt-1 text-xs text-white/55 leading-relaxed">{x.hint}</p>
                   </button>
@@ -204,13 +265,7 @@ export default function BookingPage() {
 
               <form ref={formRef} className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
                 {/* Honeypot hidden */}
-                <input
-                  name="company"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  className="hidden"
-                  aria-hidden="true"
-                />
+                <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field label="Nom complet *" name="name" placeholder="Ex. Emmanuel Kibanda" error={fieldErrors.name} />
@@ -239,37 +294,33 @@ export default function BookingPage() {
                 />
 
                 <div ref={feedbackRef}>
-                  {status === "error" && (
-                    <Feedback type="error" text={`❌ ${errorMsg || "Erreur. Réessaie."}`} />
-                  )}
-                  {status === "success" && (
-                    <Feedback type="success" text="✅ Demande envoyée. On te revient rapidement." />
-                  )}
+                  {status === "error" && <Feedback type="error" text={`❌ ${errorMsg || "Erreur. Réessaie."}`} />}
+                  {status === "success" && <Feedback type="success" text="✅ Demande envoyée. On te revient rapidement." />}
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <button
-                    type="submit"
-                    disabled={status === "loading"}
-                    className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-7 py-3 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
-                  >
-                    {status === "loading" ? "Envoi…" : "Envoyer la demande"}
+                  <button type="submit" disabled={status === "loading"} className={UI.btnPrimary}>
+                    <span className={UI.btnPrimaryGlow} />
+                    <span className="relative z-10">{status === "loading" ? "Envoi…" : "Envoyer la demande"}</span>
                   </button>
 
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-7 py-3 text-sm font-semibold text-[#F5C518] transition hover:bg-[#F5C518] hover:text-black"
-                  >
+                  <Link href="/contact" className={UI.btnSecondary}>
                     Passer par Contact
                   </Link>
                 </div>
               </form>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Side */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-7">
+          {/* SIDE */}
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-120px" }}
+            className="lg:col-span-4 space-y-6"
+          >
+            <motion.div variants={item} className={UI.card}>
               <h3 className="text-xl font-semibold tracking-tight">Ce qu’on confirme</h3>
               <p className="mt-2 text-sm text-white/70 leading-relaxed">
                 Une proposition réaliste selon ton objectif et la plateforme finale.
@@ -283,25 +334,40 @@ export default function BookingPage() {
                   "Délais de livraison",
                 ].map((t) => (
                   <div key={t} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-yellow-400" />
                     <span className="leading-relaxed">{t}</span>
                   </div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
-            <div className="rounded-3xl border border-white/10 bg-black/20 p-7">
+            <motion.div variants={item} className="rounded-2xl border border-white/10 bg-black/20 p-6">
               <h3 className="text-lg font-semibold">Devis détaillé</h3>
               <p className="mt-2 text-sm text-white/70 leading-relaxed">
                 Pour un chiffrage complet (options, scope, versions), utilise Contact.
               </p>
-              <Link
-                href="/contact"
-                className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-              >
-                Contact
+              <Link href="/contact" className={UI.btnPrimary + " mt-5 inline-flex w-full justify-center"}>
+                <span className={UI.btnPrimaryGlow} />
+                <span className="relative z-10">Contact</span>
               </Link>
-            </div>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* CTA FINAL */}
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+          <p className="text-2xl md:text-3xl font-bold text-white">Prêt à tourner quelque chose de fort ?</p>
+          <p className="mt-2 text-white/70 leading-relaxed">
+            Dis-nous ton idée. On te répond avec une approche claire, un plan, et un rendu ciné.
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <Link href="/booking" className={UI.btnPrimary}>
+              <span className={UI.btnPrimaryGlow} />
+              <span className="relative z-10">Réserver</span>
+            </Link>
+            <Link href="/contact" className={UI.btnSecondary}>
+              Contact
+            </Link>
           </div>
         </div>
       </section>
@@ -337,10 +403,12 @@ function Field({
         aria-invalid={Boolean(error) || undefined}
         className={[
           "w-full rounded-2xl bg-black/20 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
-          error ? "border-[#F5C518]/60 ring-1 ring-[#F5C518]/20" : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10",
+          error
+            ? "border-yellow-400/60 ring-1 ring-yellow-400/20"
+            : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10",
         ].join(" ")}
       />
-      {error ? <p className="mt-2 text-xs text-[#F5C518]">{error}</p> : null}
+      {error ? <p className="mt-2 text-xs text-yellow-400">{error}</p> : null}
     </div>
   );
 }
@@ -405,10 +473,12 @@ function Textarea({
         aria-invalid={Boolean(error) || undefined}
         className={[
           "w-full rounded-2xl bg-black/20 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
-          error ? "border-[#F5C518]/60 ring-1 ring-[#F5C518]/20" : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10",
+          error
+            ? "border-yellow-400/60 ring-1 ring-yellow-400/20"
+            : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10",
         ].join(" ")}
       />
-      {error ? <p className="mt-2 text-xs text-[#F5C518]">{error}</p> : null}
+      {error ? <p className="mt-2 text-xs text-yellow-400">{error}</p> : null}
     </div>
   );
 }
@@ -418,7 +488,7 @@ function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
     <div
       className={[
         "rounded-2xl border px-4 py-3",
-        type === "error" ? "border-[#F5C518]/35 bg-[#F5C518]/10" : "border-white/10 bg-white/5",
+        type === "error" ? "border-yellow-400/35 bg-yellow-400/10" : "border-white/10 bg-white/5",
       ].join(" ")}
       role="status"
       aria-live="polite"

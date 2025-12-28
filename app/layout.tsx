@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Navbar />
 
         {/* contenu */}
-        <main className="pt-16 relative z-0">
+        <main className="pt-[var(--nav-h)] relative z-0">
           <PageTransition>{children}</PageTransition>
         </main>
 

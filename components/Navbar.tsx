@@ -11,7 +11,6 @@ const PRIMARY: NavItem[] = [
   { href: "/", label: "Accueil" },
   { href: "/#services", label: "Services" },
   { href: "/#portfolio", label: "Portfolio" },
-  // ✅ On enlève "/booking" ici (sinon doublon avec le CTA)
   { href: "/contact", label: "Contact" },
 ];
 
@@ -63,7 +62,6 @@ export default function Navbar() {
   const primary = useMemo(() => PRIMARY, []);
   const more = useMemo(() => MORE, []);
 
-  // Scroll style
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     handleScroll();
@@ -71,7 +69,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Hero reactive (home only)
   useEffect(() => {
     if (pathname !== "/") {
       setHeroMode(false);
@@ -90,7 +87,6 @@ export default function Navbar() {
     return () => io.disconnect();
   }, [pathname]);
 
-  // Close mobile on desktop
   useEffect(() => {
     const onResize = () => {
       if (window.innerWidth >= 768) setOpen(false);
@@ -99,7 +95,6 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Lock scroll on mobile menu
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -109,7 +104,6 @@ export default function Navbar() {
     };
   }, [open]);
 
-  // Escape close
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -121,12 +115,10 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Focus close button
   useEffect(() => {
     if (open) setTimeout(() => closeBtnRef.current?.focus(), 20);
   }, [open]);
 
-  // Close “Plus” when clicking outside
   useEffect(() => {
     if (!moreOpen) return;
     const onDown = (e: MouseEvent) => {
@@ -137,7 +129,6 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", onDown);
   }, [moreOpen]);
 
-  // ✅ Ferme le dropdown “Plus” quand tu changes de route
   useEffect(() => {
     setMoreOpen(false);
   }, [pathname]);
@@ -148,7 +139,6 @@ export default function Navbar() {
     const hash = getHash(href);
     const path = getPath(href);
 
-    // Same page hash scroll
     if (hash && pathname === path) {
       setOpen(false);
       if (!isSamePageHashNav(href)) window.history.pushState(null, "", `#${hash}`);
@@ -156,7 +146,6 @@ export default function Navbar() {
       return;
     }
 
-    // Go to home then scroll
     if (hash && path === "/" && pathname !== "/") {
       setOpen(false);
       router.push(`/#${hash}`);
@@ -189,7 +178,6 @@ export default function Navbar() {
   return (
     <header className={headerClass}>
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand */}
         <button
           type="button"
           className="flex items-center gap-3 group text-left"
@@ -214,7 +202,6 @@ export default function Navbar() {
           </div>
         </button>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-6 text-sm">
           {primary.map((it) => {
             const active = isActive(it.href);
@@ -239,7 +226,6 @@ export default function Navbar() {
             );
           })}
 
-          {/* Plus dropdown */}
           <div className="relative" ref={moreRef}>
             <button
               type="button"
@@ -289,7 +275,6 @@ export default function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* ✅ CTA (seul “Réserver” visible) */}
           <button
             type="button"
             onClick={() => onNavClick("/booking")}
@@ -299,7 +284,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile button */}
         <button
           className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
           onClick={() => setOpen((v) => !v)}
@@ -314,7 +298,6 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile overlay + drawer */}
       <AnimatePresence>
         {open && (
           <>
@@ -322,7 +305,7 @@ export default function Navbar() {
               type="button"
               aria-label="Fermer"
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -330,7 +313,7 @@ export default function Navbar() {
             />
 
             <motion.aside
-              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/90 backdrop-blur-xl border-l border-white/10 z-50 md:hidden"
+              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/90 backdrop-blur-xl border-l border-white/10 z-[70] md:hidden"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}

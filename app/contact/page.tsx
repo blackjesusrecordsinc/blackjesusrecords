@@ -1,8 +1,9 @@
-// app/contact/page.tsx
 "use client";
 
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
 type FormState = {
   name: string;
@@ -39,20 +40,47 @@ const SERVICES = [
 const QUICK_PACKS = [
   {
     t: "Clip / vidéo",
-    d: "Style, références, durée, plateforme (YouTube / Reels), lieu + date.",
+    d: "Style, références, durée, plateforme, lieu + date.",
   },
   {
     t: "Shooting photo",
-    d: "Type (portrait / corporate / food), rendu voulu, nombre d’images, lieu.",
+    d: "Type, rendu voulu, nombre d’images, lieu.",
   },
   {
     t: "Post-production",
-    d: "Durée finale, footage dispo, objectifs, deadline, formats à livrer.",
+    d: "Durée finale, footage dispo, objectifs, deadline.",
   },
 ] as const;
 
-const cn = (...classes: Array<string | false | null | undefined>) =>
-  classes.filter(Boolean).join(" ");
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+const UI = {
+  pill:
+    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20",
+  card:
+    "rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_18px_50px_rgba(0,0,0,0.25)]",
+  btnPrimary:
+    "group relative px-7 py-3 rounded-lg bg-yellow-400 text-black font-semibold overflow-hidden transition " +
+    "hover:scale-[1.02] active:scale-95 shadow-[0_12px_40px_rgba(0,0,0,0.35)]",
+  btnPrimaryGlow:
+    "absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-300 opacity-0 group-hover:opacity-100 transition-opacity",
+  btnSecondary:
+    "px-7 py-3 rounded-lg border border-white/20 text-white font-medium hover:border-yellow-400 hover:text-yellow-400 transition",
+  sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
+};
 
 function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -61,19 +89,21 @@ function isEmail(v: string) {
 function buildPrefill(service: string) {
   const base =
     "Objectif:\n- \n\nRéférences (liens):\n- \n\nPlateforme cible:\n- (YouTube / Reels / TikTok / Shorts / Site)\n\nLivrables:\n- \n\nDélais:\n- \n\nNotes:\n- ";
+
   if (!service) return base;
 
-  if (service.toLowerCase().includes("post")) {
+  const s = service.toLowerCase();
+  if (s.includes("post")) {
     return (
       "Objectif:\n- \n\nFootage:\n- Caméra / drone / audio séparé ?\n\nDurée finale:\n- \n\nFormats:\n- 16:9 / 9:16 / 1:1\n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- "
     );
   }
-  if (service.toLowerCase().includes("photo")) {
+  if (s.includes("photo")) {
     return (
       "Type de séance:\n- (portrait / corporate / food / couple)\n\nRendu voulu:\n- (clean / editorial / ciné)\n\nNombre d’images:\n- \n\nLieu:\n- \n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- "
     );
   }
-  if (service.toLowerCase().includes("vidéo") || service.toLowerCase().includes("video")) {
+  if (s.includes("vidéo") || s.includes("video")) {
     return (
       "Type:\n- (clip / corporate / événement / pub)\n\nDurée:\n- \n\nPlateforme:\n- \n\nLieu + date:\n- \n\nRéférences (liens):\n- \n\nLivrables:\n- (YouTube + vertical, etc.)\n\nNotes:\n- "
     );
@@ -86,12 +116,10 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-
   const firstErrorRef = useRef<HTMLDivElement | null>(null);
 
   const errors = useMemo(() => {
     const e: Partial<Record<keyof FormState, string>> = {};
-
     const name = form.name.trim();
     const email = form.email.trim();
     const message = form.message.trim();
@@ -101,7 +129,6 @@ export default function ContactPage() {
     else if (!isEmail(email)) e.email = "Email invalide (ex: nom@domaine.com).";
     if (!message) e.message = "Ton message est requis.";
     if (message && message.length < 20) e.message = "Ajoute un peu de contexte (min. 20 caractères).";
-
     return e;
   }, [form]);
 
@@ -123,10 +150,7 @@ export default function ContactPage() {
       service: serviceLabel,
       message: p.message.trim().length ? p.message : buildPrefill(serviceLabel),
     }));
-    // focus message after quickfill
-    setTimeout(() => {
-      document.getElementById("message")?.focus?.();
-    }, 0);
+    setTimeout(() => document.getElementById("message")?.focus?.(), 0);
   }, []);
 
   const onSubmit = useCallback(
@@ -136,13 +160,15 @@ export default function ContactPage() {
       setError(null);
 
       if (hasErrors) {
-        setError("Vérifie les champs requis (en rouge) et renvoie.");
-        setTimeout(() => firstErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+        setError("Vérifie les champs requis et renvoie.");
+        setTimeout(
+          () => firstErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
+          0
+        );
         return;
       }
 
       setLoading(true);
-
       try {
         const res = await fetch("/api/contact", {
           method: "POST",
@@ -159,7 +185,6 @@ export default function ContactPage() {
         });
 
         const data = await res.json().catch(() => null);
-
         if (!res.ok) {
           setError(data?.error || "Une erreur est survenue. Réessaie.");
           return;
@@ -177,87 +202,82 @@ export default function ContactPage() {
   );
 
   return (
-    <main className="min-h-screen bg-[#0B0B0E] text-white font-sans">
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        {/* background glow */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-[#F5C518]/10 blur-3xl" />
-          <div className="absolute -bottom-48 left-12 h-[420px] w-[420px] rounded-full bg-white/5 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,197,24,0.08),transparent_55%)]" />
-        </div>
+    <main className="min-h-screen">
+      {/* HEADER (style Home) */}
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+          <motion.div variants={item} className={UI.pill}>
+            <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+            <span className="text-xs uppercase tracking-widest text-yellow-400">Contact</span>
+          </motion.div>
 
-        <div className="max-w-6xl mx-auto px-6 lg:px-8 pt-16 pb-10 relative">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-            <span className="text-[11px] font-semibold tracking-[0.25em] text-white/70 uppercase">
-              Contact
-            </span>
-          </div>
+          <motion.div variants={item}>
+            <h1 className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+              Parle-nous de ton{" "}
+              <span className="relative inline-block">
+                <span className="bg-gradient-to-r from-yellow-400 to-yellow-300 bg-clip-text text-transparent">
+                  projet
+                </span>
+                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-yellow-400/10 blur-xl opacity-70" />
+              </span>
+              .
+            </h1>
+          </motion.div>
 
-          <h1 className="mt-5 text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
-            Parle-nous de ton <span className="text-[#F5C518]">projet</span>.
-          </h1>
-
-          <p className="mt-5 max-w-3xl text-base md:text-lg text-white/70 leading-relaxed">
-            Un brief clair = une réponse claire. Clip, photo, post-production, site web ou stratégie :
+          <motion.p variants={item} className="text-base md:text-lg text-white/70 leading-relaxed max-w-3xl">
+            Un brief clair = une réponse claire. Clip, photo, post-prod, web ou stratégie :
             on te cadre le scope, les délais et les livrables.
-          </p>
+          </motion.p>
 
-          {/* Quick actions */}
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/booking"
-              className="inline-flex items-center justify-center rounded-full bg-[#F5C518] px-6 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-            >
-              Réserver un appel
+          <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
+            <Link href="/booking" className={UI.btnPrimary}>
+              <span className={UI.btnPrimaryGlow} />
+              <span className="relative z-10">Réserver un appel</span>
             </Link>
-            <Link
-              href="/services"
-              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-            >
+            <Link href="/services" className={UI.btnSecondary}>
               Voir les services
             </Link>
-          </div>
-        </div>
+          </motion.div>
+
+          <motion.div variants={item} className={UI.sep} />
+        </motion.div>
       </section>
 
       {/* CONTENT */}
-      <section className="max-w-6xl mx-auto px-6 lg:px-8 pb-20">
-        <div className="grid gap-8 lg:grid-cols-12">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <div className="grid gap-6 lg:grid-cols-12">
           {/* FORM */}
-          <div className="lg:col-span-8">
-            <div className="rounded-3xl border border-white/10 bg-[#14141A] p-7 md:p-8 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-120px" }}
+            className="lg:col-span-8"
+          >
+            <motion.div variants={item} className={UI.card}>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
-                    Brief
-                  </div>
-                  <h2 className="mt-3 text-2xl md:text-3xl font-semibold tracking-tight">
-                    Formulaire de contact
-                  </h2>
-                  <p className="mt-2 text-sm md:text-base text-white/70">
-                    Va droit au but. Si tu manques d’idées, utilise un modèle “brief” en 1 clic.
+                  <h2 className="text-2xl md:text-3xl font-semibold tracking-tight">Formulaire</h2>
+                  <p className="mt-2 text-sm md:text-base text-white/70 leading-relaxed">
+                    Va droit au but. Si tu veux, utilise un modèle “brief” en 1 clic.
                   </p>
                 </div>
-
-                <span className="shrink-0 hidden sm:inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+                <span className="shrink-0 hidden sm:inline-flex items-center rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs text-white/70">
                   Réponse rapide
                 </span>
               </div>
 
-              {/* quick fill */}
+              {/* QUICK FILL */}
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
                 {QUICK_PACKS.map((x) => (
                   <button
                     key={x.t}
                     type="button"
                     onClick={() => onQuickFill(x.t === "Clip / vidéo" ? "Production vidéo" : x.t)}
-                    className="group rounded-2xl border border-white/10 bg-[#0F0F12] px-4 py-4 text-left transition hover:border-white/20 hover:bg-[#111116]"
+                    className="group rounded-2xl border border-white/10 bg-black/20 px-4 py-4 text-left transition hover:border-white/20 hover:bg-white/5"
                   >
                     <p className="text-sm font-semibold">
-                      {x.t} <span className="text-[#F5C518] group-hover:opacity-90">→</span>
+                      {x.t} <span className="text-yellow-400">→</span>
                     </p>
                     <p className="mt-1 text-xs text-white/55 leading-relaxed">{x.d}</p>
                   </button>
@@ -265,7 +285,6 @@ export default function ContactPage() {
               </div>
 
               <form onSubmit={onSubmit} className="mt-8 space-y-6" noValidate>
-                {/* NAME / EMAIL */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field
                     label="Nom complet *"
@@ -290,7 +309,6 @@ export default function ContactPage() {
                   />
                 </div>
 
-                {/* PHONE / SERVICE */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field
                     label="Téléphone"
@@ -300,7 +318,6 @@ export default function ContactPage() {
                     autoComplete="tel"
                     placeholder="Optionnel"
                   />
-
                   <Select
                     label="Type de service"
                     name="service"
@@ -311,15 +328,8 @@ export default function ContactPage() {
                   />
                 </div>
 
-                {/* DATE / LOCATION */}
                 <div className="grid md:grid-cols-3 gap-4">
-                  <Field
-                    label="Date souhaitée"
-                    type="date"
-                    name="date"
-                    value={form.date}
-                    onChange={onChange}
-                  />
+                  <Field label="Date souhaitée" type="date" name="date" value={form.date} onChange={onChange} />
                   <div className="md:col-span-2">
                     <Field
                       label="Lieu"
@@ -331,7 +341,6 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                {/* BUDGET */}
                 <Field
                   label="Budget approximatif"
                   name="budget"
@@ -340,7 +349,6 @@ export default function ContactPage() {
                   placeholder="Ex. 800 $, 1500 $, à discuter…"
                 />
 
-                {/* MESSAGE */}
                 <Textarea
                   label="Message *"
                   name="message"
@@ -352,33 +360,38 @@ export default function ContactPage() {
                   placeholder="Objectif, références, plateforme cible, délais…"
                 />
 
-                {/* FEEDBACK */}
                 <div ref={firstErrorRef}>
                   {error && <Feedback type="error" text={error} />}
                   {success && <Feedback type="success" text={success} />}
                 </div>
 
-                {/* SUBMIT */}
                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="relative inline-flex items-center justify-center rounded-full bg-[#F5C518] px-8 py-3 text-sm font-semibold text-black transition hover:opacity-90 disabled:opacity-50"
+                    className={UI.btnPrimary}
                   >
-                    {loading ? "Envoi…" : "Envoyer le message"}
+                    <span className={UI.btnPrimaryGlow} />
+                    <span className="relative z-10">{loading ? "Envoi…" : "Envoyer le message"}</span>
                   </button>
 
                   <p className="text-xs text-white/50 leading-relaxed">
-                    En envoyant, tu acceptes qu’on te recontacte par email/téléphone pour clarifier le scope.
+                    En envoyant, tu acceptes qu’on te recontacte pour clarifier le scope.
                   </p>
                 </div>
               </form>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* SIDE */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="rounded-3xl border border-white/10 bg-[#14141A] p-7 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-120px" }}
+            className="lg:col-span-4 space-y-6"
+          >
+            <motion.div variants={item} className={UI.card}>
               <h3 className="text-xl font-semibold tracking-tight">Notre approche</h3>
               <p className="mt-2 text-sm text-white/70 leading-relaxed">
                 On ne “prend pas” un projet. On le cadre, on le produit, on le livre propre.
@@ -392,7 +405,7 @@ export default function ContactPage() {
                   "Production + livraison prête à publier",
                 ].map((i) => (
                   <li key={i} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-yellow-400" />
                     <span>{i}</span>
                   </li>
                 ))}
@@ -402,14 +415,14 @@ export default function ContactPage() {
 
               <p className="mt-5 text-sm text-white/70">
                 Pour un créneau direct :{" "}
-                <Link href="/booking" className="text-[#F5C518] font-semibold hover:opacity-90 transition">
+                <Link href="/booking" className="text-yellow-400 font-semibold hover:opacity-90 transition">
                   Réservation
                 </Link>
                 .
               </p>
-            </div>
+            </motion.div>
 
-            <div className="rounded-3xl border border-white/10 bg-[#121216] p-7">
+            <motion.div variants={item} className="rounded-2xl border border-white/10 bg-black/20 p-6">
               <h3 className="text-lg font-semibold">Info utile</h3>
               <p className="mt-2 text-sm text-white/70 leading-relaxed">
                 Plus ton message est précis, plus vite on peut te répondre.
@@ -422,34 +435,30 @@ export default function ContactPage() {
                   "Livrables attendus (formats + durée)",
                 ].map((i) => (
                   <div key={i} className="flex gap-3 text-sm text-white/80">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#F5C518]" />
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-yellow-400" />
                     <span className="leading-relaxed">{i}</span>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
 
-      {/* BOTTOM CTA */}
-      <section className="border-t border-white/10 bg-[#121216]">
-        <div className="max-w-6xl mx-auto px-6 lg:px-8 py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl md:text-3xl font-semibold leading-tight tracking-tight">
-              Réponse <span className="text-[#F5C518]">rapide</span>, cadre clair
-            </h2>
-            <p className="mt-3 text-sm md:text-base text-white/70">
-              Les projets structurés sont traités en priorité.
-            </p>
+        {/* CTA FINAL (style Home) */}
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 shadow-[0_18px_50px_rgba(0,0,0,0.25)]">
+          <p className="text-2xl md:text-3xl font-bold text-white">Réponse rapide, cadre clair.</p>
+          <p className="mt-2 text-white/70 leading-relaxed">
+            Les projets structurés sont traités en priorité.
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
+            <Link href="/services" className={UI.btnSecondary}>
+              Voir les services
+            </Link>
+            <Link href="/booking" className={UI.btnPrimary}>
+              <span className={UI.btnPrimaryGlow} />
+              <span className="relative z-10">Réserver</span>
+            </Link>
           </div>
-
-          <Link
-            href="/services"
-            className="inline-flex items-center justify-center rounded-full border border-[#F5C518] px-6 py-3 text-sm font-semibold text-[#F5C518] transition hover:bg-[#F5C518] hover:text-black"
-          >
-            Voir les services
-          </Link>
         </div>
       </section>
     </main>
@@ -457,6 +466,10 @@ export default function ContactPage() {
 }
 
 /* ========= UI ATOMS ========= */
+
+function cn(...c: Array<string | false | null | undefined>) {
+  return c.filter(Boolean).join(" ");
+}
 
 function Field({
   label,
@@ -482,14 +495,14 @@ function Field({
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         className={cn(
-          "w-full rounded-2xl bg-[#0F0F12] border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
+          "w-full rounded-2xl bg-black/20 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
           error
-            ? "border-[#F5C518]/70 ring-1 ring-[#F5C518]/25"
+            ? "border-yellow-400/60 ring-1 ring-yellow-400/20"
             : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10"
         )}
       />
       {error ? (
-        <p id={`${id}-error`} className="mt-2 text-xs text-[#F5C518]">
+        <p id={`${id}-error`} className="mt-2 text-xs text-yellow-400">
           {error}
         </p>
       ) : null}
@@ -518,7 +531,7 @@ function Select({
       <select
         {...props}
         id={id}
-        className="w-full rounded-2xl bg-[#0F0F12] border border-white/10 px-4 py-3 text-sm text-white outline-none transition hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10"
+        className="w-full rounded-2xl bg-black/20 border border-white/10 px-4 py-3 text-sm text-white outline-none transition hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10"
       >
         <option value="">Sélectionner…</option>
         {options.map((o) => (
@@ -556,14 +569,14 @@ function Textarea({
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         className={cn(
-          "w-full rounded-2xl bg-[#0F0F12] border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
+          "w-full rounded-2xl bg-black/20 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition",
           error
-            ? "border-[#F5C518]/70 ring-1 ring-[#F5C518]/25"
+            ? "border-yellow-400/60 ring-1 ring-yellow-400/20"
             : "border-white/10 hover:border-white/15 focus:border-white/20 focus:ring-1 focus:ring-white/10"
         )}
       />
       {error ? (
-        <p id={`${id}-error`} className="mt-2 text-xs text-[#F5C518]">
+        <p id={`${id}-error`} className="mt-2 text-xs text-yellow-400">
           {error}
         </p>
       ) : null}
@@ -574,12 +587,10 @@ function Textarea({
 function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
   return (
     <div
-      className={cn(
+      className={[
         "rounded-2xl border px-4 py-3",
-        type === "error"
-          ? "border-[#F5C518]/40 bg-[#F5C518]/10"
-          : "border-white/10 bg-white/5"
-      )}
+        type === "error" ? "border-yellow-400/35 bg-yellow-400/10" : "border-white/10 bg-white/5",
+      ].join(" ")}
       role="status"
       aria-live="polite"
     >
