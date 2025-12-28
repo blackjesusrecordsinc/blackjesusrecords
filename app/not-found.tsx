@@ -2,31 +2,15 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[70vh] flex items-center justify-center px-6">
-      <div className="max-w-xl text-center">
-        <p className="text-sm text-white/60">404</p>
-        <h1 className="mt-2 text-3xl md:text-4xl font-bold text-white">
-          Page introuvable
-        </h1>
-        <p className="mt-3 text-white/70">
-          Le lien est invalide ou la page a été déplacée.
-        </p>
-
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <Link
-            href="/"
-            className="px-6 py-3 rounded-lg bg-yellow-400 text-black font-semibold"
-          >
-            Retour à l’accueil
-          </Link>
-          <Link
-            href="/contact"
-            className="px-6 py-3 rounded-lg border border-white/15 text-white/85 hover:border-white/30 transition"
-          >
-            Contact
-          </Link>
-        </div>
-      </div>
-    </div>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-black text-white gap-6 px-6 text-center">
+      <h1 className="text-5xl font-bold">404</h1>
+      <p className="text-white/70">Page introuvable.</p>
+      <Link
+        href="/"
+        className="rounded-full bg-[#F5C518] px-6 py-3 font-semibold text-black"
+      >
+        Retour à l’accueil
+      </Link>
+    </main>
   );
 }

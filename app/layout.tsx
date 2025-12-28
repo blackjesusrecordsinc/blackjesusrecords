@@ -11,6 +11,7 @@ import CursorGlow from "@/components/CursorGlow";
 import PageTransition from "@/components/PageTransition";
 
 import { Analytics } from "@vercel/analytics/react";
+import { Suspense } from "react";
 
 const SITE_NAME = "Black Jesus Records";
 const SITE_URL = "https://www.blackjesusrecords.ca";
@@ -46,15 +47,23 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="fr" className="bg-[#0B0B0E]">
       <body className="min-h-screen bg-[#0B0B0E] text-white antialiased">
         {/* UX layers (global) */}
         <TopProgress />
-        <RouteLoader />
-        <CursorGlow />
 
+        {/* 🔒 OBLIGATOIRE POUR useSearchParams */}
+        <Suspense fallback={null}>
+          <RouteLoader />
+        </Suspense>
+
+        <CursorGlow />
         <Navbar />
 
         <main className="pt-24">
@@ -63,7 +72,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <Footer />
 
-        {/* Vercel analytics */}
         <Analytics />
       </body>
     </html>
