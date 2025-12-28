@@ -1,14 +1,11 @@
 // app/api/contact/route.ts
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import pRetry from "p-retry";
 
 export const runtime = "nodejs";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-/* ============================
-   TYPES
-============================ */
 
 type ContactPayload = {
   name?: string;
@@ -19,15 +16,12 @@ type ContactPayload = {
   location?: string;
   budget?: string;
   message?: string;
-
-  // Honeypot anti-bot
-  company?: string;
+  company?: string; // honeypot
 };
 
 /* ============================
    UTILS
 ============================ */
-
 function escHtml(v: string) {
   return v
     .replaceAll("&", "&amp;")
@@ -55,10 +49,26 @@ function normalizePhone(v?: string) {
   return x ? x.replace(/[^\d+]/g, "") : "";
 }
 
+function getOrigin(req: Request) {
+  // Vercel forward headers: origin rarement, mais referer souvent
+  const origin = req.headers.get("origin") || "";
+  const referer = req.headers.get("referer") || "";
+  return origin || (referer ? new URL(referer).origin : "");
+}
+
+// Optionnel: autorise uniquement ton site à envoyer vers l’API
+function isAllowedOrigin(origin: string) {
+  if (!origin) return true; // si absent, on tolère (certaines configs)
+  const allowed = [
+    "https://www.blackjesusrecords.ca",
+    "https://blackjesusrecords.ca",
+  ];
+  return allowed.includes(origin);
+}
+
 /* ============================
    EMAIL TEMPLATES
 ============================ */
-
 function buildInternalHtml(data: {
   name: string;
   email: string;
@@ -146,9 +156,7 @@ function buildClientHtml(name: string) {
       <div style="padding:20px;color:#111">
         <p>Bonjour ${escHtml(safeName)},</p>
 
-        <p>
-          Merci d’avoir contacté <strong>Black Jesus Records</strong>.
-        </p>
+        <p>Merci d’avoir contacté <strong>Black Jesus Records</strong>.</p>
 
         <p>
           Chaque projet est étudié avec rigueur afin de garantir une réponse claire,
@@ -174,16 +182,42 @@ function buildClientHtml(name: string) {
 }
 
 /* ============================
+   RESEND SEND (WITH RETRY)
+============================ */
+async function resendSend(input: Parameters<typeof resend.emails.send>[0]) {
+  // Retry uniquement sur erreurs réseau / 5xx
+  return pRetry(
+    async () => {
+      const out = await resend.emails.send(input);
+      // Resend SDK renvoie { data, error } (souvent)
+      const anyOut = out as any;
+      if (anyOut?.error) {
+        const msg = anyOut.error?.message || "Resend error";
+        // pour que pRetry sache que c'est un échec
+        throw new Error(msg);
+      }
+      return out;
+    },
+    {
+      retries: 2,
+      minTimeout: 250,
+      maxTimeout: 1200,
+    }
+  );
+}
+
+/* ============================
    HANDLER
 ============================ */
-
 export async function POST(req: Request) {
   try {
     if (!process.env.RESEND_API_KEY) {
-      return NextResponse.json(
-        { error: "Configuration serveur manquante." },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Configuration serveur manquante." }, { status: 500 });
+    }
+
+    const origin = getOrigin(req);
+    if (!isAllowedOrigin(origin)) {
+      return NextResponse.json({ error: "Origin non autorisée." }, { status: 403 });
     }
 
     let body: ContactPayload;
@@ -210,73 +244,45 @@ export async function POST(req: Request) {
     if (!email || !isEmail(email)) {
       return NextResponse.json({ error: "Email invalide." }, { status: 400 });
     }
-
     if (!message || message.length < 10) {
-      return NextResponse.json(
-        { error: "Message trop court." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Message trop court." }, { status: 400 });
     }
 
+    // IMPORTANT: ces FROM doivent être des adresses autorisées par Resend (domaine vérifié)
     const internalFrom =
-      process.env.RESEND_FROM_INTERNAL ||
-      "Black Jesus Records <no-reply@blackjesusrecords.ca>";
+      process.env.RESEND_FROM_INTERNAL || "Black Jesus Records <no-reply@blackjesusrecords.ca>";
 
     const clientFrom =
-      process.env.RESEND_FROM_CLIENT ||
-      "Black Jesus Records <contact@blackjesusrecords.ca>";
+      process.env.RESEND_FROM_CLIENT || "Black Jesus Records <contact@blackjesusrecords.ca>";
 
-    const internalTo =
-      process.env.CONTACT_TO_EMAIL || "blackjesusrecords.inc@gmail.com";
+    const internalTo = process.env.CONTACT_TO_EMAIL || "blackjesusrecords.inc@gmail.com";
 
-    // Email interne
-    const internal = await resend.emails.send({
+    // 1) Email interne (on met reply_to, le plus compatible)
+    const internal = await resendSend({
       from: internalFrom,
       to: [internalTo],
-      replyTo: email,
+      // ✅ plus compatible que replyTo selon versions
+      reply_to: email,
       subject: `Nouvelle demande — ${service}`,
-      html: buildInternalHtml({
-        name,
-        email,
-        phone,
-        service,
-        date,
-        location,
-        budget,
-        message,
-      }),
-    });
+      html: buildInternalHtml({ name, email, phone, service, date, location, budget, message }),
+    } as any);
 
-    if ((internal as any).error) {
-      console.error("RESEND INTERNAL ERROR:", (internal as any).error);
-      return NextResponse.json(
-        { error: "Erreur email interne." },
-        { status: 500 }
-      );
-    }
-
-    // Auto-réponse client
-    const client = await resend.emails.send({
+    // 2) Auto-réponse client
+    const client = await resendSend({
       from: clientFrom,
       to: [email],
       subject: "Demande reçue — Black Jesus Records",
       html: buildClientHtml(name),
     });
 
-    if ((client as any).error) {
-      console.error("RESEND CLIENT ERROR:", (client as any).error);
-      return NextResponse.json(
-        { error: "Erreur email client." },
-        { status: 500 }
-      );
-    }
+    // log minimal utile en prod
+    const internalId = (internal as any)?.data?.id || (internal as any)?.id;
+    const clientId = (client as any)?.data?.id || (client as any)?.id;
+    console.log("CONTACT OK:", { internalId, clientId, service, email });
 
     return NextResponse.json({ success: true });
-  } catch (err) {
+  } catch (err: any) {
     console.error("CONTACT API ERROR:", err);
-    return NextResponse.json(
-      { error: "Erreur serveur." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erreur serveur." }, { status: 500 });
   }
 }
