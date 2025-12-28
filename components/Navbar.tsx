@@ -119,7 +119,9 @@ export default function Navbar() {
   const transparent = pathname === "/" && heroMode && !scrolled;
   const headerClass = [
     "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-    transparent ? "bg-transparent" : "bg-[#020812]/70 backdrop-blur-xl border-b border-white/10",
+    transparent
+      ? "bg-transparent"
+      : "bg-black/55 backdrop-blur-xl border-b border-white/10",
   ].join(" ");
 
   return (
@@ -132,11 +134,17 @@ export default function Navbar() {
           onClick={() => onNavClick("/")}
         >
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-white/5">
-            <Image src="/logo_bjr.png" alt="Black Jesus Records" fill className="object-cover" priority />
+            <Image
+              src="/logo_bjr.png"
+              alt="Black Jesus Records"
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
 
           <div className="leading-tight">
-            <div className="font-bold tracking-wider uppercase text-sm group-hover:text-cyan-200 transition-colors">
+            <div className="font-bold tracking-wider uppercase text-sm transition-colors group-hover:text-primary">
               Black Jesus Records
             </div>
             <div className="text-[11px] text-white/60">Studio créatif & label</div>
@@ -154,13 +162,13 @@ export default function Navbar() {
                 onClick={() => onNavClick(it.href)}
                 className={[
                   "relative py-2 transition",
-                  active ? "text-cyan-200" : "text-white/80 hover:text-cyan-200",
+                  active ? "text-primary" : "text-white/80 hover:text-primary",
                 ].join(" ")}
               >
                 {it.label}
                 <span
                   className={[
-                    "absolute -bottom-1 left-0 h-0.5 w-full bg-cyan-300 transition-transform origin-left",
+                    "absolute -bottom-1 left-0 h-0.5 w-full bg-primary transition-transform origin-left",
                     active ? "scale-x-100" : "scale-x-0",
                   ].join(" ")}
                 />
@@ -176,8 +184,8 @@ export default function Navbar() {
               className={[
                 "inline-flex items-center gap-2 transition",
                 more.some((x) => isActive(x.href))
-                  ? "text-cyan-200"
-                  : "text-white/80 hover:text-cyan-200",
+                  ? "text-primary"
+                  : "text-white/80 hover:text-primary",
               ].join(" ")}
               aria-expanded={moreOpen}
               aria-label="Plus"
@@ -192,7 +200,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.14 }}
-                  className="absolute right-0 mt-3 w-56 rounded-2xl border border-white/10 bg-[#041224]/70 backdrop-blur-xl overflow-hidden shadow-xl"
+                  className="absolute right-0 mt-3 w-56 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl overflow-hidden shadow-xl"
                 >
                   {more.map((it) => {
                     const active = isActive(it.href);
@@ -204,8 +212,8 @@ export default function Navbar() {
                         className={[
                           "w-full text-left px-4 py-3 text-sm transition",
                           active
-                            ? "text-cyan-200 bg-white/5"
-                            : "text-white/80 hover:text-cyan-200 hover:bg-white/5",
+                            ? "text-primary bg-white/5"
+                            : "text-white/80 hover:text-primary hover:bg-white/5",
                         ].join(" ")}
                       >
                         {it.label}
@@ -220,7 +228,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => onNavClick("/booking")}
-            className="ml-2 inline-flex items-center justify-center px-4 py-2 rounded-xl bg-cyan-300 text-[#001019] font-semibold hover:opacity-95 transition"
+            className="ml-2 inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary text-black font-semibold hover:opacity-95 transition shadow-[0_0_22px_rgba(245,197,66,0.25)]"
           >
             Réserver
           </button>
@@ -249,7 +257,7 @@ export default function Navbar() {
               type="button"
               aria-label="Fermer"
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-[#020812]/70 backdrop-blur-sm z-[60] md:hidden"
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -257,7 +265,7 @@ export default function Navbar() {
             />
 
             <motion.aside
-              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-[#041224]/85 backdrop-blur-xl border-l border-white/10 z-[70] md:hidden"
+              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/78 backdrop-blur-xl border-l border-white/10 z-[70] md:hidden"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -278,27 +286,37 @@ export default function Navbar() {
                 </div>
 
                 <div className="mt-6 space-y-2">
-                  {[...primary, ...more].map((it) => (
-                    <button
-                      key={it.href}
-                      type="button"
-                      onClick={() => onNavClick(it.href)}
-                      className="w-full text-left py-3 px-4 rounded-xl transition border border-white/10 text-white/85 hover:text-cyan-200 hover:bg-white/5 hover:border-white/15"
-                    >
-                      {it.label}
-                    </button>
-                  ))}
+                  {[...primary, ...more].map((it) => {
+                    const active = isActive(it.href);
+                    return (
+                      <button
+                        key={it.href}
+                        type="button"
+                        onClick={() => onNavClick(it.href)}
+                        className={[
+                          "w-full text-left py-3 px-4 rounded-xl transition border border-white/10",
+                          active
+                            ? "text-primary bg-white/5"
+                            : "text-white/85 hover:text-primary hover:bg-white/5 hover:border-white/15",
+                        ].join(" ")}
+                      >
+                        {it.label}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                <div className="mt-8 p-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/10">
+                <div className="mt-8 p-4 rounded-2xl border border-primary/25 bg-primary/10">
                   <button
                     type="button"
                     onClick={() => onNavClick("/booking")}
-                    className="block w-full text-center py-3 rounded-xl bg-cyan-300 text-[#001019] font-semibold hover:opacity-95 transition"
+                    className="block w-full text-center py-3 rounded-xl bg-primary text-black font-semibold hover:opacity-95 transition shadow-[0_0_22px_rgba(245,197,66,0.25)]"
                   >
                     Réserver une date
                   </button>
-                  <p className="mt-3 text-xs text-white/60 text-center">Réponse 24–48h (jours ouvrables)</p>
+                  <p className="mt-3 text-xs text-white/60 text-center">
+                    Réponse 24–48h (jours ouvrables)
+                  </p>
                 </div>
               </div>
             </motion.aside>

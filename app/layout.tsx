@@ -21,8 +21,8 @@ const DEFAULT_DESCRIPTION =
   "Studio créatif & label à Lévis (Québec). Vidéo, photo, post-production, contenus réseaux sociaux et stratégie.";
 
 export const viewport: Viewport = {
-  // pas de noir “visible”, mais on garde un thème cohérent pour mobile/SEO
-  themeColor: "#0A0F1F",
+  // ✅ Jaune signature (plus de bleu visible sur mobile/SEO)
+  themeColor: "#F5C542",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -40,8 +40,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className="bg-transparent">
-      <body className="min-h-screen bg-transparent text-white antialiased overflow-x-hidden">
-        {/* ✅ AQUARIUM BACKGROUND GLOBAL (derrière tout, sans zones noires) */}
+      {/* ✅ readable = overlay global lisible sur toutes les pages */}
+      <body className="readable min-h-screen bg-transparent text-white antialiased overflow-x-hidden [accent-color:#F5C542]">
+        {/* ✅ BACKGROUND GLOBAL (derrière tout) */}
         <div className="fixed inset-0 -z-10">
           <WorkBackground count={11} intervalMs={7000} />
         </div>

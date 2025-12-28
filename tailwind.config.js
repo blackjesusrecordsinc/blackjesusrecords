@@ -8,8 +8,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#fbbf24",
-        dark: "#000000",
+        primary: "#F5C542",      // JAUNE SIGNATURE (cinéma / luxe)
+        primarySoft: "#E6B93C",  // hover / accents
+        dark: "#0B0B0B",         // noir profond
+        grayText: "#D1D1D1",     // texte secondaire
       },
     },
   },
