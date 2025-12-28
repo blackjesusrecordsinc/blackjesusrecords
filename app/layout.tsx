@@ -55,10 +55,10 @@ export default function RootLayout({
   return (
     <html lang="fr" className="bg-[#0B0B0E]">
       <body className="min-h-screen bg-[#0B0B0E] text-white antialiased">
-        {/* UX layers (global) */}
+        {/* UX layers */}
         <TopProgress />
 
-        {/* 🔒 OBLIGATOIRE POUR useSearchParams */}
+        {/* Obligatoire pour RouteLoader (useSearchParams) */}
         <Suspense fallback={null}>
           <RouteLoader />
         </Suspense>
@@ -66,12 +66,12 @@ export default function RootLayout({
         <CursorGlow />
         <Navbar />
 
-        <main className="pt-24">
+        {/* ⬇️ ALIGNÉ AVEC LA HAUTEUR DU NAVBAR */}
+        <main className="pt-16">
           <PageTransition>{children}</PageTransition>
         </main>
 
         <Footer />
-
         <Analytics />
       </body>
     </html>
