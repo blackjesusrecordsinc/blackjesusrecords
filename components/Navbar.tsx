@@ -36,13 +36,15 @@ export default function Navbar() {
   const primary = useMemo(() => PRIMARY, []);
   const more = useMemo(() => MORE, []);
 
+  /* Scroll state */
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  /* Hero transparency */
   useEffect(() => {
     if (pathname !== "/") {
       setHeroMode(false);
@@ -53,20 +55,20 @@ export default function Navbar() {
 
     const io = new IntersectionObserver(
       ([entry]) => setHeroMode(entry.isIntersecting),
-      { root: null, rootMargin: "-10% 0px -72% 0px", threshold: [0, 0.15, 0.35] }
+      { rootMargin: "-10% 0px -70% 0px" }
     );
     io.observe(hero);
     return () => io.disconnect();
   }, [pathname]);
 
+  /* Close mobile on resize */
   useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth >= 768) setOpen(false);
-    };
+    const onResize = () => window.innerWidth >= 768 && setOpen(false);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  /* Lock scroll when drawer open */
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -76,6 +78,7 @@ export default function Navbar() {
     };
   }, [open]);
 
+  /* Escape key */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -87,23 +90,22 @@ export default function Navbar() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  /* Focus close button */
   useEffect(() => {
     if (open) setTimeout(() => closeBtnRef.current?.focus(), 20);
   }, [open]);
 
+  /* Click outside "More" */
   useEffect(() => {
     if (!moreOpen) return;
     const onDown = (e: MouseEvent) => {
-      if (!moreRef.current) return;
-      if (!moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+      if (!moreRef.current?.contains(e.target as Node)) setMoreOpen(false);
     };
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [moreOpen]);
 
-  useEffect(() => {
-    setMoreOpen(false);
-  }, [pathname]);
+  useEffect(() => setMoreOpen(false), [pathname]);
 
   const onNavClick = (href: string) => {
     setMoreOpen(false);
@@ -111,40 +113,29 @@ export default function Navbar() {
     router.push(href);
   };
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(href + "/");
-  };
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
   const transparent = pathname === "/" && heroMode && !scrolled;
-  const headerClass = [
-    "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-    transparent
-      ? "bg-transparent"
-      : "bg-black/55 backdrop-blur-xl border-b border-white/10",
-  ].join(" ");
+  const headerClass =
+    "fixed top-0 left-0 right-0 z-50 transition-all duration-300 " +
+    (transparent ? "bg-transparent" : "bg-black/55 backdrop-blur-xl border-b border-white/10");
 
   return (
     <header className={headerClass} style={{ height: "var(--nav-h)" }}>
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        {/* Logo */}
         <button
           type="button"
-          className="flex items-center gap-3 group text-left"
-          aria-label="Accueil — Black Jesus Records"
           onClick={() => onNavClick("/")}
+          aria-label="Accueil — Black Jesus Records"
+          className="flex items-center gap-3 group"
         >
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-white/5">
-            <Image
-              src="/logo_bjr.png"
-              alt="Black Jesus Records"
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src="/logo_bjr.png" alt="Black Jesus Records" fill className="object-cover" priority />
           </div>
-
           <div className="leading-tight">
-            <div className="font-bold tracking-wider uppercase text-sm transition-colors group-hover:text-primary">
+            <div className="font-bold uppercase tracking-wider text-sm group-hover:text-primary transition">
               Black Jesus Records
             </div>
             <div className="text-[11px] text-white/60">Studio créatif & label</div>
@@ -158,19 +149,17 @@ export default function Navbar() {
             return (
               <button
                 key={it.href}
-                type="button"
                 onClick={() => onNavClick(it.href)}
-                className={[
-                  "relative py-2 transition",
-                  active ? "text-primary" : "text-white/80 hover:text-primary",
-                ].join(" ")}
+                aria-current={active ? "page" : undefined}
+                className={`relative py-2 transition ${
+                  active ? "text-primary" : "text-white/80 hover:text-primary"
+                }`}
               >
                 {it.label}
                 <span
-                  className={[
-                    "absolute -bottom-1 left-0 h-0.5 w-full bg-primary transition-transform origin-left",
-                    active ? "scale-x-100" : "scale-x-0",
-                  ].join(" ")}
+                  className={`absolute -bottom-1 left-0 h-0.5 w-full bg-primary transition-transform origin-left ${
+                    active ? "scale-x-100" : "scale-x-0"
+                  }`}
                 />
               </button>
             );
@@ -179,16 +168,13 @@ export default function Navbar() {
           {/* More */}
           <div className="relative" ref={moreRef}>
             <button
-              type="button"
               onClick={() => setMoreOpen((v) => !v)}
-              className={[
-                "inline-flex items-center gap-2 transition",
+              aria-expanded={moreOpen}
+              className={`inline-flex items-center gap-2 transition ${
                 more.some((x) => isActive(x.href))
                   ? "text-primary"
-                  : "text-white/80 hover:text-primary",
-              ].join(" ")}
-              aria-expanded={moreOpen}
-              aria-label="Plus"
+                  : "text-white/80 hover:text-primary"
+              }`}
             >
               Plus <span className="text-white/50">▾</span>
             </button>
@@ -207,14 +193,12 @@ export default function Navbar() {
                     return (
                       <button
                         key={it.href}
-                        type="button"
                         onClick={() => onNavClick(it.href)}
-                        className={[
-                          "w-full text-left px-4 py-3 text-sm transition",
+                        className={`w-full text-left px-4 py-3 text-sm transition ${
                           active
                             ? "text-primary bg-white/5"
-                            : "text-white/80 hover:text-primary hover:bg-white/5",
-                        ].join(" ")}
+                            : "text-white/80 hover:text-primary hover:bg-white/5"
+                        }`}
                       >
                         {it.label}
                       </button>
@@ -226,9 +210,8 @@ export default function Navbar() {
           </div>
 
           <button
-            type="button"
             onClick={() => onNavClick("/booking")}
-            className="ml-2 inline-flex items-center justify-center px-4 py-2 rounded-xl bg-primary text-black font-semibold hover:opacity-95 transition shadow-[0_0_22px_rgba(245,197,66,0.25)]"
+            className="ml-2 px-4 py-2 rounded-xl bg-primary text-black font-semibold hover:opacity-95 transition shadow-[0_0_22px_rgba(245,197,66,0.25)]"
           >
             Réserver
           </button>
@@ -236,15 +219,15 @@ export default function Navbar() {
 
         {/* Mobile burger */}
         <button
-          className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
           onClick={() => setOpen((v) => !v)}
-          aria-label="Menu"
           aria-expanded={open}
+          aria-label="Menu"
+          className="md:hidden w-11 h-11 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
         >
-          <div className="flex flex-col gap-1.5 w-5">
-            <span className={["h-0.5 bg-white transition-all", open ? "rotate-45 translate-y-2" : ""].join(" ")} />
-            <span className={["h-0.5 bg-white transition-all", open ? "opacity-0" : "opacity-100"].join(" ")} />
-            <span className={["h-0.5 bg-white transition-all", open ? "-rotate-45 -translate-y-2" : ""].join(" ")} />
+          <div className="flex flex-col gap-1.5 w-5 mx-auto">
+            <span className={`h-0.5 bg-white transition ${open ? "rotate-45 translate-y-2" : ""}`} />
+            <span className={`h-0.5 bg-white transition ${open ? "opacity-0" : ""}`} />
+            <span className={`h-0.5 bg-white transition ${open ? "-rotate-45 -translate-y-2" : ""}`} />
           </div>
         </button>
       </nav>
@@ -253,15 +236,11 @@ export default function Navbar() {
       <AnimatePresence>
         {open && (
           <>
-            <motion.button
-              type="button"
-              aria-label="Fermer"
-              onClick={() => setOpen(false)}
+            <motion.div
               className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
             />
 
             <motion.aside
@@ -276,10 +255,9 @@ export default function Navbar() {
                   <div className="text-white/70 text-sm">Navigation</div>
                   <button
                     ref={closeBtnRef}
-                    type="button"
                     onClick={() => setOpen(false)}
-                    className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition text-white"
                     aria-label="Fermer le menu"
+                    className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
                   >
                     ✕
                   </button>
@@ -291,14 +269,12 @@ export default function Navbar() {
                     return (
                       <button
                         key={it.href}
-                        type="button"
                         onClick={() => onNavClick(it.href)}
-                        className={[
-                          "w-full text-left py-3 px-4 rounded-xl transition border border-white/10",
+                        className={`w-full text-left py-3 px-4 rounded-xl border border-white/10 transition ${
                           active
                             ? "text-primary bg-white/5"
-                            : "text-white/85 hover:text-primary hover:bg-white/5 hover:border-white/15",
-                        ].join(" ")}
+                            : "text-white/85 hover:text-primary hover:bg-white/5"
+                        }`}
                       >
                         {it.label}
                       </button>
@@ -308,9 +284,8 @@ export default function Navbar() {
 
                 <div className="mt-8 p-4 rounded-2xl border border-primary/25 bg-primary/10">
                   <button
-                    type="button"
                     onClick={() => onNavClick("/booking")}
-                    className="block w-full text-center py-3 rounded-xl bg-primary text-black font-semibold hover:opacity-95 transition shadow-[0_0_22px_rgba(245,197,66,0.25)]"
+                    className="w-full py-3 rounded-xl bg-primary text-black font-semibold shadow-[0_0_22px_rgba(245,197,66,0.25)]"
                   >
                     Réserver une date
                   </button>

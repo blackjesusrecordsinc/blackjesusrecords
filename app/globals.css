@@ -1,21 +1,16 @@
 @import "tailwindcss";
 
 /* =========================
-   VARIABLES GLOBALES (BLACK JESUS)
+   VARIABLES GLOBALES – BLACK JESUS
 ========================= */
 :root {
-  --foreground: #f5f5f5;                 /* blanc cassé */
-  --muted: rgba(255, 255, 255, 0.78);    /* texte secondaire */
+  --foreground: #f5f5f5;
+  --muted: rgba(255, 255, 255, 0.78);
   --nav-h: 64px;
 
-  /* ✅ JAUNE SIGNATURE */
+  /* JAUNE SIGNATURE */
   --brand-yellow: #F5C542;
   --brand-yellow-soft: #E6B93C;
-
-  /* ✅ overlays pour lisibilité (sur fonds photos) */
-  --scrim-top: rgba(0, 0, 0, 0.78);
-  --scrim-mid: rgba(0, 0, 0, 0.50);
-  --scrim-bot: rgba(0, 0, 0, 0.80);
 }
 
 /* =========================
@@ -29,27 +24,23 @@ html {
 
 body {
   min-height: 100vh;
-  background: transparent; /* ✅ tu voulais transparent */
+  background: transparent;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
 }
 
 /* =========================
-   GLOBAL TRANSPARENCY RULE
-   (on garde ton principe, mais sans casser la lisibilité)
+   ⚠️ TRANSPARENCE CONTRÔLÉE
+   ❌ on NE force PLUS les div/header/main/footer
+   (évite bugs de lisibilité + z-index)
 ========================= */
-section,
-main,
-article,
-header,
-footer,
-div {
+section {
   background-color: transparent;
 }
 
 /* =========================
-   LIENS: plus jamais bleu
+   LIENS – JAUNE ONLY
 ========================= */
 a {
   color: var(--brand-yellow);
@@ -60,7 +51,7 @@ a:hover {
 }
 
 /* =========================
-   TITRES: JAUNE CINÉMA (zéro bleu)
+   TITRES – JAUNE CINÉMA
 ========================= */
 h1,
 h2,
@@ -68,15 +59,14 @@ h3,
 h4 {
   color: var(--brand-yellow);
   text-shadow:
-    0 0 18px rgba(245, 197, 66, 0.30),
-    0 2px 34px rgba(0, 0, 0, 0.72);
+    0 0 16px rgba(245, 197, 66, 0.28),
+    0 2px 28px rgba(0, 0, 0, 0.7);
 }
 
 /* =========================
    TEXTE SECONDAIRE
 ========================= */
 p,
-span,
 li {
   color: var(--muted);
 }
@@ -88,38 +78,42 @@ li {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ✅ sélection jaune (pas bleu) */
+/* Sélection – jaune (accessibilité OK) */
 ::selection {
-  background: rgba(245, 197, 66, 0.22);
+  background: rgba(245, 197, 66, 0.25);
   color: #ffffff;
 }
 
-/* ✅ focus jaune (pas bleu) */
+/* Focus visible – jaune */
 :focus-visible {
   outline: 2px solid var(--brand-yellow);
   outline-offset: 2px;
 }
 
 /* =========================
-   OPTIONAL: si tu veux calmer le fond
-   (applique class="readable" sur ton wrapper de page/hero)
+   UTILITAIRE OPTIONNEL – LISIBILITÉ
+   (à appliquer MANUELLEMENT si besoin)
 ========================= */
+.readable {
+  position: relative;
+}
+
 .readable::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   background: linear-gradient(
     to bottom,
-    var(--scrim-top) 0%,
-    var(--scrim-mid) 50%,
-    var(--scrim-bot) 100%
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.45) 50%,
+    rgba(0, 0, 0, 0.8) 100%
   );
 }
 
 /* =========================
-   Animation (si tu l’utilises ailleurs)
+   ANIMATION (OPTIONNELLE)
 ========================= */
 @keyframes bgFloat {
   0% { transform: translateY(-2%); }
