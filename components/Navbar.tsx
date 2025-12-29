@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -30,11 +31,23 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [heroMode, setHeroMode] = useState(false);
 
+  // ✅ touch detection (pour bloquer dropdown "Plus")
+  const [isTouch, setIsTouch] = useState(false);
+
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const moreRef = useRef<HTMLDivElement | null>(null);
 
   const primary = useMemo(() => PRIMARY, []);
   const more = useMemo(() => MORE, []);
+
+  /* Touch / hover detection */
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: none)");
+    const update = () => setIsTouch(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
 
   /* Scroll state */
   useEffect(() => {
@@ -53,10 +66,9 @@ export default function Navbar() {
     const hero = document.getElementById("top");
     if (!hero) return;
 
-    const io = new IntersectionObserver(
-      ([entry]) => setHeroMode(entry.isIntersecting),
-      { rootMargin: "-10% 0px -70% 0px" }
-    );
+    const io = new IntersectionObserver(([entry]) => setHeroMode(entry.isIntersecting), {
+      rootMargin: "-10% 0px -70% 0px",
+    });
     io.observe(hero);
     return () => io.disconnect();
   }, [pathname]);
@@ -119,20 +131,37 @@ export default function Navbar() {
   const transparent = pathname === "/" && heroMode && !scrolled;
   const headerClass =
     "fixed top-0 left-0 right-0 z-50 transition-all duration-300 " +
-    (transparent ? "bg-transparent" : "bg-black/55 backdrop-blur-xl border-b border-white/10");
+    (transparent
+      ? "bg-transparent"
+      : "bg-black/55 border-b border-white/10 backdrop-blur-sm md:backdrop-blur-xl");
+
+  // ✅ dropdown seulement si pas touch
+  const shouldShowMoreDropdown = moreOpen && !isTouch;
 
   return (
     <header className={headerClass} style={{ height: "var(--nav-h)" }}>
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      {/* ✅ hauteur nav cohérente */}
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[var(--nav-h)] flex items-center justify-between">
         {/* Logo */}
-        <button
-          type="button"
-          onClick={() => onNavClick("/")}
+        <Link
+          href="/"
           aria-label="Accueil — Black Jesus Records"
           className="flex items-center gap-3 group"
+          onClick={() => {
+            setOpen(false);
+            setMoreOpen(false);
+          }}
         >
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-white/5">
-            <Image src="/logo_bjr.png" alt="Black Jesus Records" fill className="object-cover" priority />
+            <Image
+              src="/logo_bjr.png"
+              alt="Black Jesus Records"
+              fill
+              className="object-cover"
+              priority
+              sizes="40px"
+              quality={85}
+            />
           </div>
           <div className="leading-tight">
             <div className="font-bold uppercase tracking-wider text-sm group-hover:text-primary transition">
@@ -140,16 +169,16 @@ export default function Navbar() {
             </div>
             <div className="text-[11px] text-white/60">Studio créatif & label</div>
           </div>
-        </button>
+        </Link>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-6 text-sm">
           {primary.map((it) => {
             const active = isActive(it.href);
             return (
-              <button
+              <Link
                 key={it.href}
-                onClick={() => onNavClick(it.href)}
+                href={it.href}
                 aria-current={active ? "page" : undefined}
                 className={`relative py-2 transition ${
                   active ? "text-primary" : "text-white/80 hover:text-primary"
@@ -157,11 +186,11 @@ export default function Navbar() {
               >
                 {it.label}
                 <span
-                  className={`absolute -bottom-1 left-0 h-0.5 w-full bg-primary transition-transform origin-left ${
+                  className={`absolute -bottom-1 left-0 h-0.5 w-full bg-primary transition-transform origin-left duration-300 ${
                     active ? "scale-x-100" : "scale-x-0"
                   }`}
                 />
-              </button>
+              </Link>
             );
           })}
 
@@ -169,39 +198,37 @@ export default function Navbar() {
           <div className="relative" ref={moreRef}>
             <button
               onClick={() => setMoreOpen((v) => !v)}
-              aria-expanded={moreOpen}
+              aria-expanded={shouldShowMoreDropdown}
               className={`inline-flex items-center gap-2 transition ${
-                more.some((x) => isActive(x.href))
-                  ? "text-primary"
-                  : "text-white/80 hover:text-primary"
+                more.some((x) => isActive(x.href)) ? "text-primary" : "text-white/80 hover:text-primary"
               }`}
             >
               Plus <span className="text-white/50">▾</span>
             </button>
 
             <AnimatePresence>
-              {moreOpen && (
+              {shouldShowMoreDropdown && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.14 }}
-                  className="absolute right-0 mt-3 w-56 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-xl overflow-hidden shadow-xl"
+                  className="absolute right-0 mt-3 w-56 rounded-2xl border border-white/10 bg-black/70 overflow-hidden shadow-xl backdrop-blur-sm md:backdrop-blur-xl"
                 >
                   {more.map((it) => {
                     const active = isActive(it.href);
                     return (
-                      <button
+                      <Link
                         key={it.href}
-                        onClick={() => onNavClick(it.href)}
-                        className={`w-full text-left px-4 py-3 text-sm transition ${
-                          active
-                            ? "text-primary bg-white/5"
-                            : "text-white/80 hover:text-primary hover:bg-white/5"
+                        href={it.href}
+                        aria-current={active ? "page" : undefined}
+                        onClick={() => setMoreOpen(false)}
+                        className={`block w-full text-left px-4 py-3 text-sm transition ${
+                          active ? "text-primary bg-white/5" : "text-white/80 hover:text-primary hover:bg-white/5"
                         }`}
                       >
                         {it.label}
-                      </button>
+                      </Link>
                     );
                   })}
                 </motion.div>
@@ -209,25 +236,34 @@ export default function Navbar() {
             </AnimatePresence>
           </div>
 
-          <button
-            onClick={() => onNavClick("/booking")}
+          <Link
+            href="/booking"
             className="ml-2 px-4 py-2 rounded-xl bg-primary text-black font-semibold hover:opacity-95 transition shadow-[0_0_22px_rgba(245,197,66,0.25)]"
+            aria-label="Réserver"
           >
             Réserver
-          </button>
+          </Link>
         </div>
 
         {/* Mobile burger */}
         <button
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
-          aria-label="Menu"
+          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           className="md:hidden w-11 h-11 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
         >
-          <div className="flex flex-col gap-1.5 w-5 mx-auto">
-            <span className={`h-0.5 bg-white transition ${open ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`h-0.5 bg-white transition ${open ? "opacity-0" : ""}`} />
-            <span className={`h-0.5 bg-white transition ${open ? "-rotate-45 -translate-y-2" : ""}`} />
+          <div className="flex flex-col gap-1 w-5 mx-auto">
+            <span
+              className={`block h-0.5 w-5 bg-white transition-all duration-300 ${
+                open ? "rotate-45 translate-y-1.5" : ""
+              }`}
+            />
+            <span className={`block h-0.5 w-5 bg-white transition-all duration-300 ${open ? "opacity-0" : ""}`} />
+            <span
+              className={`block h-0.5 w-5 bg-white transition-all duration-300 ${
+                open ? "-rotate-45 -translate-y-1.5" : ""
+              }`}
+            />
           </div>
         </button>
       </nav>
@@ -244,7 +280,7 @@ export default function Navbar() {
             />
 
             <motion.aside
-              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/78 backdrop-blur-xl border-l border-white/10 z-[70] md:hidden"
+              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/78 border-l border-white/10 z-[70] md:hidden backdrop-blur-sm md:backdrop-blur-xl"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -267,31 +303,31 @@ export default function Navbar() {
                   {[...primary, ...more].map((it) => {
                     const active = isActive(it.href);
                     return (
-                      <button
+                      <Link
                         key={it.href}
-                        onClick={() => onNavClick(it.href)}
-                        className={`w-full text-left py-3 px-4 rounded-xl border border-white/10 transition ${
-                          active
-                            ? "text-primary bg-white/5"
-                            : "text-white/85 hover:text-primary hover:bg-white/5"
+                        href={it.href}
+                        aria-current={active ? "page" : undefined}
+                        onClick={() => setOpen(false)}
+                        className={`block w-full text-left py-3 px-4 rounded-xl border border-white/10 transition ${
+                          active ? "text-primary bg-white/5" : "text-white/85 hover:text-primary hover:bg-white/5"
                         }`}
                       >
                         {it.label}
-                      </button>
+                      </Link>
                     );
                   })}
                 </div>
 
                 <div className="mt-8 p-4 rounded-2xl border border-primary/25 bg-primary/10">
-                  <button
-                    onClick={() => onNavClick("/booking")}
-                    className="w-full py-3 rounded-xl bg-primary text-black font-semibold shadow-[0_0_22px_rgba(245,197,66,0.25)]"
+                  <Link
+                    href="/booking"
+                    onClick={() => setOpen(false)}
+                    className="block w-full text-center py-3 rounded-xl bg-primary text-black font-semibold shadow-[0_0_22px_rgba(245,197,66,0.25)]"
+                    aria-label="Réserver une date"
                   >
                     Réserver une date
-                  </button>
-                  <p className="mt-3 text-xs text-white/60 text-center">
-                    Réponse 24–48h (jours ouvrables)
-                  </p>
+                  </Link>
+                  <p className="mt-3 text-xs text-white/60 text-center">Réponse 24–48h (jours ouvrables)</p>
                 </div>
               </div>
             </motion.aside>

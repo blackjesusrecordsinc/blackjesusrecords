@@ -2,244 +2,210 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 
 import Reveal from "@/components/Reveal";
-import Typewriter from "@/components/Typewriter";
-import HeroCineSlider from "@/components/HeroCineSlider";
 
-const proof = [
-  { value: "+20", label: "Projets livrés (clips, événements, contenus)" },
-  { value: "48–72h", label: "Délai moyen pour un premier preview montage" },
-  { value: "4K", label: "Exports optimisés YouTube, TikTok, Reels" },
+const services = [
+  "Clips rap / street / drill — rendu ciné",
+  "Direction artistique & performance",
+  "Captation d'événements & montage émotion",
+  "Photo professionnelle — portrait, food, corporate",
+  "Stratégie de contenu & réseaux sociaux",
 ];
 
-/* =========================
-   Animations propres
-========================= */
+const proof = [
+  { value: "20+", label: "Projets livrés" },
+  { value: "72h", label: "Délai moyen preview" },
+  { value: "4K", label: "Exports optimisés" },
+];
+
 const container: Variants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } },
 };
 
 const item: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
-  },
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
+// TODO: remplace par ton vrai base64 (généré via sharp)
+const HERO_BLUR_DATA_URL =
+  "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...";
+
 export default function HomePage() {
-  const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 0.25], [0, -22]);
-  const heroImgY = useTransform(scrollYProgress, [0, 0.25], [0, 14]);
-
   return (
-    <main className="min-h-screen">
-      {/* HERO */}
-      <section id="top" className="relative min-h-[92vh] flex items-center overflow-hidden">
-        <HeroCineSlider
-          count={10}
-          intervalMs={9000}
-          darkness={0.62}
-          vignette={0.5}
-          glow={0.06}
-          grain={0.05}
-        />
+    <div className="min-h-screen">
+      {/* HERO SIMPLIFIÉ */}
+      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* Fond statique */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black z-0" />
 
-        {/* overlay lisibilité (sobre) */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black/70" />
+        {/* Overlay lisibilité unique */}
+        <div className="absolute inset-0 z-0 bg-black/35" />
 
-        {/* glow unique jaune */}
+        {/* Texture subtile */}
         <div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/14 blur-3xl"
+          className="absolute inset-0 z-0 opacity-[0.015]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 3 1.343 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+          }}
         />
 
-        <motion.div
-          style={{ y: heroY }}
-          className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-20"
-        >
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* TEXTE */}
-            <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-              <motion.div
-                variants={item}
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/25"
-              >
-                <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                <span className="text-xs uppercase tracking-widest text-primary">
-                  Studio créatif & label — Lévis
-                </span>
-              </motion.div>
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-20">
+          <motion.div variants={container} initial="hidden" animate="show" className="text-center lg:text-left">
+            {/* Badge */}
+            <motion.div variants={item} className="mb-8">
+              <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                Studio créatif & label — Lévis, Québec
+              </span>
+            </motion.div>
 
-              <motion.div variants={item} className="space-y-3">
-                <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-[1.05]">
-                  Image, son <br />
-                  <span className="text-primary">& stratégie</span>
-                </h1>
+            {/* Titre */}
+            <motion.h1 variants={item} className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+              <span className="block text-white">Black Jesus</span>
+              <span className="block text-primary">Records</span>
+            </motion.h1>
 
-                <p className="text-base md:text-lg text-grayText max-w-2xl leading-relaxed">
-                  <Typewriter
-                    phrases={[
-                      "Clips rap / street / drill — rendu ciné, énergie brute.",
-                      "Brand content & pubs — direction artistique + performance.",
-                      "Événements — captation clean, montage émotion.",
-                      "Photo pro — portrait, food, corporate.",
-                    ]}
-                    typingMs={20}
-                    holdMs={1100}
-                    className="text-grayText"
-                    accentClassName="text-primary font-semibold"
-                    accentWords={["rap", "street", "drill", "ciné", "performance", "Photo"]}
-                  />
-                </p>
-              </motion.div>
+            {/* ✅ Contraste texte */}
+            <motion.p
+              variants={item}
+              className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto lg:mx-0 mb-10 leading-relaxed"
+            >
+              Studio spécialisé dans la production audiovisuelle à haute énergie. De l'idée à la réalisation, nous créons des
+              contenus qui marquent.
+            </motion.p>
 
-              <motion.p variants={item} className="text-sm md:text-base text-grayText max-w-2xl">
-                Direction artistique, tournage stabilisé, drone, montage, étalonnage et exports optimisés — une seule équipe,
-                un rendu ciné.
-              </motion.p>
-
-              {/* CTA */}
-              <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Link href="/booking" className="px-8 py-4 rounded-xl bg-primary text-black font-semibold shadow-glow">
-                  Réserver une date
-                </Link>
-
-                <Link
-                  href="/services"
-                  className="px-8 py-4 rounded-xl border border-white/25 text-white hover:border-primary transition"
-                >
-                  Services
-                </Link>
-
-                <Link
-                  href="/portfolio"
-                  className="px-8 py-4 rounded-xl border border-white/15 text-white/90 hover:border-white/30 transition"
-                >
-                  Portfolio
-                </Link>
-              </motion.div>
-
-              {/* quick routes */}
-              <motion.div variants={item} className="flex flex-wrap gap-2 pt-2">
-                {[
-                  { href: "/services", label: "Services" },
-                  { href: "/portfolio", label: "Portfolio" },
-                  { href: "/portfolio#photo", label: "Photo" },
-                  { href: "/label", label: "Label" },
-                ].map((x) => (
-                  <Link
-                    key={x.href}
-                    href={x.href}
-                    className="px-3 py-1.5 rounded-full border border-white/20 text-xs text-white/85 hover:border-primary hover:text-primary transition"
-                  >
-                    {x.label}
-                  </Link>
+            {/* Services */}
+            <motion.div variants={item} className="mb-12">
+              <ul className="space-y-2 text-white/75">
+                {services.slice(0, 3).map((service, index) => (
+                  <li key={index} className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-primary rounded-full" />
+                    {service}
+                  </li>
                 ))}
-              </motion.div>
-
-              {/* trust */}
-              <motion.div variants={item} className="flex flex-wrap gap-6 pt-8 text-sm text-white/80">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  Disponibilités limitées
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  Québec & International
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-primary rounded-full" />
-                  Livraison garantie
-                </div>
-              </motion.div>
+              </ul>
             </motion.div>
 
-            {/* VISUEL */}
-            <motion.div style={{ y: heroImgY }} className="relative z-10">
-              <div className="absolute -inset-6 bg-primary/18 blur-2xl opacity-70" />
-
-              <motion.div
-                whileHover={{ scale: 1.01 }}
-                transition={{ type: "spring", stiffness: 240, damping: 20 }}
-                className="relative h-[420px] sm:h-[520px] lg:h-[620px] rounded-2xl overflow-hidden border border-white/10 bg-white/5 shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+            {/* CTA */}
+            <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Link
+                href="/booking"
+                className="px-10 py-4 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition-colors"
+                aria-label="Discuter d'un projet (réservation)"
               >
-                <Image
-                  src="/black-jesus-records-hero.jpg"
-                  alt="Black Jesus Records – Réalisation"
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 560px"
-                  className="object-cover object-[50%_14%]"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/15" />
-                <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/85 to-transparent" />
-                <div className="absolute inset-x-0 bottom-8 text-center px-8">
-                  <p className="text-white/95 text-[15px] italic">
-                    “De l’idée à la réalisation.”
-                  </p>
-                  <p className="mt-2 text-white/75 text-sm">— Black Jesus Records</p>
-                </div>
-              </motion.div>
-
-              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/70">
-                <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary" />
-                Direction artistique · Réalisation · Post-production
-              </div>
+                Discuter d'un projet
+              </Link>
+              <Link
+                href="/portfolio"
+                className="px-10 py-4 border-2 border-white/20 text-white rounded-lg hover:border-primary hover:text-primary transition-colors"
+                aria-label="Voir notre travail (portfolio)"
+              >
+                Voir notre travail
+              </Link>
             </motion.div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </section>
 
-      {/* PREUVE */}
-      <Reveal className="max-w-6xl mx-auto px-4 py-14">
-        <div className="grid gap-6 md:grid-cols-3">
-          {proof.map((p) => (
-            <motion.div
-              key={p.value}
-              whileHover={{ y: -3 }}
-              transition={{ type: "spring", stiffness: 240, damping: 18 }}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 hover:border-primary/40 transition shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
-            >
-              <p className="text-3xl font-extrabold">{p.value}</p>
-              <p className="mt-2 text-white/70 text-sm">{p.label}</p>
-            </motion.div>
-          ))}
+      {/* SECTION PREUVE */}
+      <section className="py-20 bg-gradient-to-b from-transparent to-black/30">
+        <div className="max-w-6xl mx-auto px-4">
+          <Reveal>
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
+              Une approche <span className="text-primary">résultats</span>
+            </h2>
+          </Reveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {proof.map((stat, index) => (
+              <Reveal key={stat.value} delay={index * 0.1}>
+                <div className="text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+                  <div className="text-4xl md:text-5xl font-bold text-primary mb-4">{stat.value}</div>
+                  <p className="text-white/80">{stat.label}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
-      </Reveal>
+      </section>
+
+      {/* IMAGE DE PRODUCTION */}
+      <section className="py-20">
+        <div className="max-w-5xl mx-auto px-4">
+          <Reveal>
+            <motion.div
+              // ✅ hover subtil (optionnel, très léger)
+              whileHover={{ y: -4 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-2xl"
+            >
+              <Image
+                src="/black-jesus-records-hero.jpg"
+                alt="Production Black Jesus Records"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 520px"
+                className="object-cover object-center"
+                quality={90}
+                placeholder="blur"
+                blurDataURL={HERO_BLUR_DATA_URL}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-8 left-8 right-8">
+                <p className="text-2xl font-bold mb-2 text-white">
+                  Direction artistique, réalisation, post-production
+                </p>
+                <p className="text-white/80">Une seule équipe pour un résultat cohérent et professionnel</p>
+              </div>
+            </motion.div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* CTA FINAL */}
-      <Reveal className="max-w-6xl mx-auto px-4 pb-24">
-        <motion.div
-          whileHover={{ scale: 1.01 }}
-          transition={{ type: "spring", stiffness: 220, damping: 18 }}
-          className="rounded-2xl border border-white/10 bg-white/5 p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-[0_18px_50px_rgba(0,0,0,0.25)]"
-        >
-          <div>
-            <p className="text-2xl md:text-3xl font-extrabold">Prêt à tourner quelque chose de fort ?</p>
-            <p className="mt-2 text-white/70">
-              Dis-nous ton idée. On te répond avec une approche claire, un plan, et un rendu ciné.
-            </p>
-            <p className="mt-3 text-sm text-white/55">Réponse rapide · Plan clair · Livraison propre</p>
-          </div>
-          <div className="flex gap-3">
-            <Link href="/booking" className="px-7 py-3 rounded-xl bg-primary text-black font-semibold shadow-glow">
-              Réserver
-            </Link>
-            <Link
-              href="/contact"
-              className="px-7 py-3 rounded-xl border border-white/20 hover:border-primary hover:text-primary transition"
-            >
-              Contact
-            </Link>
-          </div>
-        </motion.div>
-      </Reveal>
-    </main>
+      <section className="py-20">
+        <div className="max-w-4xl mx-auto px-4">
+          <Reveal>
+            <div className="text-center p-12 rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/15 to-primary/5">
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">Prêt à donner vie à votre projet ?</h2>
+              <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+                Contactez-nous pour une consultation gratuite et un devis sur mesure.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/contact"
+                  className="px-10 py-4 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition-colors"
+                  aria-label="Nous contacter"
+                >
+                  Nous contacter
+                </Link>
+                <Link
+                  href="/services"
+                  className="px-10 py-4 border-2 border-white text-white rounded-lg hover:bg-white hover:text-black transition-colors"
+                  aria-label="Voir nos services"
+                >
+                  Nos services
+                </Link>
+              </div>
+
+              {/* ✅ Accessibilité exemple lien secondaire */}
+              <div className="mt-6">
+                <Link
+                  href="/services"
+                  className="text-sm text-white/75 hover:text-primary transition"
+                  aria-label="Voir tous nos services"
+                >
+                  Voir tous les services →
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+    </div>
   );
 }

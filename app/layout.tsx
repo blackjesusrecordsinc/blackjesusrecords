@@ -15,13 +15,22 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Suspense } from "react";
 
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+  preload: true,
+});
+
 const SITE_NAME = "Black Jesus Records";
 const SITE_URL = "https://www.blackjesusrecords.ca";
 const DEFAULT_DESCRIPTION =
   "Studio créatif & label à Lévis (Québec). Vidéo, photo, post-production, contenus réseaux sociaux et stratégie.";
 
 export const viewport: Viewport = {
-  themeColor: "#F5C542", // jaune signature
+  themeColor: "#F5C542",
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
@@ -38,36 +47,43 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" className="bg-transparent" suppressHydrationWarning>
+    <html lang="fr" className={`bg-transparent ${inter.variable}`} suppressHydrationWarning>
       <body
         className="
           min-h-screen
-          bg-transparent
+          bg-black
           text-white
           antialiased
           overflow-x-hidden
           [accent-color:#F5C542]
+          font-sans
         "
       >
-        {/* ✅ Background global allégé (perf mobile) */}
+        {/* ✅ 1) WorkBackground responsive + fallback statique mobile */}
         <div className="fixed inset-0 -z-10">
-          <WorkBackground count={7} intervalMs={10000} />
+          <div className="hidden sm:block">
+            <WorkBackground count={7} intervalMs={10000} />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black sm:hidden" />
         </div>
 
         {/* UX */}
         <TopProgress />
 
-        {/* Route loader avec fallback minimal (pas null) */}
-        <Suspense fallback={<div className="h-1 w-full" />}>
+        {/* ✅ 3) Suspense fallback plus “progressif” */}
+        <Suspense
+          fallback={
+            <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-pulse" />
+          }
+        >
           <RouteLoader />
         </Suspense>
 
-        {/* Effet curseur (à désactiver via media-query hover:none en interne) */}
+        {/* ✅ 4) CursorGlow: laisse le composant gérer le touch/no-hover en interne */}
         <CursorGlow />
 
         <Navbar />
 
-        {/* ✅ Main sémantique + z-index sûr */}
         <main
           id="main-content"
           role="main"

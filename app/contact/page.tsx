@@ -49,31 +49,34 @@ const container: Variants = {
   show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 };
 
+// ✅ micro: no filter blur (perf)
 const item: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(6px)" },
-  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
 
+// ✅ micro: cohérence marque (primary = jaune) + blur mobile allégé
 const UI = {
   pill:
     "inline-flex items-center gap-2 px-4 py-1.5 rounded-full " +
-    "bg-cyan-300/10 border border-cyan-300/25 shadow-[0_0_40px_rgba(0,180,255,0.12)]",
+    "bg-primary/10 border border-primary/25 shadow-[0_0_40px_rgba(245,197,66,0.12)]",
   card:
     "rounded-2xl border border-white/10 bg-white/6 p-6 " +
-    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl",
+    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-sm md:backdrop-blur-xl",
   btnPrimary:
-    "group relative px-7 py-3 rounded-lg bg-cyan-300 text-[#001019] font-semibold overflow-hidden transition " +
+    "group relative px-7 py-3 rounded-lg bg-primary text-black font-semibold overflow-hidden transition " +
     "hover:scale-[1.02] active:scale-95 shadow-[0_14px_52px_rgba(0,8,22,0.45)]",
   btnPrimaryGlow:
-    "absolute inset-0 bg-gradient-to-r from-cyan-300 to-blue-300 opacity-0 group-hover:opacity-100 transition-opacity",
+    "absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-100 transition-opacity",
   btnSecondary:
     "px-7 py-3 rounded-lg border border-white/20 text-white font-medium " +
-    "hover:border-cyan-300 hover:text-cyan-100 transition",
+    "hover:border-primary hover:text-white transition",
   sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
 };
 
 function isEmail(v: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+  // ✅ micro: regex plus robuste
+  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v.trim());
 }
 
 function buildPrefill(service: string) {
@@ -184,28 +187,54 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-[calc(100vh-var(--nav-h))]">
-      {/* HERO */}
+      {/* HERO (optimisé: slider desktop + fallback mobile) */}
       <section className="relative min-h-[62vh] flex items-center overflow-hidden">
-        <HeroCineSlider count={10} ext=".jpg" intervalMs={8000} darkness={0.58} vignette={0.52} glow={0.10} grain={0.10} />
+        {/* Desktop slider allégé */}
+        <div className="hidden md:block absolute inset-0">
+          <HeroCineSlider
+            count={5}
+            ext=".jpg"
+            intervalMs={10000}
+            darkness={0.62}
+            vignette={0.4}
+            glow={0.06}
+            grain={0.03}
+          />
+        </div>
+
+        {/* Mobile fallback */}
+        <div className="md:hidden absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black">
+          <div
+            className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: "url('/work/01.jpg')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          />
+        </div>
+
+        {/* Overlay lisibilité */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/55 to-black/70" />
 
         <div className="relative max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-16">
           <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
             <motion.div variants={item} className={UI.pill}>
-              <span className="w-2 h-2 bg-cyan-300 rounded-full animate-pulse" />
-              <span className="text-xs uppercase tracking-widest text-cyan-100">Contact</span>
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+              <span className="text-xs uppercase tracking-widest text-white/85">Contact</span>
             </motion.div>
 
             <motion.h1 variants={item} className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
               Parle-nous de ton{" "}
-              <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
                 projet
               </span>
               .
             </motion.h1>
 
             <motion.p variants={item} className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
-              Un brief clair = une réponse claire. Clip, photo, post-prod, web ou stratégie : on te cadre le scope,
-              les délais et les livrables.
+              Un brief clair = une réponse claire. Clip, photo, post-prod, web ou stratégie : on te cadre le scope, les
+              délais et les livrables.
             </motion.p>
 
             <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
@@ -213,7 +242,9 @@ export default function ContactPage() {
                 <span className={UI.btnPrimaryGlow} />
                 <span className="relative z-10">Réserver un appel</span>
               </Link>
-              <Link href="/services" className={UI.btnSecondary}>Voir les services</Link>
+              <Link href="/services" className={UI.btnSecondary}>
+                Voir les services
+              </Link>
             </motion.div>
 
             <motion.div variants={item} className={UI.sep} />
@@ -252,10 +283,10 @@ export default function ContactPage() {
                     key={x.t}
                     type="button"
                     onClick={() => onQuickFill(x.t === "Clip / vidéo" ? "Production vidéo" : x.t)}
-                    className="group rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-left transition hover:border-cyan-300/35 hover:bg-white/8"
+                    className="group rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-left transition hover:border-primary/35 hover:bg-white/8"
                   >
                     <p className="text-sm font-semibold text-white">
-                      {x.t} <span className="text-cyan-200">→</span>
+                      {x.t} <span className="text-primary">→</span>
                     </p>
                     <p className="mt-1 text-xs text-white/60 leading-relaxed">{x.d}</p>
                   </button>
@@ -264,25 +295,79 @@ export default function ContactPage() {
 
               <form onSubmit={onSubmit} className="mt-8 space-y-6" noValidate>
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Field label="Nom complet *" name="name" value={form.name} onChange={onChange} required error={errors.name} autoComplete="name" placeholder="Ex. Emmanuel Kibanda" />
-                  <Field label="Email *" type="email" name="email" value={form.email} onChange={onChange} required error={errors.email} autoComplete="email" placeholder="Ex. nom@domaine.com" />
+                  <Field
+                    label="Nom complet *"
+                    name="name"
+                    value={form.name}
+                    onChange={onChange}
+                    required
+                    error={errors.name}
+                    autoComplete="name"
+                    placeholder="Ex. Emmanuel Kibanda"
+                  />
+                  <Field
+                    label="Email *"
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={onChange}
+                    required
+                    error={errors.email}
+                    autoComplete="email"
+                    placeholder="Ex. nom@domaine.com"
+                  />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Field label="Téléphone" name="phone" value={form.phone} onChange={onChange} autoComplete="tel" placeholder="Optionnel" />
-                  <Select label="Type de service" name="service" value={form.service} onChange={onChange} options={SERVICES as unknown as string[]} hint="Choisis si tu sais déjà." />
+                  <Field
+                    label="Téléphone"
+                    name="phone"
+                    value={form.phone}
+                    onChange={onChange}
+                    autoComplete="tel"
+                    placeholder="Optionnel"
+                  />
+                  <Select
+                    label="Type de service"
+                    name="service"
+                    value={form.service}
+                    onChange={onChange}
+                    options={[...SERVICES]}
+                    hint="Choisis si tu sais déjà."
+                  />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
                   <Field label="Date souhaitée" type="date" name="date" value={form.date} onChange={onChange} />
                   <div className="md:col-span-2">
-                    <Field label="Lieu" name="location" value={form.location} onChange={onChange} placeholder="Ville, studio, extérieur…" />
+                    <Field
+                      label="Lieu"
+                      name="location"
+                      value={form.location}
+                      onChange={onChange}
+                      placeholder="Ville, studio, extérieur…"
+                    />
                   </div>
                 </div>
 
-                <Field label="Budget approximatif" name="budget" value={form.budget} onChange={onChange} placeholder="Ex. 800 $, 1500 $, à discuter…" />
+                <Field
+                  label="Budget approximatif"
+                  name="budget"
+                  value={form.budget}
+                  onChange={onChange}
+                  placeholder="Ex. 800 $, 1500 $, à discuter…"
+                />
 
-                <Textarea label="Message *" name="message" id="message" value={form.message} onChange={onChange} required error={errors.message} placeholder="Objectif, références, plateforme cible, délais…" />
+                <Textarea
+                  label="Message *"
+                  name="message"
+                  id="message"
+                  value={form.message}
+                  onChange={onChange}
+                  required
+                  error={errors.message}
+                  placeholder="Objectif, références, plateforme cible, délais…"
+                />
 
                 <div ref={firstErrorRef}>
                   {error && <Feedback type="error" text={error} />}
@@ -290,7 +375,14 @@ export default function ContactPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-                  <button type="submit" disabled={loading} className={UI.btnPrimary}>
+                  <button
+                    type="submit"
+                    disabled={loading || hasErrors}
+                    className={[
+                      UI.btnPrimary,
+                      (loading || hasErrors) ? "opacity-70 cursor-not-allowed" : "",
+                    ].join(" ")}
+                  >
                     <span className={UI.btnPrimaryGlow} />
                     <span className="relative z-10">{loading ? "Envoi…" : "Envoyer le message"}</span>
                   </button>
@@ -313,9 +405,7 @@ export default function ContactPage() {
           >
             <motion.div variants={item} className={UI.card}>
               <h3 className="text-xl font-semibold tracking-tight text-white">Notre approche</h3>
-              <p className="mt-2 text-sm text-white/75 leading-relaxed">
-                On cadre le projet, on produit, on livre propre.
-              </p>
+              <p className="mt-2 text-sm text-white/75 leading-relaxed">On cadre le projet, on produit, on livre propre.</p>
 
               <ul className="mt-5 space-y-3 text-sm text-white/85">
                 {[
@@ -325,7 +415,7 @@ export default function ContactPage() {
                   "Production + livraison prête à publier",
                 ].map((i) => (
                   <li key={i} className="flex gap-3">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary" />
                     <span>{i}</span>
                   </li>
                 ))}
@@ -335,14 +425,17 @@ export default function ContactPage() {
 
               <p className="mt-5 text-sm text-white/75">
                 Pour un créneau direct :{" "}
-                <Link href="/booking" className="text-cyan-200 font-semibold hover:opacity-90 transition">
+                <Link href="/booking" className="text-primary font-semibold hover:opacity-90 transition">
                   Réservation
                 </Link>
                 .
               </p>
             </motion.div>
 
-            <motion.div variants={item} className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl">
+            <motion.div
+              variants={item}
+              className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-sm md:backdrop-blur-xl"
+            >
               <h3 className="text-lg font-semibold text-white">Info utile</h3>
               <p className="mt-2 text-sm text-white/75 leading-relaxed">
                 Plus ton message est précis, plus vite on peut te répondre.
@@ -355,7 +448,7 @@ export default function ContactPage() {
                   "Livrables attendus (formats + durée)",
                 ].map((i) => (
                   <div key={i} className="flex gap-3 text-sm text-white/85">
-                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                    <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary" />
                     <span className="leading-relaxed">{i}</span>
                   </div>
                 ))}
@@ -365,11 +458,13 @@ export default function ContactPage() {
         </div>
 
         {/* CTA FINAL */}
-        <div className="mt-10 rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl">
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-sm md:backdrop-blur-xl">
           <p className="text-2xl md:text-3xl font-bold text-white">Réponse rapide, cadre clair.</p>
           <p className="mt-2 text-white/75 leading-relaxed">Les projets structurés sont traités en priorité.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
-            <Link href="/services" className={UI.btnSecondary}>Voir les services</Link>
+            <Link href="/services" className={UI.btnSecondary}>
+              Voir les services
+            </Link>
             <Link href="/booking" className={UI.btnPrimary}>
               <span className={UI.btnPrimaryGlow} />
               <span className="relative z-10">Réserver</span>
@@ -401,7 +496,9 @@ function Field({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">{label}</label>
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
+        {label}
+      </label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <input
         {...props}
@@ -409,13 +506,17 @@ function Field({
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         className={cn(
-          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-xl",
+          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-sm md:backdrop-blur-xl",
           error
-            ? "border-cyan-300/60 ring-1 ring-cyan-300/20"
-            : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15"
+            ? "border-primary/60 ring-1 ring-primary/20"
+            : "border-white/10 hover:border-white/15 focus:border-primary/35 focus:ring-1 focus:ring-primary/15"
         )}
       />
-      {error ? <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">{error}</p> : null}
+      {error ? (
+        <p id={`${id}-error`} className="mt-2 text-xs text-primary">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -434,16 +535,20 @@ function Select({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">{label}</label>
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
+        {label}
+      </label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <select
         {...props}
         id={id}
-        className="w-full rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white outline-none transition backdrop-blur-xl hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15"
+        className="w-full rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white outline-none transition backdrop-blur-sm md:backdrop-blur-xl hover:border-white/15 focus:border-primary/35 focus:ring-1 focus:ring-primary/15"
       >
         <option value="">Sélectionner…</option>
         {options.map((o) => (
-          <option key={o} value={o} className="bg-[#041224]">{o}</option>
+          <option key={o} value={o} className="bg-[#041224]">
+            {o}
+          </option>
         ))}
       </select>
     </div>
@@ -464,7 +569,9 @@ function Textarea({
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
-      <label htmlFor={id} className="block text-sm text-white/85 mb-2">{label}</label>
+      <label htmlFor={id} className="block text-sm text-white/85 mb-2">
+        {label}
+      </label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <textarea
         {...props}
@@ -473,26 +580,31 @@ function Textarea({
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? `${id}-error` : undefined}
         className={cn(
-          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-xl",
+          "w-full rounded-2xl bg-white/6 border px-4 py-3 text-sm text-white placeholder:text-white/35 outline-none transition backdrop-blur-sm md:backdrop-blur-xl",
           error
-            ? "border-cyan-300/60 ring-1 ring-cyan-300/20"
-            : "border-white/10 hover:border-white/15 focus:border-cyan-300/35 focus:ring-1 focus:ring-cyan-300/15"
+            ? "border-primary/60 ring-1 ring-primary/20"
+            : "border-white/10 hover:border-white/15 focus:border-primary/35 focus:ring-1 focus:ring-primary/15"
         )}
       />
-      {error ? <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">{error}</p> : null}
+      {error ? (
+        <p id={`${id}-error`} className="mt-2 text-xs text-primary">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
 
 function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
+  const isError = type === "error";
   return (
     <div
       className={[
-        "rounded-2xl border px-4 py-3 backdrop-blur-xl",
-        type === "error" ? "border-cyan-300/35 bg-cyan-300/10" : "border-white/10 bg-white/6",
+        "rounded-2xl border px-4 py-3 backdrop-blur-sm md:backdrop-blur-xl",
+        isError ? "border-primary/35 bg-primary/10" : "border-white/10 bg-white/6",
       ].join(" ")}
-      role="status"
-      aria-live="polite"
+      role={isError ? "alert" : "status"}
+      aria-live={isError ? "assertive" : "polite"}
     >
       <p className="text-sm text-white/90">{text}</p>
     </div>
