@@ -48,17 +48,17 @@ const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 
 /* ───────────────────────── DATA ───────────────────────── */
-const sections: PortfolioSection[] = [
+const portfolioSections: PortfolioSection[] = [
   {
     id: "clips",
     title: "Clips & artistes",
     subtitle:
-      "Rythme, identité, performance — optimisé YouTube + réseaux. Du contenu qui a un impact.",
+      "Image, rythme, présence. Un rendu ciné propre, décliné pour YouTube et les formats courts.",
     items: [
       {
-        title: "Shégué — Clip / univers street",
+        title: "Shégué — clip / univers street",
         desc:
-          "Direction visuelle, tournage stabilisé, image contrastée, montage serré. Pensé pour performer sur YouTube et en formats courts.",
+          "Direction visuelle, tournage stabilisé, contraste maîtrisé, montage serré. Une identité claire, pensée pour tenir l’écran et se décliner en extraits.",
         tag: "Clip",
         link: {
           href: "https://youtube.com/@shegue242?si=xPnxWCIG98q8bohh",
@@ -68,7 +68,7 @@ const sections: PortfolioSection[] = [
       {
         title: "Session studio filmée",
         desc:
-          "Performance captée en studio : éclairage contrôlé, multi-angles, rendu propre. Idéal pour présenter un artiste sans filtre.",
+          "Performance captée en studio : lumière contrôlée, multi-angles, son propre. Idéal pour présenter un artiste sans artifice, avec un rendu sérieux.",
         tag: "Studio",
       },
     ],
@@ -77,18 +77,18 @@ const sections: PortfolioSection[] = [
     id: "events",
     title: "Événements",
     subtitle:
-      "Captation discrète, montage émotionnel ou dynamique, livraison prête à partager.",
+      "Captation discrète, montage vivant, livraison prête à partager — sans perdre l’émotion ni l’énergie.",
     items: [
       {
         title: "Mariage / événement privé",
         desc:
-          "Les moments forts, les détails, l’émotion. Film final livré en formats partage + archive.",
+          "Les moments forts, les détails, les regards. Un film final propre, plus une version courte pour le partage, et une archive complète.",
         tag: "Événement",
       },
       {
         title: "Aftermovie (show / soirée)",
         desc:
-          "Résumé énergique : public, scène, ambiance, sound design. Un rendu qui donne envie de revivre l’événement.",
+          "Résumé dynamique : public, scène, ambiance, sound design léger. Un rendu qui raconte la soirée et donne envie d’y retourner.",
         tag: "Aftermovie",
       },
     ],
@@ -97,18 +97,18 @@ const sections: PortfolioSection[] = [
     id: "brands",
     title: "Marques & entreprises",
     subtitle:
-      "Formats courts qui captent l’attention : message clair, esthétique premium, cohérence de marque.",
+      "Du contenu qui se comprend vite. Une esthétique premium, une exécution nette, une cohérence de marque solide.",
     items: [
       {
         title: "Reels / TikTok / Shorts",
         desc:
-          "Hook rapide, rythme maîtrisé, texte à l’écran, transitions propres. Conçu pour convertir.",
+          "Hook rapide, rythme propre, texte à l’écran quand il faut, transitions nettes. Conçu pour garder l’attention et amener à l’action.",
         tag: "Social",
       },
       {
         title: "Vidéo corporate",
         desc:
-          "Présentation d’entreprise : activité, équipe, service, valeurs. Parfait pour site web, LinkedIn et pitch.",
+          "Présentation d’entreprise : équipe, service, savoir-faire, valeurs. Parfait pour site web, LinkedIn, campagnes et pitch.",
         tag: "Corporate",
       },
     ],
@@ -119,37 +119,37 @@ const photoCategories: PhotoCategory[] = [
   {
     id: "portrait",
     title: "Portrait",
-    desc: "Branding, presse, réseaux : lumière maîtrisée, rendu clean, image qui inspire confiance.",
+    desc: "Branding, presse, réseaux : lumière maîtrisée, peau propre, rendu net. Une image qui inspire confiance.",
     count: 19,
   },
   {
     id: "editorial",
     title: "Editorial",
-    desc: "Direction artistique, intention, image signature. Pour un univers fort.",
+    desc: "Direction artistique, intention, image signature. Pour un univers fort et cohérent.",
     count: 18,
   },
   {
     id: "corporate",
     title: "Corporate",
-    desc: "Équipe, locaux, services, produits : des images pro pour site web & Google Business.",
+    desc: "Équipe, locaux, services, produits : des visuels propres pour site web, Google Business et communication.",
     count: 4,
   },
   {
     id: "food",
     title: "Food",
-    desc: "Texture, couleur, appétence. Menus, réseaux, pubs — rendu premium.",
+    desc: "Texture, couleur, appétence. Menus, pubs, réseaux : rendu premium, sans sur-traitement.",
     count: 9,
   },
   {
     id: "family",
     title: "Family",
-    desc: "Moments sincères, naturel, émotion. Galerie en croissance.",
+    desc: "Moments vrais, naturel, émotion. Une galerie qui grandit au fil des séances.",
     count: 10,
   },
   {
     id: "couple",
     title: "Couple",
-    desc: "Complicité, émotion, direction légère. Retouches propres.",
+    desc: "Complicité, émotion, direction légère. Retouches propres, rendu doux et élégant.",
     count: 2,
   },
 ];
@@ -177,7 +177,7 @@ function getFocusable(container: HTMLElement) {
   );
 }
 
-/* ───────────────────────── UI TOKENS (match Accueil) ───────────────────────── */
+/* ───────────────────────── UI TOKENS (match design system) ───────────────────────── */
 const UI = {
   wrap: "max-w-6xl mx-auto px-4 sm:px-6 lg:px-8",
   pill:
@@ -376,12 +376,18 @@ export default function PortfolioPage() {
 
   return (
     <main className="min-h-screen text-white relative">
-      {/* HERO (comme Accueil) */}
+      {/* HERO */}
       <section className="relative min-h-[58vh] flex items-center overflow-hidden">
         <HeroCineSlider count={10} ext=".jpg" intervalMs={8000} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/70 via-black/55 to-black/75 backdrop-blur-[2px]" />
-        <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 h-80 w-80 rounded-full bg-yellow-400/12 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-28 -right-28 h-96 w-96 rounded-full bg-purple-500/12 blur-3xl" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -left-24 h-80 w-80 rounded-full bg-yellow-400/12 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-28 -right-28 h-96 w-96 rounded-full bg-purple-500/12 blur-3xl"
+        />
 
         <div className="relative z-10 w-full">
           <div className={cn(UI.wrap, "pt-24 pb-14")}>
@@ -392,16 +398,16 @@ export default function PortfolioPage() {
               </div>
 
               <h1 className="text-4xl md:text-6xl font-extrabold leading-[1.05] tracking-tight">
-                Projets{" "}
+                Une sélection{" "}
                 <span className="bg-gradient-to-r from-yellow-300 to-yellow-200 bg-clip-text text-transparent">
-                  visuels
+                  précise
                 </span>{" "}
-                & contenus qui performent.
+                de nos rendus.
               </h1>
 
               <p className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
-                Clips, événements, contenus marques — et séances photo premium. Tout est pensé pour être cohérent,
-                ciné et prêt à publier.
+                Clips, événements, contenus pour marques — et séances photo. Même exigence : une image nette,
+                une direction claire, des livrables prêts à publier.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3">
@@ -420,10 +426,10 @@ export default function PortfolioPage() {
         </div>
       </section>
 
-      {/* VIDEO SECTIONS */}
+      {/* VIDÉO */}
       <section className={cn(UI.wrap, "pb-14 -mt-8")}>
         <div className="space-y-12">
-          {sections.map((sec) => (
+          {portfolioSections.map((sec) => (
             <div key={sec.id} id={sec.id} className="space-y-5 scroll-mt-28">
               <div className="space-y-2">
                 <h2 className={UI.h2}>{sec.title}</h2>
@@ -468,7 +474,7 @@ export default function PortfolioPage() {
                         Réserver
                       </Link>
                       <Link href="/contact" className={UI.btnSecondary}>
-                        Brief / Devis
+                        Brief / devis
                       </Link>
                     </div>
                   </div>
@@ -539,7 +545,7 @@ export default function PortfolioPage() {
                         <span className="relative">Réserver une séance</span>
                       </Link>
                       <Link href="/contact" className={UI.btnOutline}>
-                        Tarifs / Devis
+                        Tarifs / devis
                       </Link>
                     </div>
                   </div>
@@ -588,14 +594,13 @@ export default function PortfolioPage() {
         <div className={cn(UI.wrap, "py-14 flex flex-col gap-6 md:flex-row md:items-center md:justify-between")}>
           <div className="max-w-2xl">
             <h2 className={UI.h2}>
-              Un projet à tourner ? On livre un rendu{" "}
+              On tourne quand ?{" "}
               <span className="bg-gradient-to-r from-yellow-300 to-yellow-200 bg-clip-text text-transparent">
-                premium
+                On cadre.
               </span>
-              .
             </h2>
             <p className={cn("mt-3 text-sm md:text-base", UI.subtle)}>
-              Réserve une date ou envoie ton brief. On répond avec un scope clair, des délais, et des livrables précis.
+              Envoie ton brief ou réserve une date. On répond avec un scope clair, des délais réalistes, et des livrables précis.
             </p>
           </div>
 
@@ -760,7 +765,10 @@ export default function PortfolioPage() {
                           src={img.src}
                           alt={img.alt}
                           fill
-                          className={cn("object-cover", isActive ? "opacity-100" : "opacity-80 hover:opacity-95")}
+                          className={cn(
+                            "object-cover",
+                            isActive ? "opacity-100" : "opacity-80 hover:opacity-95"
+                          )}
                           sizes="80px"
                         />
                       </button>

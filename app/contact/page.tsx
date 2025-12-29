@@ -6,6 +6,9 @@ import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import HeroCineSlider from "@/components/HeroCineSlider";
 
+/* =========================
+   Types
+========================= */
 type FormState = {
   name: string;
   email: string;
@@ -17,7 +20,12 @@ type FormState = {
   message: string;
 };
 
-const initialForm: FormState = {
+type FieldErrors = Partial<Record<keyof FormState, string>>;
+
+/* =========================
+   Constants
+========================= */
+const INITIAL_FORM: FormState = {
   name: "",
   email: "",
   phone: "",
@@ -28,7 +36,7 @@ const initialForm: FormState = {
   message: "",
 };
 
-const SERVICES = [
+const SERVICE_OPTIONS = [
   "Production vidéo",
   "Shooting photo",
   "Post-production",
@@ -38,121 +46,161 @@ const SERVICES = [
   "Autre",
 ] as const;
 
-const QUICK_PACKS = [
-  { t: "Clip / vidéo", d: "Style, références, durée, plateforme, lieu + date." },
-  { t: "Shooting photo", d: "Type, rendu voulu, nombre d’images, lieu." },
-  { t: "Post-production", d: "Durée finale, footage dispo, objectifs, deadline." },
+const QUICK_BRIEFS = [
+  { title: "Clip / vidéo", desc: "Style, références, durée, plateforme, lieu + date." },
+  { title: "Shooting photo", desc: "Type, rendu souhaité, nombre d’images, lieu." },
+  { title: "Post-production", desc: "Durée finale, rushs dispo, objectifs, deadline." },
 ] as const;
 
+/* =========================
+   Motion
+========================= */
 const container: Variants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
 };
 
-// ✅ micro: no filter blur (perf)
 const item: Variants = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
 
-// ✅ micro: cohérence marque (primary = jaune) + blur mobile allégé
+/* =========================
+   UI tokens (tu gardes ton design)
+========================= */
 const UI = {
   pill:
     "inline-flex items-center gap-2 px-4 py-1.5 rounded-full " +
     "bg-primary/10 border border-primary/25 shadow-[0_0_40px_rgba(245,197,66,0.12)]",
+
   card:
     "rounded-2xl border border-white/10 bg-white/6 p-6 " +
     "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-sm md:backdrop-blur-xl",
+
   btnPrimary:
     "group relative px-7 py-3 rounded-lg bg-primary text-black font-semibold overflow-hidden transition " +
     "hover:scale-[1.02] active:scale-95 shadow-[0_14px_52px_rgba(0,8,22,0.45)]",
+
   btnPrimaryGlow:
     "absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-100 transition-opacity",
+
   btnSecondary:
     "px-7 py-3 rounded-lg border border-white/20 text-white font-medium " +
     "hover:border-primary hover:text-white transition",
-  sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
-};
 
-function isEmail(v: string) {
-  // ✅ micro: regex plus robuste
+  sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
+} as const;
+
+/* =========================
+   Helpers
+========================= */
+function cn(...c: Array<string | false | null | undefined>) {
+  return c.filter(Boolean).join(" ");
+}
+
+function isValidEmail(v: string) {
   return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v.trim());
 }
 
-function buildPrefill(service: string) {
+function buildBriefTemplate(serviceLabel: string) {
   const base =
-    "Objectif:\n- \n\nRéférences (liens):\n- \n\nPlateforme cible:\n- (YouTube / Reels / TikTok / Shorts / Site)\n\nLivrables:\n- \n\nDélais:\n- \n\nNotes:\n- ";
+    "Objectif :\n- \n\nRéférences (liens) :\n- \n\nPlateforme cible :\n- (YouTube / Reels / TikTok / Shorts / Site)\n\nLivrables :\n- \n\nDélais :\n- \n\nNotes :\n- ";
 
-  if (!service) return base;
+  if (!serviceLabel) return base;
 
-  const s = service.toLowerCase();
+  const s = serviceLabel.toLowerCase();
+
   if (s.includes("post")) {
-    return "Objectif:\n- \n\nFootage:\n- Caméra / drone / audio séparé ?\n\nDurée finale:\n- \n\nFormats:\n- 16:9 / 9:16 / 1:1\n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- ";
+    return (
+      "Objectif :\n- \n\nRushs :\n- (caméra / drone / audio séparé ?)\n\nDurée finale :\n- \n\nFormats :\n- (16:9 / 9:16 / 1:1)\n\nRéférences (liens) :\n- \n\nDeadline :\n- \n\nNotes :\n- "
+    );
   }
+
   if (s.includes("photo")) {
-    return "Type de séance:\n- (portrait / corporate / food / couple)\n\nRendu voulu:\n- (clean / editorial / ciné)\n\nNombre d’images:\n- \n\nLieu:\n- \n\nRéférences (liens):\n- \n\nDeadline:\n- \n\nNotes:\n- ";
+    return (
+      "Type de séance :\n- (portrait / corporate / food / couple)\n\nRendu souhaité :\n- (clean / editorial / ciné)\n\nNombre d’images :\n- \n\nLieu :\n- \n\nRéférences (liens) :\n- \n\nDeadline :\n- \n\nNotes :\n- "
+    );
   }
+
   if (s.includes("vidéo") || s.includes("video")) {
-    return "Type:\n- (clip / corporate / événement / pub)\n\nDurée:\n- \n\nPlateforme:\n- \n\nLieu + date:\n- \n\nRéférences (liens):\n- \n\nLivrables:\n- (YouTube + vertical, etc.)\n\nNotes:\n- ";
+    return (
+      "Type :\n- (clip / corporate / événement / pub)\n\nDurée :\n- \n\nPlateforme :\n- \n\nLieu + date :\n- \n\nRéférences (liens) :\n- \n\nLivrables :\n- (YouTube + vertical, etc.)\n\nNotes :\n- "
+    );
   }
+
   return base;
 }
 
+function computeErrors(form: FormState): FieldErrors {
+  const e: FieldErrors = {};
+  const name = form.name.trim();
+  const email = form.email.trim();
+  const message = form.message.trim();
+
+  if (!name) e.name = "Ton nom est requis.";
+  if (!email) e.email = "Ton email est requis.";
+  else if (!isValidEmail(email)) e.email = "Entre un email valide (ex. nom@domaine.com).";
+
+  if (!message) e.message = "Écris un message pour qu’on comprenne ton besoin.";
+  else if (message.length < 20) e.message = "Ajoute un peu de contexte (minimum 20 caractères).";
+
+  return e;
+}
+
+/* =========================
+   Page
+========================= */
 export default function ContactPage() {
-  const [form, setForm] = useState<FormState>(initialForm);
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const [isSending, setIsSending] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const firstErrorRef = useRef<HTMLDivElement | null>(null);
 
-  const errors = useMemo(() => {
-    const e: Partial<Record<keyof FormState, string>> = {};
-    const name = form.name.trim();
-    const email = form.email.trim();
-    const message = form.message.trim();
-
-    if (!name) e.name = "Ton nom est requis.";
-    if (!email) e.email = "Ton email est requis.";
-    else if (!isEmail(email)) e.email = "Email invalide (ex: nom@domaine.com).";
-    if (!message) e.message = "Ton message est requis.";
-    if (message && message.length < 20) e.message = "Ajoute un peu de contexte (min. 20 caractères).";
-    return e;
-  }, [form]);
-
+  const errors = useMemo(() => computeErrors(form), [form]);
   const hasErrors = Object.keys(errors).length > 0;
 
-  const onChange = useCallback(
+  const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-      setForm((p) => ({ ...p, [name]: value }));
+      setForm((prev) => ({ ...prev, [name]: value }));
     },
     []
   );
 
-  const onQuickFill = useCallback((serviceLabel: string) => {
-    setSuccess(null);
-    setError(null);
-    setForm((p) => ({
-      ...p,
+  const applyQuickBrief = useCallback((briefTitle: string) => {
+    setSuccessMsg(null);
+    setErrorMsg(null);
+
+    // mapping : le 1er bouton "Clip / vidéo" = service "Production vidéo"
+    const serviceLabel = briefTitle === "Clip / vidéo" ? "Production vidéo" : briefTitle;
+
+    setForm((prev) => ({
+      ...prev,
       service: serviceLabel,
-      message: p.message.trim().length ? p.message : buildPrefill(serviceLabel),
+      message: prev.message.trim().length ? prev.message : buildBriefTemplate(serviceLabel),
     }));
+
     setTimeout(() => document.getElementById("message")?.focus?.(), 0);
   }, []);
 
-  const onSubmit = useCallback(
+  const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      setSuccess(null);
-      setError(null);
+      setSuccessMsg(null);
+      setErrorMsg(null);
 
       if (hasErrors) {
-        setError("Vérifie les champs requis et renvoie.");
-        setTimeout(() => firstErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+        setErrorMsg("Corrige les champs requis, puis renvoie.");
+        setTimeout(
+          () => firstErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
+          0
+        );
         return;
       }
 
-      setLoading(true);
+      setIsSending(true);
       try {
         const res = await fetch("/api/contact", {
           method: "POST",
@@ -169,17 +217,18 @@ export default function ContactPage() {
         });
 
         const data = await res.json().catch(() => null);
+
         if (!res.ok) {
-          setError(data?.error || "Une erreur est survenue. Réessaie.");
+          setErrorMsg(data?.error || "Une erreur est survenue. Réessaie.");
           return;
         }
 
-        setSuccess("Message bien reçu. On analyse ton projet et on te répond rapidement.");
-        setForm(initialForm);
+        setSuccessMsg("Message reçu. On analyse ton brief et on te répond rapidement.");
+        setForm(INITIAL_FORM);
       } catch {
-        setError("Erreur de connexion. Réessaie plus tard.");
+        setErrorMsg("Connexion impossible. Réessaie un peu plus tard.");
       } finally {
-        setLoading(false);
+        setIsSending(false);
       }
     },
     [form, hasErrors]
@@ -187,9 +236,9 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-[calc(100vh-var(--nav-h))]">
-      {/* HERO (optimisé: slider desktop + fallback mobile) */}
+      {/* HERO */}
       <section className="relative min-h-[62vh] flex items-center overflow-hidden">
-        {/* Desktop slider allégé */}
+        {/* Desktop slider */}
         <div className="hidden md:block absolute inset-0">
           <HeroCineSlider
             count={5}
@@ -224,7 +273,10 @@ export default function ContactPage() {
               <span className="text-xs uppercase tracking-widest text-white/85">Contact</span>
             </motion.div>
 
-            <motion.h1 variants={item} className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+            <motion.h1
+              variants={item}
+              className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight"
+            >
               Parle-nous de ton{" "}
               <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">
                 projet
@@ -233,16 +285,16 @@ export default function ContactPage() {
             </motion.h1>
 
             <motion.p variants={item} className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
-              Un brief clair = une réponse claire. Clip, photo, post-prod, web ou stratégie : on te cadre le scope, les
-              délais et les livrables.
+              Plus ton brief est clair, plus notre réponse l’est. Clip, photo, post-prod, web ou stratégie : on cadre le
+              scope, les délais et les livrables.
             </motion.p>
 
             <motion.div variants={item} className="flex flex-col sm:flex-row gap-3">
-              <Link href="/booking" className={UI.btnPrimary}>
+              <Link href="/booking" className={UI.btnPrimary} aria-label="Réserver un appel">
                 <span className={UI.btnPrimaryGlow} />
                 <span className="relative z-10">Réserver un appel</span>
               </Link>
-              <Link href="/services" className={UI.btnSecondary}>
+              <Link href="/services" className={UI.btnSecondary} aria-label="Voir les services">
                 Voir les services
               </Link>
             </motion.div>
@@ -268,7 +320,7 @@ export default function ContactPage() {
                 <div>
                   <h2 className="text-2xl md:text-3xl font-semibold tracking-tight text-white">Formulaire</h2>
                   <p className="mt-2 text-sm md:text-base text-white/75 leading-relaxed">
-                    Va droit au but. Si tu veux, utilise un modèle “brief” en 1 clic.
+                    Va à l’essentiel. Si tu veux gagner du temps, utilise un modèle de brief en un clic.
                   </p>
                 </div>
                 <span className="shrink-0 hidden sm:inline-flex items-center rounded-full border border-white/10 bg-white/6 px-3 py-1 text-xs text-white/70">
@@ -276,30 +328,30 @@ export default function ContactPage() {
                 </span>
               </div>
 
-              {/* QUICK FILL */}
+              {/* QUICK BRIEFS */}
               <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                {QUICK_PACKS.map((x) => (
+                {QUICK_BRIEFS.map((x) => (
                   <button
-                    key={x.t}
+                    key={x.title}
                     type="button"
-                    onClick={() => onQuickFill(x.t === "Clip / vidéo" ? "Production vidéo" : x.t)}
+                    onClick={() => applyQuickBrief(x.title)}
                     className="group rounded-2xl border border-white/10 bg-white/6 px-4 py-4 text-left transition hover:border-primary/35 hover:bg-white/8"
                   >
                     <p className="text-sm font-semibold text-white">
-                      {x.t} <span className="text-primary">→</span>
+                      {x.title} <span className="text-primary">→</span>
                     </p>
-                    <p className="mt-1 text-xs text-white/60 leading-relaxed">{x.d}</p>
+                    <p className="mt-1 text-xs text-white/60 leading-relaxed">{x.desc}</p>
                   </button>
                 ))}
               </div>
 
-              <form onSubmit={onSubmit} className="mt-8 space-y-6" noValidate>
+              <form onSubmit={handleSubmit} className="mt-8 space-y-6" noValidate>
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field
                     label="Nom complet *"
                     name="name"
                     value={form.name}
-                    onChange={onChange}
+                    onChange={handleChange}
                     required
                     error={errors.name}
                     autoComplete="name"
@@ -310,7 +362,7 @@ export default function ContactPage() {
                     type="email"
                     name="email"
                     value={form.email}
-                    onChange={onChange}
+                    onChange={handleChange}
                     required
                     error={errors.email}
                     autoComplete="email"
@@ -323,7 +375,7 @@ export default function ContactPage() {
                     label="Téléphone"
                     name="phone"
                     value={form.phone}
-                    onChange={onChange}
+                    onChange={handleChange}
                     autoComplete="tel"
                     placeholder="Optionnel"
                   />
@@ -331,20 +383,20 @@ export default function ContactPage() {
                     label="Type de service"
                     name="service"
                     value={form.service}
-                    onChange={onChange}
-                    options={[...SERVICES]}
-                    hint="Choisis si tu sais déjà."
+                    onChange={handleChange}
+                    options={[...SERVICE_OPTIONS]}
+                    hint="Si tu sais déjà ce que tu veux."
                   />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
-                  <Field label="Date souhaitée" type="date" name="date" value={form.date} onChange={onChange} />
+                  <Field label="Date souhaitée" type="date" name="date" value={form.date} onChange={handleChange} />
                   <div className="md:col-span-2">
                     <Field
                       label="Lieu"
                       name="location"
                       value={form.location}
-                      onChange={onChange}
+                      onChange={handleChange}
                       placeholder="Ville, studio, extérieur…"
                     />
                   </div>
@@ -354,7 +406,7 @@ export default function ContactPage() {
                   label="Budget approximatif"
                   name="budget"
                   value={form.budget}
-                  onChange={onChange}
+                  onChange={handleChange}
                   placeholder="Ex. 800 $, 1500 $, à discuter…"
                 />
 
@@ -363,32 +415,29 @@ export default function ContactPage() {
                   name="message"
                   id="message"
                   value={form.message}
-                  onChange={onChange}
+                  onChange={handleChange}
                   required
                   error={errors.message}
                   placeholder="Objectif, références, plateforme cible, délais…"
                 />
 
                 <div ref={firstErrorRef}>
-                  {error && <Feedback type="error" text={error} />}
-                  {success && <Feedback type="success" text={success} />}
+                  {errorMsg && <Feedback type="error" text={errorMsg} />}
+                  {successMsg && <Feedback type="success" text={successMsg} />}
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                   <button
                     type="submit"
-                    disabled={loading || hasErrors}
-                    className={[
-                      UI.btnPrimary,
-                      (loading || hasErrors) ? "opacity-70 cursor-not-allowed" : "",
-                    ].join(" ")}
+                    disabled={isSending || hasErrors}
+                    className={cn(UI.btnPrimary, (isSending || hasErrors) && "opacity-70 cursor-not-allowed")}
                   >
                     <span className={UI.btnPrimaryGlow} />
-                    <span className="relative z-10">{loading ? "Envoi…" : "Envoyer le message"}</span>
+                    <span className="relative z-10">{isSending ? "Envoi…" : "Envoyer le message"}</span>
                   </button>
 
                   <p className="text-xs text-white/55 leading-relaxed">
-                    En envoyant, tu acceptes qu’on te recontacte pour clarifier le scope.
+                    En envoyant, tu acceptes qu’on te recontacte pour clarifier le scope et les livrables.
                   </p>
                 </div>
               </form>
@@ -404,19 +453,21 @@ export default function ContactPage() {
             className="lg:col-span-4 space-y-6"
           >
             <motion.div variants={item} className={UI.card}>
-              <h3 className="text-xl font-semibold tracking-tight text-white">Notre approche</h3>
-              <p className="mt-2 text-sm text-white/75 leading-relaxed">On cadre le projet, on produit, on livre propre.</p>
+              <h3 className="text-xl font-semibold tracking-tight text-white">Notre méthode</h3>
+              <p className="mt-2 text-sm text-white/75 leading-relaxed">
+                On cadre, on produit, on livre — avec une direction artistique cohérente.
+              </p>
 
               <ul className="mt-5 space-y-3 text-sm text-white/85">
                 {[
-                  "Analyse du besoin & des objectifs",
+                  "Lecture du besoin & des objectifs",
                   "Validation faisabilité & disponibilités",
                   "Proposition claire (scope, livrables, délais)",
                   "Production + livraison prête à publier",
-                ].map((i) => (
-                  <li key={i} className="flex gap-3">
+                ].map((line) => (
+                  <li key={line} className="flex gap-3">
                     <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary" />
-                    <span>{i}</span>
+                    <span>{line}</span>
                   </li>
                 ))}
               </ul>
@@ -436,20 +487,20 @@ export default function ContactPage() {
               variants={item}
               className="rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-sm md:backdrop-blur-xl"
             >
-              <h3 className="text-lg font-semibold text-white">Info utile</h3>
+              <h3 className="text-lg font-semibold text-white">Pour aller plus vite</h3>
               <p className="mt-2 text-sm text-white/75 leading-relaxed">
-                Plus ton message est précis, plus vite on peut te répondre.
+                Mets 2–3 infos concrètes : on pourra te répondre proprement, sans aller-retour.
               </p>
               <div className="mt-4 space-y-2">
                 {[
                   "1–2 liens de référence (YouTube / Instagram / TikTok)",
                   "Plateforme cible (YouTube, Reels, TikTok…)",
-                  "Deadline réelle + budget (même approximatif)",
+                  "Deadline + budget (même approximatif)",
                   "Livrables attendus (formats + durée)",
-                ].map((i) => (
-                  <div key={i} className="flex gap-3 text-sm text-white/85">
+                ].map((line) => (
+                  <div key={line} className="flex gap-3 text-sm text-white/85">
                     <span className="mt-2 h-1.5 w-1.5 rounded-full bg-primary" />
-                    <span className="leading-relaxed">{i}</span>
+                    <span className="leading-relaxed">{line}</span>
                   </div>
                 ))}
               </div>
@@ -459,8 +510,8 @@ export default function ContactPage() {
 
         {/* CTA FINAL */}
         <div className="mt-10 rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-sm md:backdrop-blur-xl">
-          <p className="text-2xl md:text-3xl font-bold text-white">Réponse rapide, cadre clair.</p>
-          <p className="mt-2 text-white/75 leading-relaxed">Les projets structurés sont traités en priorité.</p>
+          <p className="text-2xl md:text-3xl font-bold text-white">Réponse rapide, cadre propre.</p>
+          <p className="mt-2 text-white/75 leading-relaxed">Les projets bien briefés sont traités en priorité.</p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link href="/services" className={UI.btnSecondary}>
               Voir les services
@@ -476,12 +527,9 @@ export default function ContactPage() {
   );
 }
 
-/* ===== UI ATOMS ===== */
-
-function cn(...c: Array<string | false | null | undefined>) {
-  return c.filter(Boolean).join(" ");
-}
-
+/* =========================
+   UI atoms (inchangés, juste clean)
+========================= */
 function Field({
   label,
   hint,
@@ -494,12 +542,15 @@ function Field({
   error?: string;
 }) {
   const id = (props.id || props.name || label).toString();
+
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-sm text-white/85 mb-2">
         {label}
       </label>
+
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
+
       <input
         {...props}
         id={id}
@@ -512,6 +563,7 @@ function Field({
             : "border-white/10 hover:border-white/15 focus:border-primary/35 focus:ring-1 focus:ring-primary/15"
         )}
       />
+
       {error ? (
         <p id={`${id}-error`} className="mt-2 text-xs text-primary">
           {error}
@@ -533,12 +585,15 @@ function Select({
   options: string[];
 }) {
   const id = (props.id || props.name || label).toString();
+
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-sm text-white/85 mb-2">
         {label}
       </label>
+
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
+
       <select
         {...props}
         id={id}
@@ -567,12 +622,15 @@ function Textarea({
   error?: string;
 }) {
   const id = (props.id || props.name || label).toString();
+
   return (
     <div className={className}>
       <label htmlFor={id} className="block text-sm text-white/85 mb-2">
         {label}
       </label>
+
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
+
       <textarea
         {...props}
         id={id}
@@ -586,6 +644,7 @@ function Textarea({
             : "border-white/10 hover:border-white/15 focus:border-primary/35 focus:ring-1 focus:ring-primary/15"
         )}
       />
+
       {error ? (
         <p id={`${id}-error`} className="mt-2 text-xs text-primary">
           {error}
@@ -597,12 +656,13 @@ function Textarea({
 
 function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
   const isError = type === "error";
+
   return (
     <div
-      className={[
+      className={cn(
         "rounded-2xl border px-4 py-3 backdrop-blur-sm md:backdrop-blur-xl",
-        isError ? "border-primary/35 bg-primary/10" : "border-white/10 bg-white/6",
-      ].join(" ")}
+        isError ? "border-primary/35 bg-primary/10" : "border-white/10 bg-white/6"
+      )}
       role={isError ? "alert" : "status"}
       aria-live={isError ? "assertive" : "polite"}
     >
