@@ -57,8 +57,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           overflow-x-hidden
           [accent-color:#F5C542]
           font-sans
+          relative
         "
       >
+        {/* ✅ FILM GRAIN (global) */}
+        <div className="film-grain is-animated" aria-hidden="true" />
+
         {/* ✅ 1) WorkBackground responsive + fallback statique mobile */}
         <div className="fixed inset-0 -z-10">
           <div className="hidden sm:block">
@@ -70,16 +74,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* UX */}
         <TopProgress />
 
-        {/* ✅ 3) Suspense fallback plus “progressif” */}
+        {/* ✅ Suspense fallback premium jaune */}
         <Suspense
           fallback={
-            <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-pulse" />
+            <div className="fixed left-0 top-0 z-[100] h-1 w-full bg-[#F5C542]/20">
+              <div className="h-full w-1/3 bg-[#F5C542] animate-pulse" />
+            </div>
           }
         >
           <RouteLoader />
         </Suspense>
 
-        {/* ✅ 4) CursorGlow: laisse le composant gérer le touch/no-hover en interne */}
+        {/* ✅ CursorGlow: laisse le composant gérer le touch/no-hover en interne */}
         <CursorGlow />
 
         <Navbar />

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
@@ -36,9 +37,12 @@ const styles = {
     "inline-flex items-center gap-2 px-4 py-1.5 rounded-full " +
     "bg-cyan-300/10 border border-cyan-300/25 shadow-[0_0_40px_rgba(0,180,255,0.12)]",
 
+  // ✅ micro-interactions premium
   card:
     "rounded-2xl border border-white/10 bg-white/6 p-6 " +
-    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl hover:border-cyan-300/25 transition",
+    "shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl " +
+    "hover:border-cyan-300/25 hover:scale-[1.01] hover:shadow-[0_24px_80px_rgba(0,180,255,0.10)] " +
+    "transition-all duration-500",
 
   sep: "h-px w-full bg-gradient-to-r from-transparent via-white/12 to-transparent",
 
@@ -74,7 +78,7 @@ type ApproachStep = {
 };
 
 /* =========================
-   Content (your assumptions kept)
+   Content
 ========================= */
 const proofPoints: ProofPoint[] = [
   { value: "Label + studio", label: "Une seule équipe : image, son, stratégie" },
@@ -111,7 +115,7 @@ const approachSteps: ApproachStep[] = [
 ];
 
 /* =========================
-   Small UI pieces (same structure)
+   Small UI pieces
 ========================= */
 function Pill({ label }: { label: string }) {
   return (
@@ -140,7 +144,7 @@ function SecondaryButton({ href, children }: { href: string; children: React.Rea
 }
 
 /* =========================
-   Sections (same layout)
+   Sections
 ========================= */
 function HeroSection() {
   return (
@@ -173,33 +177,43 @@ function HeroSection() {
       {/* voile léger (pas trop) */}
       <div className="pointer-events-none absolute inset-0 backdrop-blur-[1.5px]" />
 
+      {/* ✅ gradient sombre bas (contraste garanti sur toutes les images) */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%]
+                   bg-gradient-to-t from-[#020814]/85 via-[#020814]/35 to-transparent"
+      />
+
       <div className="relative max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-20">
-        <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
-          <Pill label="À propos" />
+        {/* ✅ scrim derrière le contenu (option ultra-safe) */}
+        <div className="inline-block rounded-3xl border border-white/10 bg-[#020814]/35 p-6 md:p-8 backdrop-blur-xl">
+          <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+            <Pill label="À propos" />
 
-          <motion.h1 variants={item} className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
-            Une équipe{" "}
-            <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
-                créative
-              </span>
-              <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-cyan-300/12 blur-xl opacity-70" />
-            </span>{" "}
-            pensée pour livrer.
-          </motion.h1>
+            <motion.h1 variants={item} className="text-4xl md:text-6xl font-bold leading-[1.05] tracking-tight">
+              Une équipe{" "}
+              <span className="relative inline-block">
+                <span className="bg-gradient-to-r from-cyan-200 via-cyan-300 to-blue-200 bg-clip-text text-transparent">
+                  créative
+                </span>
+                <span className="pointer-events-none absolute -inset-x-2 -inset-y-1 bg-cyan-300/12 blur-xl opacity-70" />
+              </span>{" "}
+              pensée pour livrer.
+            </motion.h1>
 
-          <motion.p variants={item} className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
-            Black Jesus Records est un <strong>studio créatif</strong> & <strong>label</strong> basé à Lévis (Québec).
-            Notre focus : image forte, exécution propre, livrables optimisés YouTube & réseaux.
-          </motion.p>
+            <motion.p variants={item} className="text-base md:text-lg text-white/80 leading-relaxed max-w-3xl">
+              Black Jesus Records est un <strong>studio créatif</strong> & <strong>label</strong> basé à Lévis (Québec).
+              Notre focus : image forte, exécution propre, livrables optimisés YouTube & réseaux.
+            </motion.p>
 
-          <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 pt-2">
-            <PrimaryButton href="/booking">Réserver</PrimaryButton>
-            <SecondaryButton href="/portfolio">Voir le portfolio</SecondaryButton>
+            <motion.div variants={item} className="flex flex-col sm:flex-row gap-4 pt-2">
+              <PrimaryButton href="/booking">Réserver</PrimaryButton>
+              <SecondaryButton href="/portfolio">Voir le portfolio</SecondaryButton>
+            </motion.div>
+
+            <motion.div variants={item} className={styles.sep} />
           </motion.div>
-
-          <motion.div variants={item} className={styles.sep} />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -208,11 +222,14 @@ function HeroSection() {
 function ProofSection({ points }: { points: ProofPoint[] }) {
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      {/* ✅ SEO / a11y */}
+      <h2 className="sr-only">Points forts</h2>
+
       <motion.div
         variants={container}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-120px" }}
+        viewport={{ once: true, margin: "-10%" }} // ✅ responsive
         className="grid gap-6 md:grid-cols-3"
       >
         {points.map((p) => (
@@ -227,7 +244,7 @@ function ProofSection({ points }: { points: ProofPoint[] }) {
         variants={item}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-120px" }}
+        viewport={{ once: true, margin: "-10%" }} // ✅ responsive
         className="mt-8 rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-6 md:p-8 backdrop-blur-xl"
       >
         <p className="text-white/90 italic text-base md:text-lg leading-relaxed">
@@ -242,11 +259,14 @@ function ProofSection({ points }: { points: ProofPoint[] }) {
 function CardsSection({ cards }: { cards: FeatureCard[] }) {
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      {/* ✅ SEO / a11y */}
+      <h2 className="sr-only">Studio, label et livraison</h2>
+
       <motion.div
         variants={container}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-120px" }}
+        viewport={{ once: true, margin: "-10%" }} // ✅ responsive
         className="grid gap-6 md:grid-cols-3"
       >
         {cards.map((c) => (
@@ -266,6 +286,32 @@ function CardsSection({ cards }: { cards: FeatureCard[] }) {
           </motion.div>
         ))}
       </motion.div>
+
+      {/* ✅ suggestion visuelle: synergie "image + son" sans assets */}
+      <motion.div
+        variants={item}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-10%" }}
+        className="mt-10 rounded-2xl border border-white/10 bg-white/6 p-6 backdrop-blur-xl"
+      >
+        <p className="text-white/80 text-sm uppercase tracking-widest">Workflow</p>
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-white/75">
+          <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5">Pré-prod</span>
+          <span className="text-white/30">→</span>
+          <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5">Tournage</span>
+          <span className="text-white/30">→</span>
+          <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5">Montage</span>
+          <span className="text-white/30">→</span>
+          <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5">Étalonnage</span>
+          <span className="text-white/30">→</span>
+          <span className="px-3 py-1 rounded-full border border-cyan-300/25 bg-cyan-300/10 text-cyan-100">
+            Sound polish
+          </span>
+          <span className="text-white/30">→</span>
+          <span className="px-3 py-1 rounded-full border border-white/10 bg-white/5">Exports</span>
+        </div>
+      </motion.div>
     </section>
   );
 }
@@ -277,7 +323,7 @@ function FounderSection({ steps }: { steps: ApproachStep[] }) {
         variants={container}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, margin: "-120px" }}
+        viewport={{ once: true, margin: "-10%" }} // ✅ responsive
         className="rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl"
       >
         <Pill label="Direction" />
@@ -317,7 +363,15 @@ function FounderSection({ steps }: { steps: ApproachStep[] }) {
 function FinalCTASection() {
   return (
     <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-      <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-120px" }}>
+      {/* ✅ SEO / a11y */}
+      <h2 className="sr-only">Appel à l’action</h2>
+
+      <motion.div
+        variants={container}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: "-10%" }} // ✅ responsive
+      >
         <motion.div
           variants={item}
           className="rounded-2xl border border-white/10 bg-white/6 p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-[0_18px_60px_rgba(0,8,22,0.35)] backdrop-blur-xl"
@@ -343,7 +397,7 @@ function FinalCTASection() {
 }
 
 /* =========================
-   Page (same overall structure)
+   Page
 ========================= */
 export default function AboutPage() {
   return (

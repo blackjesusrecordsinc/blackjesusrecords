@@ -1,59 +1,66 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
-import type { Variants } from "framer-motion";
 
-import Reveal from "@/components/Reveal";
-import HeroBackground from "@/components/HeroBackground"; // ✅ ton background slider (déjà séparé)
+import HeroBackground from "@/components/HeroBackground";
+import { fadeContainer, fadeUpItem } from "@/lib/motion";
 
+/* ================= CONST ================= */
+const GRAIN_BG =
+  "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22 viewBox=%220 0 100 100%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.9%22 numOctaves=%222%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.18%22/%3E%3C/svg%3E";
+
+/* ================= DATA ================= */
 const services = [
-  "Clips rap / street / drill — esthétique cinéma, montage nerveux",
-  "Direction artistique & mise en scène (image + performance)",
-  "Événements — captation propre, montage émotionnel",
-  "Photo pro — portraits, food, corporate",
-  "Contenu & réseaux — formats courts, cohérence, cadence",
+  {
+    text: "Clips rap / street / drill — esthétique cinéma, montage nerveux",
+    featured: true,
+  },
+  {
+    text: "Direction artistique & mise en scène (image + performance)",
+    featured: true,
+  },
+  {
+    text: "Événements — captation propre, montage émotionnel",
+    featured: true,
+  },
+  { text: "Photo pro — portraits, food, corporate", featured: true },
+  {
+    text: "Contenu & réseaux — formats courts, cohérence, cadence",
+    featured: false,
+  },
 ];
 
 const proof = [
-  { value: "20+", label: "Projets livrés" },
-  { value: "72h", label: "Première preview" },
-  { value: "4K", label: "Exports optimisés" },
+  { value: "20+", label: "Projets livrés", hint: "Rendu premium, livraisons propres." },
+  { value: "72h", label: "Première preview", hint: "Tu vois vite la direction." },
+  { value: "4K", label: "Exports optimisés", hint: "YouTube + Reels + TikTok." },
 ];
 
-const container: Variants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
-};
+const featuredServices = services.filter((s) => s.featured);
 
-const item: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
-};
-
-// TODO: remplace par ton vrai base64 (généré via sharp)
-const HERO_BLUR_DATA_URL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...";
+const container = fadeContainer(0.07);
+const item = fadeUpItem;
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* HERO */}
+      {/* ================= HERO ================= */}
       <section className="relative min-h-[92vh] overflow-hidden">
-        {/* ✅ Ton background slider séparé */}
+        {/* Background */}
         <div className="absolute inset-0 z-0">
           <HeroBackground />
         </div>
 
-        {/* ✅ Overlay lisibilité (garde les photos visibles) */}
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/35 via-black/50 to-black/75" />
+        {/* Overlay PRO (lisibilité stable sur toutes les photos) */}
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/55 via-black/65 to-black/95" />
+        <div className="absolute inset-0 z-[1] bg-[radial-gradient(900px_circle_at_20%_25%,rgba(245,197,66,0.10),transparent_60%)]" />
+        <div className="absolute inset-0 z-[1] bg-[radial-gradient(900px_circle_at_70%_20%,rgba(255,255,255,0.06),transparent_55%)]" />
 
-        {/* Texture ultra subtile */}
+        {/* Grain / texture (via constante) */}
         <div
-          className="pointer-events-none absolute inset-0 z-[2] opacity-[0.012]"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`,
-          }}
+          className="pointer-events-none absolute inset-0 z-[2] opacity-[0.10] mix-blend-overlay"
+          style={{ backgroundImage: `url('${GRAIN_BG}')` }}
         />
 
         <div className="relative z-[3] mx-auto flex min-h-[92vh] w-full max-w-6xl items-center px-4 sm:px-6 lg:px-8">
@@ -61,257 +68,128 @@ export default function HomePage() {
             variants={container}
             initial="hidden"
             animate="show"
-            className="w-full py-16 lg:py-20"
+            className="w-full py-14 lg:py-20"
           >
-            <div className="grid items-center gap-12 lg:grid-cols-12">
-              {/* Colonne texte */}
+            <div className="grid items-center gap-10 lg:grid-cols-12">
+              {/* ================= TEXTE ================= */}
               <div className="lg:col-span-7">
-                {/* Badge (signature légère, rotation propre) */}
-                <motion.div variants={item} className="mb-7">
-                  <span className="inline-flex -rotate-[2deg] items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 backdrop-blur">
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-                    Studio créatif & label — Lévis, Québec
-                  </span>
-                </motion.div>
+                {/* Spotlight panel (lisibilité + premium, sans cacher le background) */}
+                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/35 p-6 backdrop-blur-xl sm:p-8 lg:bg-black/25">
+                  {/* glow interne */}
+                  <div className="pointer-events-none absolute inset-0 opacity-70 [background:radial-gradient(520px_circle_at_18%_18%,rgba(245,197,66,0.12),transparent_55%)]" />
+                  <div className="pointer-events-none absolute inset-0 opacity-60 [background:radial-gradient(520px_circle_at_80%_10%,rgba(255,255,255,0.08),transparent_60%)]" />
 
-                {/* Titre (impact, pas de phrase inutile) */}
-                <motion.h1
-                  variants={item}
-                  className="text-balance text-5xl font-extrabold leading-[0.98] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl"
-                >
-                  <span className="block text-white">Black Jesus</span>
-                  <span className="block text-primary">Records</span>
-                </motion.h1>
+                  {/* Badge */}
+                  <motion.div variants={item} className="relative mb-7">
+                    <span className="inline-flex -rotate-[1.5deg] items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-[rgba(255,255,255,0.92)]">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      Studio créatif & label — Lévis, Québec
+                    </span>
+                  </motion.div>
 
-                {/* Pitch (humain, net, pro) */}
-                <motion.p
-                  variants={item}
-                  className="mt-6 max-w-[42rem] text-pretty text-lg leading-relaxed text-white/80 sm:text-xl"
-                >
-                  On réalise des images qui portent : rythme, intention, et finition propre.
-                  De la préparation au rendu final, tout est pensé pour être publié — sans compromis.
-                </motion.p>
-
-                {/* Liste services (respire + lisible sur fond animé) */}
-                <motion.div variants={item} className="mt-10">
-                  <ul className="max-w-[44rem] space-y-2.5 text-white/78">
-                    {services.slice(0, 3).map((service, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="mt-[0.55rem] h-2 w-2 shrink-0 rounded-full bg-primary" />
-                        <span className="leading-relaxed">{service}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-
-                {/* CTA (pro, clean) */}
-                <motion.div
-                  variants={item}
-                  className="mt-12 flex flex-col gap-3 sm:flex-row sm:items-center"
-                >
-                  <Link
-                    href="/booking"
-                    className="inline-flex items-center justify-center rounded-xl bg-primary px-7 py-4 text-sm font-bold text-black transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/60 focus:ring-offset-2 focus:ring-offset-black"
-                    aria-label="Discuter d'un projet (réservation)"
+                  {/* Titre (logo vibe) */}
+                  <motion.h1
+                    variants={item}
+                    className="relative text-balance text-5xl font-extrabold leading-[0.92] tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl"
+                    style={{ textShadow: "0 18px 45px rgba(0,0,0,0.70)" }}
                   >
-                    Discuter d’un projet
-                  </Link>
+                    <span className="block text-white">Black Jesus</span>
+                    <span className="block text-primary">Records</span>
+                  </motion.h1>
 
-                  <Link
-                    href="/portfolio"
-                    className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/0 px-7 py-4 text-sm font-semibold text-white/90 transition hover:border-primary/50 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black"
-                    aria-label="Voir notre travail (portfolio)"
+                  {/* Sous-titre (plus “impact label”) */}
+                  <motion.p
+                    variants={item}
+                    className="relative mt-6 max-w-xl text-pretty text-lg leading-relaxed text-[rgba(255,255,255,0.78)] sm:text-xl"
+                    style={{ textShadow: "0 10px 28px rgba(0,0,0,0.55)" }}
                   >
-                    Voir le portfolio
-                  </Link>
+                    Image, rythme, finition.
+                    <br />
+                    On transforme ta vision en contenu qui marque — prêt à publier partout.
+                  </motion.p>
 
-                  <span className="hidden text-sm text-white/55 sm:inline">
-                    Réponse rapide • Devis clair
-                  </span>
-                </motion.div>
+                  {/* Services (featured) */}
+                  <motion.div variants={item} className="relative mt-10">
+                    <ul className="space-y-3 text-[rgba(255,255,255,0.78)]">
+                      {featuredServices.map((s) => (
+                        <li key={s.text} className="flex items-start gap-3">
+                          <span className="mt-[0.55rem] h-2.5 w-2.5 shrink-0 rounded-full bg-primary shadow-[0_0_18px_rgba(245,197,66,0.35)]" />
+                          <span className="leading-relaxed text-pretty">{s.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+
+                  {/* CTA (glow sweep) */}
+                  <motion.div
+                    variants={item}
+                    className="relative mt-12 flex flex-col gap-3 sm:flex-row sm:items-center"
+                  >
+                    <Link
+                      href="/booking"
+                      className="relative overflow-hidden group inline-flex items-center justify-center rounded-xl bg-primary px-7 py-4 text-sm font-extrabold text-black shadow-glow transition hover:scale-[1.02] hover:bg-primarySoft focus:outline-none focus:ring-2 focus:ring-primary/60 focus:ring-offset-2 focus:ring-offset-black"
+                      aria-label="Discuter d'un projet (réservation)"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 translate-x-[-120%] bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-[120%]"
+                      />
+                      <span className="relative">
+                        Discuter d’un projet
+                        <span className="ml-2 transition-transform group-hover:translate-x-0.5">
+                          →
+                        </span>
+                      </span>
+                    </Link>
+
+                    <Link
+                      href="/portfolio"
+                      className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-7 py-4 text-sm font-semibold text-white/90 transition hover:border-primary/60 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black"
+                      aria-label="Voir notre travail (portfolio)"
+                    >
+                      Voir le portfolio
+                    </Link>
+
+                    <span className="hidden text-sm text-[rgba(255,255,255,0.55)] sm:inline">
+                      Réponse rapide • Devis clair
+                    </span>
+                  </motion.div>
+                </div>
               </div>
 
-              {/* Colonne preuve (cards) */}
+              {/* ================= PREUVES ================= */}
               <div className="lg:col-span-5">
-                <motion.div variants={item} className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-                  {proof.map((stat) => (
-                    <div
-                      key={stat.value}
-                      className="rounded-2xl border border-white/10 bg-white/[0.05] px-6 py-6 backdrop-blur"
-                    >
-                      <div className="text-3xl font-extrabold text-primary sm:text-4xl">
-                        {stat.value}
-                      </div>
-                      <p className="mt-1 text-sm font-medium text-white/80">{stat.label}</p>
-                      <p className="mt-3 text-sm text-white/55">
-                        Cadence tenue, rendu propre, livraison prête à publier.
-                      </p>
-                    </div>
-                  ))}
+                {/* Mobile: carousel | sm+: grid | lg: 1 colonne */}
+                <motion.div variants={item} className="sm:grid sm:grid-cols-3 lg:grid-cols-1 sm:gap-4">
+                  <div className="flex gap-4 overflow-x-auto pb-4 sm:contents">
+                    {proof.map((p) => (
+                      <motion.div
+                        key={p.value}
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                        className="relative h-full min-w-[280px] sm:min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] px-6 py-6 backdrop-blur-xl transition-colors hover:border-primary/40"
+                      >
+                        <div className="pointer-events-none absolute inset-0 opacity-70 [background:radial-gradient(520px_circle_at_20%_10%,rgba(245,197,66,0.10),transparent_55%)]" />
+                        <div className="relative h-full flex flex-col">
+                          <div className="text-4xl font-extrabold text-primary">{p.value}</div>
+                          <p className="mt-1 text-sm font-semibold text-[rgba(255,255,255,0.90)]">
+                            {p.label}
+                          </p>
+                          <p className="mt-auto pt-3 text-sm leading-relaxed text-[rgba(255,255,255,0.55)]">
+                            {p.hint}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Fade bas pour transition premium vers la section suivante */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-24 bg-gradient-to-b from-transparent to-black" />
-      </section>
-
-      {/* SECTION PREUVE */}
-      <section className="bg-black py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <div className="mx-auto max-w-3xl text-center">
-              <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-                Une méthode <span className="text-primary">simple</span>, un rendu <span className="text-primary">fort</span>
-              </h2>
-              <p className="mt-4 text-pretty text-lg leading-relaxed text-white/75">
-                Brief clair, plan solide, exécution propre. Vous voyez rapidement la direction, puis on finit au niveau.
-              </p>
-            </div>
-          </Reveal>
-
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
-            {[
-              {
-                title: "Pré-production",
-                text: "Objectif, direction, repérage, plan de tournage. On évite l’impro, on gagne en impact.",
-              },
-              {
-                title: "Production",
-                text: "Stabilisation, lumière, cadre, rythme. Une image propre, pensée pour votre public.",
-              },
-              {
-                title: "Post-production",
-                text: "Montage, étalonnage, exports multi-formats. Tout est prêt pour YouTube et les réseaux.",
-              },
-            ].map((card, index) => (
-              <Reveal key={card.title} delay={index * 0.1}>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur">
-                  <h3 className="text-lg font-bold text-white">{card.title}</h3>
-                  <p className="mt-3 text-sm leading-relaxed text-white/70">{card.text}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* IMAGE DE PRODUCTION */}
-      <section className="bg-black py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <div className="grid items-center gap-10 lg:grid-cols-12">
-              <div className="lg:col-span-6">
-                <motion.div
-                  whileHover={{ y: -4 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="relative aspect-[16/10] overflow-hidden rounded-3xl border border-white/10 shadow-2xl"
-                >
-                  <Image
-                    src="/black-jesus-records-hero.jpg"
-                    alt="Production Black Jesus Records"
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 620px"
-                    className="object-cover object-center"
-                    quality={92}
-                    placeholder="blur"
-                    blurDataURL={HERO_BLUR_DATA_URL}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <p className="text-xl font-bold text-white sm:text-2xl">
-                      Direction artistique • Réalisation • Post-production
-                    </p>
-                    <p className="mt-2 text-sm leading-relaxed text-white/75">
-                      Une seule équipe. Une seule vision. Un résultat cohérent, du début à la livraison.
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
-
-              <div className="lg:col-span-6">
-                <Reveal>
-                  <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-                    Une image <span className="text-primary">qui reste</span> — pas un contenu jetable
-                  </h2>
-                  <p className="mt-5 max-w-xl text-pretty text-lg leading-relaxed text-white/75">
-                    On ne cherche pas l’effet “vite fait”. On construit une esthétique, un rythme, une identité.
-                    Et on livre des versions prêtes pour chaque plateforme.
-                  </p>
-
-                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <Link
-                      href="/portfolio"
-                      className="inline-flex items-center justify-center rounded-xl border border-white/15 px-7 py-4 text-sm font-semibold text-white/90 transition hover:border-primary/50 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black"
-                      aria-label="Voir le portfolio"
-                    >
-                      Voir le portfolio
-                    </Link>
-                    <Link
-                      href="/services"
-                      className="inline-flex items-center justify-center rounded-xl bg-white/5 px-7 py-4 text-sm font-semibold text-white/90 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-black"
-                      aria-label="Voir nos services"
-                    >
-                      Nos services
-                    </Link>
-                  </div>
-                </Reveal>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* CTA FINAL */}
-      <section className="bg-black pb-24 pt-6">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <Reveal>
-            <div className="relative overflow-hidden rounded-3xl border border-primary/25 bg-gradient-to-br from-primary/15 via-white/[0.03] to-transparent p-10 sm:p-12">
-              <div className="absolute inset-0 opacity-[0.12] [background:radial-gradient(650px_circle_at_20%_0%,rgba(255,255,255,0.22),transparent_60%)]" />
-
-              <div className="relative text-center">
-                <h2 className="text-balance text-3xl font-extrabold tracking-tight sm:text-4xl">
-                  Prêt à lancer un projet qui <span className="text-primary">fait parler</span> ?
-                </h2>
-
-                <p className="mx-auto mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-white/75">
-                  Dites-nous ce que vous visez, la date, et le format. On vous répond avec une direction claire et un devis net.
-                </p>
-
-                <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-4 text-sm font-bold text-black transition hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/60 focus:ring-offset-2 focus:ring-offset-black"
-                    aria-label="Nous contacter"
-                  >
-                    Nous contacter
-                  </Link>
-
-                  <Link
-                    href="/services"
-                    className="inline-flex items-center justify-center rounded-xl border border-white/20 px-8 py-4 text-sm font-semibold text-white/90 transition hover:border-primary/50 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black"
-                    aria-label="Voir nos services"
-                  >
-                    Voir les services
-                  </Link>
-                </div>
-
-                <div className="mt-6">
-                  <Link
-                    href="/services"
-                    className="text-sm text-white/65 transition hover:text-primary"
-                    aria-label="Voir tous nos services"
-                  >
-                    Voir tous les services →
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </Reveal>
-        </div>
+        {/* Fade bas */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-28 bg-gradient-to-b from-transparent to-black" />
       </section>
     </main>
   );

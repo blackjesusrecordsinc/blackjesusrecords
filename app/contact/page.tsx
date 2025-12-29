@@ -52,6 +52,13 @@ const QUICK_BRIEFS = [
   { title: "Post-production", desc: "Durée finale, rushs dispo, objectifs, deadline." },
 ] as const;
 
+/** Mapping blindé */
+const BRIEF_TO_SERVICE: Record<(typeof QUICK_BRIEFS)[number]["title"], (typeof SERVICE_OPTIONS)[number]> = {
+  "Clip / vidéo": "Production vidéo",
+  "Shooting photo": "Shooting photo",
+  "Post-production": "Post-production",
+};
+
 /* =========================
    Motion
 ========================= */
@@ -144,6 +151,9 @@ function computeErrors(form: FormState): FieldErrors {
   if (!message) e.message = "Écris un message pour qu’on comprenne ton besoin.";
   else if (message.length < 20) e.message = "Ajoute un peu de contexte (minimum 20 caractères).";
 
+  // Optionnel : si tu veux que service soit requis, décommente :
+  // if (!form.service.trim()) e.service = "Choisis un service (ou 'Autre').";
+
   return e;
 }
 
@@ -157,9 +167,9 @@ export default function ContactPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const firstErrorRef = useRef<HTMLDivElement | null>(null);
+  const messageRef = useRef<HTMLTextAreaElement | null>(null);
 
   const errors = useMemo(() => computeErrors(form), [form]);
-  const hasErrors = Object.keys(errors).length > 0;
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -169,12 +179,11 @@ export default function ContactPage() {
     []
   );
 
-  const applyQuickBrief = useCallback((briefTitle: string) => {
+  const applyQuickBrief = useCallback((briefTitle: (typeof QUICK_BRIEFS)[number]["title"]) => {
     setSuccessMsg(null);
     setErrorMsg(null);
 
-    // mapping : le 1er bouton "Clip / vidéo" = service "Production vidéo"
-    const serviceLabel = briefTitle === "Clip / vidéo" ? "Production vidéo" : briefTitle;
+    const serviceLabel = BRIEF_TO_SERVICE[briefTitle];
 
     setForm((prev) => ({
       ...prev,
@@ -182,7 +191,7 @@ export default function ContactPage() {
       message: prev.message.trim().length ? prev.message : buildBriefTemplate(serviceLabel),
     }));
 
-    setTimeout(() => document.getElementById("message")?.focus?.(), 0);
+    requestAnimationFrame(() => messageRef.current?.focus());
   }, []);
 
   const handleSubmit = useCallback(
@@ -191,7 +200,10 @@ export default function ContactPage() {
       setSuccessMsg(null);
       setErrorMsg(null);
 
-      if (hasErrors) {
+      const currentErrors = computeErrors(form);
+      const hasCurrentErrors = Object.keys(currentErrors).length > 0;
+
+      if (hasCurrentErrors) {
         setErrorMsg("Corrige les champs requis, puis renvoie.");
         setTimeout(
           () => firstErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }),
@@ -231,7 +243,7 @@ export default function ContactPage() {
         setIsSending(false);
       }
     },
-    [form, hasErrors]
+    [form]
   );
 
   return (
@@ -386,6 +398,7 @@ export default function ContactPage() {
                     onChange={handleChange}
                     options={[...SERVICE_OPTIONS]}
                     hint="Si tu sais déjà ce que tu veux."
+                    error={errors.service}
                   />
                 </div>
 
@@ -419,6 +432,7 @@ export default function ContactPage() {
                   required
                   error={errors.message}
                   placeholder="Objectif, références, plateforme cible, délais…"
+                  inputRef={messageRef}
                 />
 
                 <div ref={firstErrorRef}>
@@ -429,8 +443,8 @@ export default function ContactPage() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                   <button
                     type="submit"
-                    disabled={isSending || hasErrors}
-                    className={cn(UI.btnPrimary, (isSending || hasErrors) && "opacity-70 cursor-not-allowed")}
+                    disabled={isSending}
+                    className={cn(UI.btnPrimary, isSending && "opacity-70 cursor-not-allowed")}
                   >
                     <span className={UI.btnPrimaryGlow} />
                     <span className="relative z-10">{isSending ? "Envoi…" : "Envoyer le message"}</span>
@@ -528,7 +542,7 @@ export default function ContactPage() {
 }
 
 /* =========================
-   UI atoms (inchangés, juste clean)
+   UI atoms (Optimisés)
 ========================= */
 function Field({
   label,
@@ -576,12 +590,14 @@ function Field({
 function Select({
   label,
   hint,
+  error,
   options,
   className,
   ...props
 }: React.SelectHTMLAttributes<HTMLSelectElement> & {
   label: string;
   hint?: string;
+  error?: string;
   options: string[];
 }) {
   const id = (props.id || props.name || label).toString();
@@ -594,18 +610,42 @@ function Select({
 
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
 
-      <select
-        {...props}
-        id={id}
-        className="w-full rounded-2xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white outline-none transition backdrop-blur-sm md:backdrop-blur-xl hover:border-white/15 focus:border-primary/35 focus:ring-1 focus:ring-primary/15"
-      >
-        <option value="">Sélectionner…</option>
-        {options.map((o) => (
-          <option key={o} value={o} className="bg-[#041224]">
-            {o}
+      <div className="relative">
+        <select
+          {...props}
+          id={id}
+          aria-invalid={Boolean(error) || undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
+          className={cn(
+            "w-full rounded-2xl bg-white/6 border px-4 py-3 pr-10 text-sm text-white outline-none transition backdrop-blur-sm md:backdrop-blur-xl appearance-none",
+            error
+              ? "border-primary/60 ring-1 ring-primary/20"
+              : "border-white/10 hover:border-white/15 focus:border-primary/35 focus:ring-1 focus:ring-primary/15"
+          )}
+        >
+          <option value="" className="bg-[#041224]">
+            Sélectionner…
           </option>
-        ))}
-      </select>
+          {options.map((o) => (
+            <option key={o} value={o} className="bg-[#041224]">
+              {o}
+            </option>
+          ))}
+        </select>
+
+        {/* Flèche personnalisée */}
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-white/30">
+          <svg className="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+          </svg>
+        </div>
+      </div>
+
+      {error ? (
+        <p id={`${id}-error`} className="mt-2 text-xs text-primary">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -615,11 +655,13 @@ function Textarea({
   hint,
   error,
   className,
+  inputRef,
   ...props
 }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
   label: string;
   hint?: string;
   error?: string;
+  inputRef?: React.RefObject<HTMLTextAreaElement | null>;
 }) {
   const id = (props.id || props.name || label).toString();
 
@@ -634,6 +676,7 @@ function Textarea({
       <textarea
         {...props}
         id={id}
+        ref={inputRef}
         rows={6}
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? `${id}-error` : undefined}

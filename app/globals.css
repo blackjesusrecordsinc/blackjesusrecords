@@ -8,9 +8,13 @@
   --muted: rgba(255, 255, 255, 0.78);
   --nav-h: 64px;
 
-  /* JAUNE SIGNATURE */
-  --brand-yellow: #F5C542;
-  --brand-yellow-soft: #E6B93C;
+  /* BRAND (jaune signature) */
+  --brand-yellow: #f5c542;
+  --brand-yellow-soft: #e6b93c;
+
+  /* ACCENT (tech/ciné) */
+  --accent: #22d3ee;       /* cyan-400 */
+  --accent-soft: #67e8f9;  /* cyan-300 */
 }
 
 /* =========================
@@ -20,6 +24,13 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--nav-h);
   color-scheme: dark;
+}
+
+/* ✅ A11y: respecte reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -52,6 +63,8 @@ a:hover {
 
 /* =========================
    TITRES – JAUNE CINÉMA
+   ✅ IMPORTANT: si un titre a une classe Tailwind "text-..."
+   on ne force pas la couleur (sinon ça casse tes gradients/white)
 ========================= */
 h1,
 h2,
@@ -61,6 +74,14 @@ h4 {
   text-shadow:
     0 0 16px rgba(245, 197, 66, 0.28),
     0 2px 28px rgba(0, 0, 0, 0.7);
+}
+
+/* ✅ Laisse Tailwind gérer la couleur si "text-..." est présent */
+h1[class*="text-"],
+h2[class*="text-"],
+h3[class*="text-"],
+h4[class*="text-"] {
+  color: inherit;
 }
 
 /* =========================
@@ -113,10 +134,63 @@ li {
 }
 
 /* =========================
+   FILM GRAIN (CINÉ/STREET) – PROD
+   ✅ Pas d'URL externe: /public/noise.svg
+========================= */
+.film-grain {
+  position: fixed;
+  inset: -120px; /* évite les bords lors du move */
+  pointer-events: none;
+  z-index: 60; /* au-dessus du contenu, sans casser les overlays spéciaux */
+  opacity: 0.035;
+  background-image: url("/noise.svg");
+  background-repeat: repeat;
+  background-size: 260px 260px;
+  mix-blend-mode: overlay;
+  transform: translateZ(0);
+}
+
+.film-grain.is-animated {
+  will-change: transform;
+  animation: grainMove 2.5s steps(8) infinite;
+}
+
+@keyframes grainMove {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-2%, -1%, 0);
+  }
+  40% {
+    transform: translate3d(1%, -2%, 0);
+  }
+  60% {
+    transform: translate3d(2%, 1%, 0);
+  }
+  80% {
+    transform: translate3d(-1%, 2%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-grain.is-animated {
+    animation: none;
+  }
+}
+
+/* =========================
    ANIMATION (OPTIONNELLE)
 ========================= */
 @keyframes bgFloat {
-  0% { transform: translateY(-2%); }
-  50% { transform: translateY(2%); }
-  100% { transform: translateY(-2%); }
+  0% {
+    transform: translateY(-2%);
+  }
+  50% {
+    transform: translateY(2%);
+  }
+  100% {
+    transform: translateY(-2%);
+  }
 }

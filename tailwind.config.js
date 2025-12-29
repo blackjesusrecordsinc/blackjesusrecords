@@ -14,23 +14,25 @@ module.exports = {
         ========================= */
         primary: "#F5C542",      // jaune signature (cinéma / luxe)
         primarySoft: "#E6B93C",  // hover / accents doux
+        primaryText: "#0B0B0B",
 
         /* =========================
            NEUTRES
         ========================= */
-        dark: "#0B0B0B",         // noir profond
-        grayText: "#D1D1D1",     // texte secondaire
+        dark: "#0B0B0B",
+        foreground: "#F5F5F5",
 
         /* =========================
-           ALIASES UTILES (UX)
+           TEXT TOKENS
         ========================= */
-        foreground: "#F5F5F5",   // texte principal
+        mutedStrong: "rgba(255,255,255,0.90)",
         muted: "rgba(255,255,255,0.78)",
+        mutedSoft: "rgba(255,255,255,0.55)",
       },
 
       boxShadow: {
-        /* glow jaune premium */
         glow: "0 0 22px rgba(245,197,66,0.25)",
+        title: "0 10px 30px rgba(0,0,0,0.55)",
       },
     },
   },

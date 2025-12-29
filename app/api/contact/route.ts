@@ -4,9 +4,13 @@ import { Resend } from "resend";
 import pRetry from "p-retry";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic"; // évite caches edge bizarres
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+/* ============================
+   TYPES
+============================ */
 type ContactPayload = {
   name?: string;
   email?: string;
@@ -22,6 +26,10 @@ type ContactPayload = {
 /* ============================
    UTILS
 ============================ */
+function json(status: number, data: Record<string, unknown>) {
+  return NextResponse.json(data, { status });
+}
+
 function escHtml(v: string) {
   return v
     .replaceAll("&", "&amp;")
@@ -35,13 +43,12 @@ function clean(v?: string) {
   return (v ?? "").toString().trim();
 }
 
-function safeLen(v: string | undefined, max: number) {
-  const s = v ?? "";
-  return s.length > max ? s.slice(0, max) : s;
+function safeLen(v: string, max: number) {
+  return v.length > max ? v.slice(0, max) : v;
 }
 
 function isEmail(v: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(v.trim());
 }
 
 function normalizePhone(v?: string) {
@@ -50,20 +57,37 @@ function normalizePhone(v?: string) {
 }
 
 function getOrigin(req: Request) {
-  // Vercel forward headers: origin rarement, mais referer souvent
   const origin = req.headers.get("origin") || "";
   const referer = req.headers.get("referer") || "";
-  return origin || (referer ? new URL(referer).origin : "");
+  try {
+    return origin || (referer ? new URL(referer).origin : "");
+  } catch {
+    return origin || "";
+  }
 }
 
-// Optionnel: autorise uniquement ton site à envoyer vers l’API
 function isAllowedOrigin(origin: string) {
-  if (!origin) return true; // si absent, on tolère (certaines configs)
-  const allowed = [
+  if (!origin) return true; // tolérant : certains fetch n’envoient pas origin/referer
+  const allowed = new Set([
     "https://www.blackjesusrecords.ca",
     "https://blackjesusrecords.ca",
-  ];
-  return allowed.includes(origin);
+  ]);
+  return allowed.has(origin);
+}
+
+function shouldRetry(err: unknown) {
+  const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
+  // retry réseau/tempo/5xx probables
+  return (
+    msg.includes("timeout") ||
+    msg.includes("timed out") ||
+    msg.includes("fetch") ||
+    msg.includes("socket") ||
+    msg.includes("econnreset") ||
+    msg.includes("eai_again") ||
+    msg.includes("429") ||
+    msg.includes("5") // garde-fou simple
+  );
 }
 
 /* ============================
@@ -92,14 +116,15 @@ function buildInternalHtml(data: {
   const table = rows
     .map(
       ([k, v]) => `
-      <tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #eee;color:#666;width:160px">
-          <strong>${escHtml(k)}</strong>
-        </td>
-        <td style="padding:10px 12px;border-bottom:1px solid #eee;color:#111">
-          ${escHtml(v || "—")}
-        </td>
-      </tr>`
+        <tr>
+          <td style="padding:10px 12px;border-bottom:1px solid #eee;color:#666;width:160px">
+            <strong>${escHtml(k)}</strong>
+          </td>
+          <td style="padding:10px 12px;border-bottom:1px solid #eee;color:#111">
+            ${escHtml(v || "—")}
+          </td>
+        </tr>
+      `
     )
     .join("");
 
@@ -184,24 +209,30 @@ function buildClientHtml(name: string) {
 /* ============================
    RESEND SEND (WITH RETRY)
 ============================ */
-async function resendSend(input: Parameters<typeof resend.emails.send>[0]) {
-  // Retry uniquement sur erreurs réseau / 5xx
+async function sendEmail(input: Parameters<typeof resend.emails.send>[0]) {
   return pRetry(
     async () => {
       const out = await resend.emails.send(input);
-      // Resend SDK renvoie { data, error } (souvent)
       const anyOut = out as any;
+
+      // Le SDK renvoie souvent { data, error }
       if (anyOut?.error) {
         const msg = anyOut.error?.message || "Resend error";
-        // pour que pRetry sache que c'est un échec
+        // marque l’erreur pour retry
         throw new Error(msg);
       }
+
       return out;
     },
     {
       retries: 2,
       minTimeout: 250,
-      maxTimeout: 1200,
+      maxTimeout: 1500,
+      randomize: true,
+      onFailedAttempt: (err) => {
+        // si ça ne mérite pas retry : stop
+        if (!shouldRetry(err)) throw err;
+      },
     }
   );
 }
@@ -212,26 +243,27 @@ async function resendSend(input: Parameters<typeof resend.emails.send>[0]) {
 export async function POST(req: Request) {
   try {
     if (!process.env.RESEND_API_KEY) {
-      return NextResponse.json({ error: "Configuration serveur manquante." }, { status: 500 });
+      return json(500, { error: "Configuration serveur manquante." });
     }
 
     const origin = getOrigin(req);
     if (!isAllowedOrigin(origin)) {
-      return NextResponse.json({ error: "Origin non autorisée." }, { status: 403 });
+      return json(403, { error: "Origin non autorisée." });
     }
 
     let body: ContactPayload;
     try {
       body = (await req.json()) as ContactPayload;
     } catch {
-      return NextResponse.json({ error: "Payload invalide." }, { status: 400 });
+      return json(400, { error: "Payload invalide." });
     }
 
-    // Honeypot anti-bot
+    // Honeypot anti-bot (silencieux)
     if (clean(body.company)) {
-      return NextResponse.json({ success: true });
+      return json(200, { success: true });
     }
 
+    // Normalisation + limites
     const name = safeLen(clean(body.name) || "Non renseigné", 80);
     const email = safeLen(clean(body.email).toLowerCase(), 120);
     const phone = safeLen(normalizePhone(body.phone), 40);
@@ -241,14 +273,18 @@ export async function POST(req: Request) {
     const budget = safeLen(clean(body.budget) || "—", 80);
     const message = safeLen(clean(body.message), 5000);
 
+    // Validation
     if (!email || !isEmail(email)) {
-      return NextResponse.json({ error: "Email invalide." }, { status: 400 });
+      return json(400, { error: "Email invalide." });
     }
     if (!message || message.length < 10) {
-      return NextResponse.json({ error: "Message trop court." }, { status: 400 });
+      return json(400, { error: "Message trop court." });
     }
 
-    // IMPORTANT: ces FROM doivent être des adresses autorisées par Resend (domaine vérifié)
+    // ENV recommandés (mets-les dans Vercel)
+    // RESEND_FROM_INTERNAL="Black Jesus Records <no-reply@blackjesusrecords.ca>"
+    // RESEND_FROM_CLIENT="Black Jesus Records <contact@blackjesusrecords.ca>"
+    // CONTACT_TO_EMAIL="blackjesusrecords.inc@gmail.com"
     const internalFrom =
       process.env.RESEND_FROM_INTERNAL || "Black Jesus Records <no-reply@blackjesusrecords.ca>";
 
@@ -257,32 +293,36 @@ export async function POST(req: Request) {
 
     const internalTo = process.env.CONTACT_TO_EMAIL || "blackjesusrecords.inc@gmail.com";
 
-    // 1) Email interne (on met reply_to, le plus compatible)
-    const internal = await resendSend({
+    // 1) Email interne (avec reply_to)
+    const internal = await sendEmail({
       from: internalFrom,
       to: [internalTo],
-      // ✅ plus compatible que replyTo selon versions
       reply_to: email,
       subject: `Nouvelle demande — ${service}`,
       html: buildInternalHtml({ name, email, phone, service, date, location, budget, message }),
+      headers: {
+        "X-Entity-Ref-ID": `contact-${Date.now()}`,
+      },
+      tags: [{ name: "source", value: "website" }],
     } as any);
 
     // 2) Auto-réponse client
-    const client = await resendSend({
+    const client = await sendEmail({
       from: clientFrom,
       to: [email],
       subject: "Demande reçue — Black Jesus Records",
       html: buildClientHtml(name),
-    });
+      tags: [{ name: "type", value: "auto-reply" }],
+    } as any);
 
-    // log minimal utile en prod
     const internalId = (internal as any)?.data?.id || (internal as any)?.id;
     const clientId = (client as any)?.data?.id || (client as any)?.id;
+
     console.log("CONTACT OK:", { internalId, clientId, service, email });
 
-    return NextResponse.json({ success: true });
+    return json(200, { success: true });
   } catch (err: any) {
     console.error("CONTACT API ERROR:", err);
-    return NextResponse.json({ error: "Erreur serveur." }, { status: 500 });
+    return json(500, { error: "Erreur serveur." });
   }
 }

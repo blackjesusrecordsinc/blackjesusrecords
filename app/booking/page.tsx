@@ -4,7 +4,6 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
-
 import HeroCineSlider from "@/components/HeroCineSlider";
 
 /* ================= TYPES ================= */
@@ -22,16 +21,20 @@ type BookingPayload = {
   company?: string; // honeypot
 };
 
+type BaseFieldProps = {
+  label: string;
+  hint?: string;
+  error?: string;
+  className?: string;
+};
+
 /* ================= UTILS ================= */
-function toStr(v: FormDataEntryValue | null) {
-  return typeof v === "string" ? v.trim() : "";
-}
-function isEmail(v: string) {
-  // robuste + simple
-  return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(v.trim());
-}
 function cn(...c: Array<string | false | null | undefined>) {
   return c.filter(Boolean).join(" ");
+}
+
+function isEmail(v: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(v.trim());
 }
 
 /* ================= DATA ================= */
@@ -122,62 +125,83 @@ const UI = {
 } as const;
 
 /* ================= PAGE ================= */
+const initialForm: BookingPayload = {
+  name: "",
+  email: "",
+  phone: "",
+  service: "",
+  date: "",
+  location: "",
+  budget: "",
+  message: "",
+  company: "",
+};
+
 export default function BookingPage() {
+  const [form, setForm] = useState<BookingPayload>(initialForm);
   const [status, setStatus] = useState<Status>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-  const formRef = useRef<HTMLFormElement | null>(null);
   const feedbackRef = useRef<HTMLDivElement | null>(null);
-  const services = useMemo(() => [...SERVICES], []);
+  const messageRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const services = useMemo(() => SERVICES.slice() as unknown as string[], []);
+
+  const disabled = status === "loading";
 
   const validate = useCallback((p: BookingPayload) => {
     const e: Record<string, string> = {};
-    if (!p.name || p.name.length < 2) e.name = "Indique ton nom.";
+    if (!p.name || p.name.trim().length < 2) e.name = "Indique ton nom.";
     if (!p.email) e.email = "Indique ton email.";
     else if (!isEmail(p.email)) e.email = "Email invalide (ex: nom@domaine.com).";
     if (!p.message) e.message = "Décris le projet.";
-    else if (p.message.length < 20) e.message = "Ajoute un minimum de contexte (20 caractères).";
-    // honeypot : si rempli => on refuse côté API idéalement, ici on laisse passer au serveur
+    else if (p.message.trim().length < 20) e.message = "Ajoute un minimum de contexte (20 caractères).";
     return e;
   }, []);
+
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value } = e.currentTarget;
+      setForm((prev) => ({ ...prev, [name]: value }));
+    },
+    []
+  );
 
   const applyTemplate = useCallback((service: string, message: string) => {
     setStatus(null);
     setErrorMsg("");
     setFieldErrors({});
-    const form = formRef.current;
-    if (!form) return;
 
-    const serviceEl = form.querySelector<HTMLSelectElement>('select[name="service"]');
-    const msgEl = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]');
+    setForm((prev) => ({
+      ...prev,
+      service,
+      message: prev.message.trim() ? prev.message : message,
+    }));
 
-    if (serviceEl) serviceEl.value = service;
-    if (msgEl) {
-      if (!msgEl.value.trim()) msgEl.value = message;
-      msgEl.focus();
-    }
+    requestAnimationFrame(() => {
+      messageRef.current?.focus();
+    });
   }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       setStatus("loading");
       setErrorMsg("");
       setFieldErrors({});
 
-      const fd = new FormData(e.currentTarget);
-
       const payload: BookingPayload = {
-        name: toStr(fd.get("name")),
-        email: toStr(fd.get("email")),
-        phone: toStr(fd.get("phone")),
-        service: toStr(fd.get("service")),
-        date: toStr(fd.get("date")),
-        location: toStr(fd.get("location")),
-        budget: toStr(fd.get("budget")),
-        message: toStr(fd.get("message")),
-        company: toStr(fd.get("company")), // honeypot
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        service: form.service.trim(),
+        date: form.date.trim(),
+        location: form.location.trim(),
+        budget: form.budget.trim(),
+        message: form.message.trim(),
+        company: form.company?.trim(),
       };
 
       const errs = validate(payload);
@@ -200,17 +224,20 @@ export default function BookingPage() {
         if (!res.ok) {
           setStatus("error");
           setErrorMsg(data?.error || "Erreur serveur. Réessaie plus tard.");
+          feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
           return;
         }
 
         setStatus("success");
-        e.currentTarget.reset();
+        setForm(initialForm);
+        feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       } catch {
         setStatus("error");
         setErrorMsg("Erreur de connexion. Réessaie plus tard.");
+        feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       }
     },
-    [validate]
+    [form, validate]
   );
 
   return (
@@ -270,25 +297,38 @@ export default function BookingPage() {
 
             {/* ===== FORM ===== */}
             <motion.div variants={item} className={UI.card}>
-              <form ref={formRef} onSubmit={handleSubmit} className="space-y-5" noValidate>
+              <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                 {/* Honeypot */}
-                <input name="company" className="hidden" tabIndex={-1} autoComplete="off" />
+                <input
+                  name="company"
+                  value={form.company || ""}
+                  onChange={onChange}
+                  className="hidden"
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <Field
                     label="Nom complet *"
                     name="name"
+                    value={form.name}
+                    onChange={onChange}
                     autoComplete="name"
                     placeholder="Ex. Emmanuel Kibanda"
                     error={fieldErrors.name}
+                    disabled={disabled}
                   />
                   <Field
                     label="Email *"
                     name="email"
                     type="email"
+                    value={form.email}
+                    onChange={onChange}
                     autoComplete="email"
                     placeholder="Ex. nom@domaine.com"
                     error={fieldErrors.email}
+                    disabled={disabled}
                   />
                 </div>
 
@@ -296,30 +336,55 @@ export default function BookingPage() {
                   <Field
                     label="Téléphone"
                     name="phone"
+                    value={form.phone}
+                    onChange={onChange}
                     autoComplete="tel"
                     placeholder="Optionnel"
+                    disabled={disabled}
                   />
                   <Select
                     label="Service"
                     name="service"
+                    value={form.service}
+                    onChange={onChange}
                     options={services}
                     hint="Choisis si tu sais déjà."
+                    disabled={disabled}
                   />
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-4">
-                  <Field label="Date souhaitée" name="date" type="date" />
-                  <Field label="Lieu" name="location" placeholder="Ville, studio, extérieur…" className="md:col-span-2" />
+                  <Field label="Date souhaitée" name="date" type="date" value={form.date} onChange={onChange} disabled={disabled} />
+                  <Field
+                    label="Lieu"
+                    name="location"
+                    value={form.location}
+                    onChange={onChange}
+                    placeholder="Ville, studio, extérieur…"
+                    className="md:col-span-2"
+                    disabled={disabled}
+                  />
                 </div>
 
-                <Field label="Budget" name="budget" placeholder="Ex. 800 $, 1500 $, à discuter…" />
+                <Field
+                  label="Budget"
+                  name="budget"
+                  value={form.budget}
+                  onChange={onChange}
+                  placeholder="Ex. 800 $, 1500 $, à discuter…"
+                  disabled={disabled}
+                />
 
                 <Textarea
+                  ref={messageRef}
                   label="Détails *"
                   name="message"
+                  value={form.message}
+                  onChange={onChange}
                   rows={7}
                   placeholder="Objectif, références (liens), plateforme, livrables, délais…"
                   error={fieldErrors.message}
+                  disabled={disabled}
                 />
 
                 <div ref={feedbackRef}>
@@ -330,11 +395,11 @@ export default function BookingPage() {
                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                   <button
                     type="submit"
-                    disabled={status === "loading"}
-                    className={cn(UI.btnPrimary, status === "loading" && "opacity-75 cursor-not-allowed")}
+                    disabled={disabled}
+                    className={cn(UI.btnPrimary, disabled && "opacity-75 cursor-not-allowed")}
                   >
                     <span className={UI.btnPrimaryGlow} />
-                    <span className="relative z-10">{status === "loading" ? "Envoi…" : "Envoyer"}</span>
+                    <span className="relative z-10">{disabled ? "Envoi…" : "Envoyer"}</span>
                   </button>
 
                   <p className="text-xs text-white/55 leading-relaxed">
@@ -360,13 +425,6 @@ export default function BookingPage() {
 }
 
 /* ================= ATOMS ================= */
-type BaseFieldProps = {
-  label: string;
-  hint?: string;
-  error?: string;
-  className?: string;
-};
-
 function Field({
   label,
   hint,
@@ -386,10 +444,7 @@ function Field({
         id={id}
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={cn(
-          UI.inputBase,
-          error && "border-cyan-300/45 ring-1 ring-cyan-300/15"
-        )}
+        className={cn(UI.inputBase, error && "border-cyan-300/45 ring-1 ring-cyan-300/15")}
       />
       {error ? (
         <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">
@@ -406,38 +461,41 @@ function Select({
   options,
   className,
   ...props
-}: React.SelectHTMLAttributes<HTMLSelectElement> &
-  BaseFieldProps & { options: string[] }) {
+}: React.SelectHTMLAttributes<HTMLSelectElement> & BaseFieldProps & { options: string[] }) {
   const id = (props.id || props.name || label).toString();
   return (
-    <div className={className}>
+    <div className={cn("relative", className)}>
       <label htmlFor={id} className="block mb-2 text-sm text-white/85">
         {label}
       </label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
-      <select
-        {...props}
-        id={id}
-        className={cn(UI.inputBase, "appearance-none")}
-      >
-        <option value="">Sélectionner…</option>
-        {options.map((o) => (
-          <option key={o} value={o} className="bg-[#041224]">
-            {o}
+
+      <div className="relative">
+        <select {...props} id={id} className={cn(UI.inputBase, "appearance-none pr-10 cursor-pointer")}>
+          <option value="" className="bg-slate-900">
+            Sélectionner…
           </option>
-        ))}
-      </select>
+          {options.map((o) => (
+            <option key={o} value={o} className="bg-slate-900">
+              {o}
+            </option>
+          ))}
+        </select>
+
+        <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-cyan-300/50">
+          <svg aria-hidden="true" className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 }
 
-function Textarea({
-  label,
-  hint,
-  error,
-  className,
-  ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & BaseFieldProps) {
+const Textarea = React.forwardRef<
+  HTMLTextAreaElement,
+  React.TextareaHTMLAttributes<HTMLTextAreaElement> & BaseFieldProps
+>(function Textarea({ label, hint, error, className, ...props }, ref) {
   const id = (props.id || props.name || label).toString();
   return (
     <div className={className}>
@@ -446,15 +504,12 @@ function Textarea({
       </label>
       {hint ? <p className="mb-2 text-xs text-white/50">{hint}</p> : null}
       <textarea
+        ref={ref}
         {...props}
         id={id}
         aria-invalid={Boolean(error) || undefined}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={cn(
-          UI.inputBase,
-          "min-h-[140px] resize-y",
-          error && "border-cyan-300/45 ring-1 ring-cyan-300/15"
-        )}
+        className={cn(UI.inputBase, "min-h-[140px] resize-y", error && "border-cyan-300/45 ring-1 ring-cyan-300/15")}
       />
       {error ? (
         <p id={`${id}-error`} className="mt-2 text-xs text-cyan-200">
@@ -463,20 +518,26 @@ function Textarea({
       ) : null}
     </div>
   );
-}
+});
+Textarea.displayName = "Textarea";
 
 function Feedback({ type, text }: { type: "error" | "success"; text: string }) {
   const isError = type === "error";
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
       className={cn(
-        "rounded-xl border px-4 py-3 backdrop-blur-sm",
-        isError ? "border-cyan-300/35 bg-cyan-300/10" : "border-white/10 bg-white/6"
+        "rounded-xl px-4 py-3 border text-sm backdrop-blur-sm",
+        isError ? "bg-cyan-300/5 border-cyan-300/20 text-cyan-100" : "bg-emerald-500/5 border-emerald-500/20 text-emerald-100"
       )}
       role={isError ? "alert" : "status"}
       aria-live={isError ? "assertive" : "polite"}
     >
-      <p className="text-sm text-white/90">{text}</p>
-    </div>
+      <div className="flex items-center gap-3">
+        <span className={cn("w-1.5 h-1.5 rounded-full", isError ? "bg-cyan-300" : "bg-emerald-400")} />
+        {text}
+      </div>
+    </motion.div>
   );
 }
