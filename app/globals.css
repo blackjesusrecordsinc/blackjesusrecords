@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 /* =========================
+<<<<<<< HEAD
    VARIABLES GLOBALES
 ========================= */
 :root {
@@ -16,6 +17,22 @@
   --scrim-top: rgba(0, 0, 0, 0.70);
   --scrim-mid: rgba(0, 0, 0, 0.45);
   --scrim-bot: rgba(0, 0, 0, 0.75);
+=======
+   VARIABLES GLOBALES – BLACK JESUS
+========================= */
+:root {
+  --foreground: #f5f5f5;
+  --muted: rgba(255, 255, 255, 0.78);
+  --nav-h: 64px;
+
+  /* BRAND (jaune signature) */
+  --brand-yellow: #f5c542;
+  --brand-yellow-soft: #e6b93c;
+
+  /* ACCENT (tech/ciné) */
+  --accent: #22d3ee;       /* cyan-400 */
+  --accent-soft: #67e8f9;  /* cyan-300 */
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 }
 
 /* =========================
@@ -25,6 +42,13 @@ html {
   scroll-behavior: smooth;
   scroll-padding-top: var(--nav-h);
   color-scheme: dark;
+}
+
+/* ✅ A11y: respecte reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -38,6 +62,7 @@ body {
 }
 
 /* =========================
+<<<<<<< HEAD
    NE PAS RENDRE TOUT TRANSPARENT
    (on respecte la respiration)
 ========================= */
@@ -49,6 +74,18 @@ article {
 
 /* =========================
    LIENS
+=======
+   ⚠️ TRANSPARENCE CONTRÔLÉE
+   ❌ on NE force PLUS les div/header/main/footer
+   (évite bugs de lisibilité + z-index)
+========================= */
+section {
+  background-color: transparent;
+}
+
+/* =========================
+   LIENS – JAUNE ONLY
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 ========================= */
 a {
   color: var(--brand-yellow);
@@ -59,7 +96,13 @@ a:hover {
 }
 
 /* =========================
+<<<<<<< HEAD
    TITRES (CINÉ, MAIS RESPIRANTS)
+=======
+   TITRES – JAUNE CINÉMA
+   ✅ IMPORTANT: si un titre a une classe Tailwind "text-..."
+   on ne force pas la couleur (sinon ça casse tes gradients/white)
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 ========================= */
 h1,
 h2,
@@ -72,6 +115,20 @@ h3 {
 h1 span,
 h2 span {
   color: var(--brand-yellow);
+<<<<<<< HEAD
+=======
+  text-shadow:
+    0 0 16px rgba(245, 197, 66, 0.28),
+    0 2px 28px rgba(0, 0, 0, 0.7);
+}
+
+/* ✅ Laisse Tailwind gérer la couleur si "text-..." est présent */
+h1[class*="text-"],
+h2[class*="text-"],
+h3[class*="text-"],
+h4[class*="text-"] {
+  color: inherit;
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 }
 
 /* =========================
@@ -90,39 +147,118 @@ li {
   -webkit-tap-highlight-color: transparent;
 }
 
+<<<<<<< HEAD
+=======
+/* Sélection – jaune (accessibilité OK) */
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 ::selection {
-  background: rgba(245, 197, 66, 0.22);
+  background: rgba(245, 197, 66, 0.25);
   color: #ffffff;
 }
 
+<<<<<<< HEAD
+=======
+/* Focus visible – jaune */
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 :focus-visible {
   outline: 2px solid var(--brand-yellow);
   outline-offset: 2px;
 }
 
 /* =========================
+<<<<<<< HEAD
    LISIBILITÉ GLOBALE
    (UNE SEULE COUCHE, OPTIONNELLE)
+=======
+   UTILITAIRE OPTIONNEL – LISIBILITÉ
+   (à appliquer MANUELLEMENT si besoin)
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 ========================= */
+.readable {
+  position: relative;
+}
+
 .readable::before {
   content: "";
-  position: fixed;
+  position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   background: linear-gradient(
     to bottom,
-    var(--scrim-top) 0%,
-    var(--scrim-mid) 50%,
-    var(--scrim-bot) 100%
+    rgba(0, 0, 0, 0.75) 0%,
+    rgba(0, 0, 0, 0.45) 50%,
+    rgba(0, 0, 0, 0.8) 100%
   );
 }
 
 /* =========================
+<<<<<<< HEAD
    ANIMATIONS DOUCES (SI UTILISÉES)
 ========================= */
 @keyframes bgFloat {
   0% { transform: translateY(-1.5%); }
   50% { transform: translateY(1.5%); }
   100% { transform: translateY(-1.5%); }
+=======
+   FILM GRAIN (CINÉ/STREET) – PROD
+   ✅ Pas d'URL externe: /public/noise.svg
+========================= */
+.film-grain {
+  position: fixed;
+  inset: -120px; /* évite les bords lors du move */
+  pointer-events: none;
+  z-index: 60; /* au-dessus du contenu, sans casser les overlays spéciaux */
+  opacity: 0.035;
+  background-image: url("/noise.svg");
+  background-repeat: repeat;
+  background-size: 260px 260px;
+  mix-blend-mode: overlay;
+  transform: translateZ(0);
+}
+
+.film-grain.is-animated {
+  will-change: transform;
+  animation: grainMove 2.5s steps(8) infinite;
+}
+
+@keyframes grainMove {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  20% {
+    transform: translate3d(-2%, -1%, 0);
+  }
+  40% {
+    transform: translate3d(1%, -2%, 0);
+  }
+  60% {
+    transform: translate3d(2%, 1%, 0);
+  }
+  80% {
+    transform: translate3d(-1%, 2%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .film-grain.is-animated {
+    animation: none;
+  }
+}
+
+/* =========================
+   ANIMATION (OPTIONNELLE)
+========================= */
+@keyframes bgFloat {
+  0% {
+    transform: translateY(-2%);
+  }
+  50% {
+    transform: translateY(2%);
+  }
+  100% {
+    transform: translateY(-2%);
+  }
+>>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 }
