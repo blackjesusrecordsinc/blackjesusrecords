@@ -1,38 +1,17 @@
 @import "tailwindcss";
 
 /* =========================
-<<<<<<< HEAD
-   VARIABLES GLOBALES
+   VARIABLES GLOBALES (BLACK JESUS)
+   ✅ Jaune only (zéro bleu/cyan)
 ========================= */
 :root {
-  --foreground: #f5f5f5;
-  --muted: rgba(255, 255, 255, 0.72);
+  --foreground: #f5f5f5;              /* blanc cassé */
+  --muted: rgba(255, 255, 255, 0.78); /* texte secondaire */
   --nav-h: 64px;
 
   /* BRAND */
-  --brand-yellow: #F5C542;
-  --brand-yellow-soft: #E6B93C;
-
-  /* Lisibilité globale (layout, pas image) */
-  --scrim-top: rgba(0, 0, 0, 0.70);
-  --scrim-mid: rgba(0, 0, 0, 0.45);
-  --scrim-bot: rgba(0, 0, 0, 0.75);
-=======
-   VARIABLES GLOBALES – BLACK JESUS
-========================= */
-:root {
-  --foreground: #f5f5f5;
-  --muted: rgba(255, 255, 255, 0.78);
-  --nav-h: 64px;
-
-  /* BRAND (jaune signature) */
   --brand-yellow: #f5c542;
   --brand-yellow-soft: #e6b93c;
-
-  /* ACCENT (tech/ciné) */
-  --accent: #22d3ee;       /* cyan-400 */
-  --accent-soft: #67e8f9;  /* cyan-300 */
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 }
 
 /* =========================
@@ -53,39 +32,28 @@ html {
 
 body {
   min-height: 100vh;
-  background: transparent;
+  background: transparent; /* ✅ ton background photo vit derrière */
   color: var(--foreground);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont,
-    "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+    "Helvetica Neue", Arial, sans-serif;
   overflow-x: hidden;
   line-height: 1.6;
 }
 
 /* =========================
-<<<<<<< HEAD
-   NE PAS RENDRE TOUT TRANSPARENT
-   (on respecte la respiration)
+   TRANSPARENCE CONTRÔLÉE
+   ❌ on NE force PAS div/header/main/footer en transparent
+   (sinon tu casses la lisibilité et les overlays)
 ========================= */
 section,
 main,
 article {
   position: relative;
-}
-
-/* =========================
-   LIENS
-=======
-   ⚠️ TRANSPARENCE CONTRÔLÉE
-   ❌ on NE force PLUS les div/header/main/footer
-   (évite bugs de lisibilité + z-index)
-========================= */
-section {
   background-color: transparent;
 }
 
 /* =========================
-   LIENS – JAUNE ONLY
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+   LIENS (JAUNE ONLY)
 ========================= */
 a {
   color: var(--brand-yellow);
@@ -96,29 +64,24 @@ a:hover {
 }
 
 /* =========================
-<<<<<<< HEAD
-   TITRES (CINÉ, MAIS RESPIRANTS)
-=======
-   TITRES – JAUNE CINÉMA
-   ✅ IMPORTANT: si un titre a une classe Tailwind "text-..."
-   on ne force pas la couleur (sinon ça casse tes gradients/white)
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+   TITRES (SOBRES + CINÉ)
+   ✅ Tailwind garde la main si tu mets une classe "text-..."
 ========================= */
 h1,
 h2,
-h3 {
+h3,
+h4 {
   color: var(--foreground);
   font-weight: 600;
   letter-spacing: -0.015em;
 }
 
+/* touches jaunes si tu utilises des <span> dans les titres */
 h1 span,
-h2 span {
+h2 span,
+h3 span {
   color: var(--brand-yellow);
-<<<<<<< HEAD
-=======
-  text-shadow:
-    0 0 16px rgba(245, 197, 66, 0.28),
+  text-shadow: 0 0 16px rgba(245, 197, 66, 0.22),
     0 2px 28px rgba(0, 0, 0, 0.7);
 }
 
@@ -128,7 +91,6 @@ h2[class*="text-"],
 h3[class*="text-"],
 h4[class*="text-"] {
   color: inherit;
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 }
 
 /* =========================
@@ -147,32 +109,22 @@ li {
   -webkit-tap-highlight-color: transparent;
 }
 
-<<<<<<< HEAD
-=======
-/* Sélection – jaune (accessibilité OK) */
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+/* Sélection – jaune */
 ::selection {
   background: rgba(245, 197, 66, 0.25);
   color: #ffffff;
 }
 
-<<<<<<< HEAD
-=======
 /* Focus visible – jaune */
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 :focus-visible {
   outline: 2px solid var(--brand-yellow);
   outline-offset: 2px;
 }
 
 /* =========================
-<<<<<<< HEAD
-   LISIBILITÉ GLOBALE
-   (UNE SEULE COUCHE, OPTIONNELLE)
-=======
-   UTILITAIRE OPTIONNEL – LISIBILITÉ
-   (à appliquer MANUELLEMENT si besoin)
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+   LISIBILITÉ GLOBALE (OPTIONNEL)
+   ✅ à appliquer sur les pages qui en ont besoin: className="readable"
+   ⚠️ IMPORTANT: ton contenu doit être au-dessus (z-10) si nécessaire
 ========================= */
 .readable {
   position: relative;
@@ -193,61 +145,6 @@ li {
 }
 
 /* =========================
-<<<<<<< HEAD
-   ANIMATIONS DOUCES (SI UTILISÉES)
-========================= */
-@keyframes bgFloat {
-  0% { transform: translateY(-1.5%); }
-  50% { transform: translateY(1.5%); }
-  100% { transform: translateY(-1.5%); }
-=======
-   FILM GRAIN (CINÉ/STREET) – PROD
-   ✅ Pas d'URL externe: /public/noise.svg
-========================= */
-.film-grain {
-  position: fixed;
-  inset: -120px; /* évite les bords lors du move */
-  pointer-events: none;
-  z-index: 60; /* au-dessus du contenu, sans casser les overlays spéciaux */
-  opacity: 0.035;
-  background-image: url("/noise.svg");
-  background-repeat: repeat;
-  background-size: 260px 260px;
-  mix-blend-mode: overlay;
-  transform: translateZ(0);
-}
-
-.film-grain.is-animated {
-  will-change: transform;
-  animation: grainMove 2.5s steps(8) infinite;
-}
-
-@keyframes grainMove {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  20% {
-    transform: translate3d(-2%, -1%, 0);
-  }
-  40% {
-    transform: translate3d(1%, -2%, 0);
-  }
-  60% {
-    transform: translate3d(2%, 1%, 0);
-  }
-  80% {
-    transform: translate3d(-1%, 2%, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .film-grain.is-animated {
-    animation: none;
-  }
-}
-
-/* =========================
    ANIMATION (OPTIONNELLE)
 ========================= */
 @keyframes bgFloat {
@@ -260,5 +157,4 @@ li {
   100% {
     transform: translateY(-2%);
   }
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 }

@@ -1,15 +1,31 @@
 "use client";
 
 import Image from "next/image";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
 
 type Slide = { src: string; alt: string };
+
+type Props = {
+  className?: string;
+  count?: number;
+  ext?: ".jpg" | ".png" | ".jpeg";
+  intervalMs?: number;
+  fadeSeconds?: number;
+  onIndexChange?: (index: number) => void;
+
+  // overlays (lisibilité + premium)
+  darkness?: number; // 0.55–0.70
+  vignette?: number; // 0.30–0.60
+  glow?: number; // 0.00–0.12
+  grain?: number; // 0.00–0.10
+  showDots?: boolean; // OFF par défaut
+};
+
 const pad2 = (n: number) => String(n).padStart(2, "0");
 
-<<<<<<< HEAD
-function pad2(n: number) {
-  return String(n).padStart(2, "0");
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v));
 }
 
 export default function HeroCineSlider({
@@ -17,71 +33,26 @@ export default function HeroCineSlider({
   count = 14,
   ext = ".jpg",
   intervalMs = 9000,
-  fadeSeconds = 2.8,
-  onIndexChange,
-}: {
-=======
-type Props = {
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
-  className?: string;
-  count?: number;
-  ext?: ".jpg" | ".png" | ".jpeg";
-  intervalMs?: number;
-  fadeSeconds?: number;
-  onIndexChange?: (index: number) => void;
-<<<<<<< HEAD
-}) {
-  const reduce = useReducedMotion();
-
-  /* ================= SLIDES ================= */
-  const slides: Slide[] = useMemo(() => {
-    return Array.from({ length: Math.max(2, count) }, (_, idx) => {
-      const n = idx + 1;
-      return {
-        src: `/work/${pad2(n)}${ext}`,
-        alt: `Black Jesus Records — Work ${pad2(n)}`,
-      };
-    });
-  }, [count, ext]);
-
-  /* ================= DOUBLE BUFFER ================= */
-  const [frontIdx, setFrontIdx] = useState(0);
-  const [backIdx, setBackIdx] = useState(1);
-  const [frontIsA, setFrontIsA] = useState(true);
-
-  const paused = useRef(false);
-  const timeoutRef = useRef<number | null>(null);
-
-  /* ================= PRELOAD ================= */
-=======
-
-  darkness?: number;
-  vignette?: number;
-  glow?: number;
-  grain?: number;
-  showDots?: boolean;
-};
-
-export default function HeroCineSlider({
-  className = "",
-  count = 8,
-  ext = ".jpg",
-  intervalMs = 10000,
-  fadeSeconds = 2.0,
+  fadeSeconds = 2.6,
   onIndexChange,
 
   darkness = 0.62,
-  vignette = 0.45,
+  vignette = 0.48,
   glow = 0.06,
   grain = 0.05,
   showDots = false,
 }: Props) {
   const reduce = useReducedMotion();
 
-  // ✅ touch/desktop
+  const d = clamp01(darkness);
+  const v = clamp01(vignette);
+  const g = clamp01(glow);
+  const gr = clamp01(grain);
+
+  // ✅ détecte touch
   const [isTouch, setIsTouch] = useState(false);
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
   useEffect(() => {
+    if (typeof window === "undefined") return;
     const mq = window.matchMedia("(hover: none), (pointer: coarse)");
     const update = () => setIsTouch(mq.matches);
     update();
@@ -89,21 +60,19 @@ export default function HeroCineSlider({
     return () => mq.removeEventListener?.("change", update);
   }, []);
 
-  // ✅ pause (hover / hors écran)
+  // ✅ pause + visibilité (perf)
   const [isPaused, setIsPaused] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const el = rootRef.current;
-    if (!el) return;
+    if (!el || typeof window === "undefined") return;
 
     const io = new IntersectionObserver(
       ([entry]) => setIsVisible(entry.isIntersecting),
       { threshold: 0.1 }
     );
-
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -112,32 +81,30 @@ export default function HeroCineSlider({
     if (!isVisible) setIsPaused(true);
   }, [isVisible]);
 
-  // Slides
-  const slides: Slide[] = useMemo(
-    () =>
-      Array.from({ length: Math.max(2, count) }, (_, i) => ({
-        src: `/work/${pad2(i + 1)}${ext}`,
-        alt: `Black Jesus Records — Work ${pad2(i + 1)}`,
-      })),
-    [count, ext]
-  );
+  // ✅ slides
+  const slides: Slide[] = useMemo(() => {
+    const total = Math.max(2, count);
+    return Array.from({ length: total }, (_, i) => ({
+      src: `/work/${pad2(i + 1)}${ext}`,
+      alt: `Black Jesus Records — Work ${pad2(i + 1)}`,
+    }));
+  }, [count, ext]);
 
   const len = slides.length;
 
-  // ✅ indices + toggle A/B
+  // ✅ double buffer A/B (crossfade)
   const [front, setFront] = useState(0);
   const [back, setBack] = useState(1);
   const [showA, setShowA] = useState(true);
 
-  // ✅ refs anti stale closure
+  // refs anti stale closure
   const frontRef = useRef(front);
   useEffect(() => {
     frontRef.current = front;
   }, [front]);
 
-  // ✅ preload (3 prochaines)
+  // ✅ preload (3 prochaines) + current
   useEffect(() => {
-    // évite crash SSR
     if (typeof window === "undefined") return;
 
     const preload = (src: string) => {
@@ -147,76 +114,39 @@ export default function HeroCineSlider({
       img.src = src;
     };
 
-<<<<<<< HEAD
-  /* ================= AUTOPLAY ================= */
-  useEffect(() => {
-    const tick = () => {
-      if (!paused.current) {
-        setFrontIdx((cur) => {
-          const next = (cur + 1) % slides.length;
-          setBackIdx(next);
-          setFrontIsA((x) => !x);
-          onIndexChange?.(next);
-          return next;
-        });
-      }
-      timeoutRef.current = window.setTimeout(tick, intervalMs);
-    };
-
-    timeoutRef.current = window.setTimeout(tick, intervalMs);
-
-    return () => {
-      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-    };
-  }, [intervalMs, slides.length, onIndexChange]);
-
-  /* ================= KEN BURNS (MICRO) ================= */
-  const ken = useMemo(() => {
-    const presets = [
-      { s0: 1.01, s1: 1.035, x0: 0, x1: -4, y0: 0, y1: 3 },
-      { s0: 1.01, s1: 1.035, x0: 4, x1: -3, y0: -2, y1: 3 },
-      { s0: 1.01, s1: 1.035, x0: -4, x1: 3, y0: 3, y1: -2 },
-    ];
-    return presets[frontIdx % presets.length];
-  }, [frontIdx]);
-
-  const fade = reduce ? 0 : fadeSeconds;
-
-  const aIsFront = frontIsA;
-  const bIsFront = !frontIsA;
-=======
+    preload(slides[front].src);
     for (let i = 1; i <= 3; i++) {
-      const idx = (front + i) % len;
-      preload(slides[idx].src);
+      preload(slides[(front + i) % len].src);
     }
   }, [front, len, slides]);
 
-  // ✅ interval adapté touch
+  // ✅ interval adapté au touch (encore + imperceptible)
   const effectiveIntervalMs = isTouch ? intervalMs * 2 : intervalMs;
 
-  // ✅ autoplay (pause aware) — interval stable, sans fuite
+  // ✅ autoplay (pause aware)
   useEffect(() => {
-    if (reduce) return; // si reduced motion, pas d'autoplay (micro perf / UX)
+    if (reduce) return; // si reduced motion, pas d'autoplay
     if (isPaused) return;
 
     const id = window.setInterval(() => {
-      setShowA((v) => !v);
+      setShowA((x) => !x);
 
-      const nextFront = (frontRef.current + 1) % len;
-      frontRef.current = nextFront;
+      const next = (frontRef.current + 1) % len;
+      frontRef.current = next;
 
-      setFront(nextFront);
-      setBack((nextFront + 1) % len);
+      setFront(next);
+      setBack((next + 1) % len);
 
-      onIndexChange?.(nextFront);
+      onIndexChange?.(next);
     }, effectiveIntervalMs);
 
     return () => window.clearInterval(id);
   }, [effectiveIntervalMs, isPaused, len, onIndexChange, reduce]);
 
-  // ✅ Ken Burns memo (dépend de l’interval effectif)
-  const kenBurns = useMemo(() => {
+  // ✅ Ken Burns ultra léger (presque imperceptible)
+  const ken = useMemo(() => {
     const duration = effectiveIntervalMs / 1000 + 1;
+    // micro mouvement, pas de “wow” visible
     return {
       initial: { scale: 1.02, x: 0, y: 0 },
       animate: { scale: 1.045, x: -6, y: 4 },
@@ -226,7 +156,7 @@ export default function HeroCineSlider({
 
   const fade = reduce ? 0 : fadeSeconds;
 
-  // ✅ filter style (pas de classe dynamique)
+  // ✅ filtre image stable (pas de classe tailwind dynamique)
   const imageStyle = useMemo(
     () =>
       ({
@@ -234,34 +164,22 @@ export default function HeroCineSlider({
       }) as React.CSSProperties,
     []
   );
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
 
   const A = slides[front];
   const B = slides[back];
 
   return (
     <div
-<<<<<<< HEAD
+      ref={rootRef}
       className={`absolute inset-0 ${className}`}
       aria-hidden="true"
-      onMouseEnter={() => (paused.current = true)}
-      onMouseLeave={() => (paused.current = false)}
-=======
-      ref={rootRef}
-      className={`absolute inset-0 ${className} hero-slider-container`}
-      aria-hidden="true"
       role="presentation"
-      aria-label="Diaporama de travaux"
       onMouseEnter={() => !isTouch && setIsPaused(true)}
       onMouseLeave={() => !isTouch && setIsPaused(false)}
       onTouchStart={() => setIsPaused(true)}
-      onTouchEnd={() => {
-        // petite pause puis reprise (optionnel)
-        window.setTimeout(() => setIsPaused(false), 900);
-      }}
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+      onTouchEnd={() => window.setTimeout(() => setIsPaused(false), 900)}
     >
-      {/* ===== LAYER A ===== */}
+      {/* LAYER A */}
       <motion.div
         className="absolute inset-0"
         animate={{ opacity: showA ? 1 : 0 }}
@@ -269,46 +187,23 @@ export default function HeroCineSlider({
       >
         <motion.div
           className="absolute inset-0"
-<<<<<<< HEAD
-          initial={
-            reduce
-              ? { scale: 1, x: 0, y: 0 }
-              : { scale: ken.s0, x: ken.x0, y: ken.y0 }
-          }
-          animate={
-            reduce
-              ? { scale: 1, x: 0, y: 0 }
-              : { scale: ken.s1, x: ken.x1, y: ken.y1 }
-          }
-          transition={
-            reduce
-              ? { duration: 0 }
-              : { duration: intervalMs / 1000 + 1, ease: "easeInOut" }
-          }
-=======
-          initial={reduce ? {} : kenBurns.initial}
-          animate={reduce ? {} : kenBurns.animate}
-          transition={reduce ? {} : kenBurns.transition}
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+          initial={reduce ? {} : ken.initial}
+          animate={reduce ? {} : ken.animate}
+          transition={reduce ? {} : ken.transition}
         >
           <Image
             src={A.src}
             alt={A.alt}
             fill
-<<<<<<< HEAD
-            priority={aIdx === 0}
-            sizes="100vw"
-            className="object-cover object-center"
-=======
             sizes="100vw"
             className="object-cover object-center"
             style={imageStyle}
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+            priority={front === 0}
           />
         </motion.div>
       </motion.div>
 
-      {/* ===== LAYER B ===== */}
+      {/* LAYER B */}
       <motion.div
         className="absolute inset-0"
         animate={{ opacity: showA ? 0 : 1 }}
@@ -316,40 +211,14 @@ export default function HeroCineSlider({
       >
         <motion.div
           className="absolute inset-0"
-<<<<<<< HEAD
-          initial={
-            reduce
-              ? { scale: 1, x: 0, y: 0 }
-              : { scale: ken.s0, x: ken.x0, y: ken.y0 }
-          }
-          animate={
-            reduce
-              ? { scale: 1, x: 0, y: 0 }
-              : { scale: ken.s1, x: ken.x1, y: ken.y1 }
-          }
-          transition={
-            reduce
-              ? { duration: 0 }
-              : { duration: intervalMs / 1000 + 1, ease: "easeInOut" }
-          }
-=======
-          initial={reduce ? {} : kenBurns.initial}
-          animate={reduce ? {} : kenBurns.animate}
-          transition={reduce ? {} : kenBurns.transition}
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
+          initial={reduce ? {} : ken.initial}
+          animate={reduce ? {} : ken.animate}
+          transition={reduce ? {} : ken.transition}
         >
           <Image
             src={B.src}
             alt={B.alt}
             fill
-<<<<<<< HEAD
-            priority={false}
-            sizes="100vw"
-            className="object-cover object-center"
-          />
-        </motion.div>
-      </motion.div>
-=======
             sizes="100vw"
             className="object-cover object-center"
             style={imageStyle}
@@ -357,50 +226,57 @@ export default function HeroCineSlider({
         </motion.div>
       </motion.div>
 
-      {/* OVERLAY LISIBILITÉ (NEUTRE) */}
+      {/* overlay lisibilité (stable) */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background: `linear-gradient(to bottom,
-            rgba(0,0,0,${Math.max(0.45, darkness + 0.12)}) 0%,
-            rgba(0,0,0,${Math.max(0.22, darkness - 0.22)}) 50%,
-            rgba(0,0,0,${Math.max(0.45, darkness + 0.18)}) 100%)`,
+            rgba(0,0,0,${Math.max(0.45, d + 0.12)}) 0%,
+            rgba(0,0,0,${Math.max(0.22, d - 0.22)}) 50%,
+            rgba(0,0,0,${Math.max(0.45, d + 0.18)}) 100%)`,
         }}
       />
 
-      {/* VIGNETTE DOUCE (réduite sur touch si tu veux — ici: micro adapt) */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          boxShadow: `inset 0 0 ${isTouch ? 90 : 140}px rgba(0,0,0,${vignette})`,
-        }}
-      />
-
-      {/* GLOW JAUNE */}
-      {glow > 0 && (
+      {/* glow jaune (subtil) */}
+      {g > 0 && (
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background: `radial-gradient(ellipse at center,
-              rgba(245,197,66,${glow}) 0%,
+              rgba(245,197,66,${g}) 0%,
               rgba(0,0,0,0) 55%)`,
           }}
         />
       )}
 
-      {/* GRAIN (désactivé reduce motion) */}
-      {!reduce && grain > 0 && (
+      {/* vignette douce */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          boxShadow: `inset 0 0 ${isTouch ? 90 : 140}px rgba(0,0,0,${v})`,
+        }}
+      />
+
+      {/* grain (optionnel) */}
+      {!reduce && gr > 0 && (
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.05] mix-blend-overlay bg-[url('/noise.png')]"
+          className="absolute inset-0 pointer-events-none mix-blend-overlay"
+          style={{
+            opacity: gr,
+            backgroundImage:
+              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.30'/%3E%3C/svg%3E\")",
+            backgroundRepeat: "repeat",
+          }}
         />
       )}
 
-      {/* DOTS */}
+      {/* dots (désactivés par défaut) */}
       {showDots && (
         <div className="absolute bottom-6 left-6 flex gap-2">
-          {slides.map((_, i) => (
+          {slides.slice(0, Math.min(10, slides.length)).map((s, i) => (
             <button
-              key={i}
+              key={s.src}
+              type="button"
               onClick={() => {
                 setFront(i);
                 setBack((i + 1) % len);
@@ -408,18 +284,14 @@ export default function HeroCineSlider({
                 setShowA(true);
                 onIndexChange?.(i);
               }}
-              className={`h-2.5 w-2.5 rounded-full ${i === front ? "bg-primary" : "bg-white/30"}`}
+              className={`h-2.5 w-2.5 rounded-full transition ${
+                i === front ? "bg-[var(--brand-yellow)]" : "bg-white/30 hover:bg-white/50"
+              }`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}
         </div>
       )}
-
-      {/* Indicateur pause (optionnel) */}
-      {isPaused && !isTouch && (
-        <div className="absolute bottom-4 right-4 text-xs text-white/50">Pause</div>
-      )}
->>>>>>> 518badd5fecd99f81b293159e5d7ee8767b37013
     </div>
   );
 }

@@ -10,7 +10,7 @@ const fade = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] as const },
+    transition: { duration: 0.75, ease: "easeOut" as const },
   },
 };
 
