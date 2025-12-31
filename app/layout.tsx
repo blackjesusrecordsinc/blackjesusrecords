@@ -4,63 +4,87 @@ import "./globals.css";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-
-import TopProgress from "@/components/TopProgress";
-import RouteLoader from "@/components/RouteLoader";
-import CursorGlow from "@/components/CursorGlow";
-import PageTransition from "@/components/PageTransition";
 import WorkBackground from "@/components/WorkBackground";
 
 import { Analytics } from "@vercel/analytics/react";
-import { Suspense } from "react";
 
-const SITE_NAME = "Black Jesus Records";
-const SITE_URL = "https://www.blackjesusrecords.ca";
-const DEFAULT_TITLE = "Black Jesus Records";
-const DEFAULT_DESCRIPTION =
-  "Studio créatif & label à Lévis (Québec). Vidéo, photo, post-production, contenus réseaux sociaux et stratégie.";
+/* =========================
+   SITE CONFIG (LOCKED)
+========================= */
+const SITE = {
+  name: "Black Jesus Records",
+  url: "https://www.blackjesusrecords.ca",
+  defaultTitle: "Black Jesus Records",
+  description:
+    "Studio créatif & label indépendant basé à Lévis, Québec. Image · Son · Stratégie.",
+  locale: "fr_CA",
+  brandColor: "#F5C542",
+} as const;
 
+/* =========================
+   VIEWPORT
+========================= */
 export const viewport: Viewport = {
-  // ✅ Jaune signature (plus de bleu visible sur mobile/SEO)
-  themeColor: "#F5C542",
+  themeColor: SITE.brandColor,
   colorScheme: "dark",
   width: "device-width",
   initialScale: 1,
 };
 
+/* =========================
+   METADATA (sobre, non marketing)
+========================= */
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  applicationName: SITE_NAME,
-  title: { default: DEFAULT_TITLE, template: `%s | ${SITE_NAME}` },
-  description: DEFAULT_DESCRIPTION,
-  alternates: { canonical: SITE_URL },
+  metadataBase: new URL(SITE.url),
+  applicationName: SITE.name,
+
+  title: {
+    default: SITE.defaultTitle,
+    template: `%s | ${SITE.name}`,
+  },
+  description: SITE.description,
+  alternates: { canonical: SITE.url },
   robots: { index: true, follow: true },
+
+  openGraph: {
+    type: "website",
+    url: SITE.url,
+    siteName: SITE.name,
+    title: SITE.defaultTitle,
+    description: SITE.description,
+    locale: SITE.locale,
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: SITE.defaultTitle,
+    description: SITE.description,
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="fr" className="bg-transparent">
-      {/* ✅ readable = overlay global lisible sur toutes les pages */}
-      <body className="readable min-h-screen bg-transparent text-white antialiased overflow-x-hidden [accent-color:#F5C542]">
-        {/* ✅ BACKGROUND GLOBAL (derrière tout) */}
+      <body className="min-h-screen bg-transparent text-white antialiased overflow-x-hidden">
+        {/* =========================
+           BACKGROUND GLOBAL
+           vivant, lent, imperceptible
+        ========================= */}
         <div className="fixed inset-0 -z-10">
-          <WorkBackground count={11} intervalMs={7000} />
+          <WorkBackground count={14} intervalMs={9000} />
         </div>
 
-        {/* UX */}
-        <TopProgress />
-
-        {/* ✅ Obligatoire (RouteLoader utilise useSearchParams) */}
-        <Suspense fallback={null}>
-          <RouteLoader />
-        </Suspense>
-
-        <CursorGlow />
+        {/* =========================
+           SHELL
+        ========================= */}
         <Navbar />
 
-        {/* contenu */}
-        <main className="pt-[var(--nav-h)] relative z-0 bg-transparent">
-          <PageTransition>{children}</PageTransition>
+        <main className="pt-[var(--nav-h)] relative">
+          {children}
         </main>
 
         <Footer />

@@ -1,288 +1,79 @@
 // app/api/contact/route.ts
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
-import pRetry from "p-retry";
 
 export const runtime = "nodejs";
-
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-type ContactPayload = {
+type Payload = {
+  kind?: "call" | "project";
   name?: string;
   email?: string;
   phone?: string;
-  service?: string;
-  date?: string;
-  location?: string;
-  budget?: string;
+  availability?: string;
   message?: string;
   company?: string; // honeypot
 };
 
-/* ============================
-   UTILS
-============================ */
-function escHtml(v: string) {
-  return v
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
 function clean(v?: string) {
   return (v ?? "").toString().trim();
 }
-
-function safeLen(v: string | undefined, max: number) {
-  const s = v ?? "";
-  return s.length > max ? s.slice(0, max) : s;
-}
-
 function isEmail(v: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
 
-function normalizePhone(v?: string) {
-  const x = clean(v);
-  return x ? x.replace(/[^\d+]/g, "") : "";
-}
-
-function getOrigin(req: Request) {
-  // Vercel forward headers: origin rarement, mais referer souvent
-  const origin = req.headers.get("origin") || "";
-  const referer = req.headers.get("referer") || "";
-  return origin || (referer ? new URL(referer).origin : "");
-}
-
-// Optionnel: autorise uniquement ton site à envoyer vers l’API
-function isAllowedOrigin(origin: string) {
-  if (!origin) return true; // si absent, on tolère (certaines configs)
-  const allowed = [
-    "https://www.blackjesusrecords.ca",
-    "https://blackjesusrecords.ca",
-  ];
-  return allowed.includes(origin);
-}
-
-/* ============================
-   EMAIL TEMPLATES
-============================ */
-function buildInternalHtml(data: {
-  name: string;
-  email: string;
-  phone: string;
-  service: string;
-  date: string;
-  location: string;
-  budget: string;
-  message: string;
-}) {
-  const rows: Array<[string, string]> = [
-    ["Nom", data.name],
-    ["Email", data.email],
-    ["Téléphone", data.phone || "—"],
-    ["Service", data.service],
-    ["Date", data.date],
-    ["Lieu", data.location],
-    ["Budget", data.budget],
-  ];
-
-  const table = rows
-    .map(
-      ([k, v]) => `
-      <tr>
-        <td style="padding:10px 12px;border-bottom:1px solid #eee;color:#666;width:160px">
-          <strong>${escHtml(k)}</strong>
-        </td>
-        <td style="padding:10px 12px;border-bottom:1px solid #eee;color:#111">
-          ${escHtml(v || "—")}
-        </td>
-      </tr>`
-    )
-    .join("");
-
-  return `
-  <div style="font-family:Arial,Helvetica,sans-serif;background:#f6f7f9;padding:24px">
-    <div style="max-width:720px;margin:auto;background:#fff;border:1px solid #eee;border-radius:14px;overflow:hidden">
-      <div style="padding:20px;background:#0b0b0e;color:#fff">
-        <div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#f5c518;font-weight:700">
-          Black Jesus Records
-        </div>
-        <div style="margin-top:6px;font-size:22px;font-weight:700">
-          Nouvelle demande entrante
-        </div>
-        <div style="margin-top:4px;font-size:13px;color:rgba(255,255,255,.65)">
-          Service : ${escHtml(data.service)}
-        </div>
-      </div>
-
-      <div style="padding:20px">
-        <table style="width:100%;border-collapse:collapse;border:1px solid #eee;border-radius:12px;overflow:hidden">
-          ${table}
-        </table>
-
-        <div style="margin-top:20px">
-          <div style="font-weight:700;margin-bottom:8px">Message</div>
-          <div style="white-space:pre-line;background:#fafafa;border:1px solid #eee;border-radius:12px;padding:14px">
-            ${escHtml(data.message)}
-          </div>
-        </div>
-
-        <p style="margin-top:16px;font-size:12px;color:#666">
-          Répondre directement à cet email pour contacter le client.
-        </p>
-      </div>
-    </div>
-  </div>`;
-}
-
-function buildClientHtml(name: string) {
-  const safeName = name && name !== "Non renseigné" ? name : "bonjour";
-
-  return `
-  <div style="font-family:Arial,Helvetica,sans-serif;background:#f6f7f9;padding:24px">
-    <div style="max-width:720px;margin:auto;background:#fff;border:1px solid #eee;border-radius:14px;overflow:hidden">
-      <div style="padding:20px;background:#0b0b0e;color:#fff">
-        <div style="font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#f5c518;font-weight:700">
-          Black Jesus Records
-        </div>
-        <div style="margin-top:6px;font-size:22px;font-weight:700">
-          Demande bien reçue
-        </div>
-      </div>
-
-      <div style="padding:20px;color:#111">
-        <p>Bonjour ${escHtml(safeName)},</p>
-
-        <p>Merci d’avoir contacté <strong>Black Jesus Records</strong>.</p>
-
-        <p>
-          Chaque projet est étudié avec rigueur afin de garantir une réponse claire,
-          structurée et alignée avec vos objectifs.
-        </p>
-
-        <div style="margin:16px 0;padding:14px;border:1px solid #eee;border-radius:12px;background:#fafafa">
-          <strong>Délai de réponse :</strong> 24 à 48h (jours ouvrables)
-        </div>
-
-        <p style="margin-top:18px">
-          —<br/>
-          <strong>Black Jesus Records</strong><br/>
-          Direction artistique · Production · Stratégie
-        </p>
-
-        <p style="margin-top:14px;font-size:12px;color:#666">
-          Pour une demande urgente, répondez à ce courriel avec “URGENT” dans l’objet.
-        </p>
-      </div>
-    </div>
-  </div>`;
-}
-
-/* ============================
-   RESEND SEND (WITH RETRY)
-============================ */
-async function resendSend(input: Parameters<typeof resend.emails.send>[0]) {
-  // Retry uniquement sur erreurs réseau / 5xx
-  return pRetry(
-    async () => {
-      const out = await resend.emails.send(input);
-      // Resend SDK renvoie { data, error } (souvent)
-      const anyOut = out as any;
-      if (anyOut?.error) {
-        const msg = anyOut.error?.message || "Resend error";
-        // pour que pRetry sache que c'est un échec
-        throw new Error(msg);
-      }
-      return out;
-    },
-    {
-      retries: 2,
-      minTimeout: 250,
-      maxTimeout: 1200,
-    }
-  );
-}
-
-/* ============================
-   HANDLER
-============================ */
 export async function POST(req: Request) {
   try {
-    if (!process.env.RESEND_API_KEY) {
-      return NextResponse.json({ error: "Configuration serveur manquante." }, { status: 500 });
-    }
+    const body = (await req.json()) as Payload;
 
-    const origin = getOrigin(req);
-    if (!isAllowedOrigin(origin)) {
-      return NextResponse.json({ error: "Origin non autorisée." }, { status: 403 });
-    }
+    if (body.company) return NextResponse.json({ success: true });
 
-    let body: ContactPayload;
-    try {
-      body = (await req.json()) as ContactPayload;
-    } catch {
-      return NextResponse.json({ error: "Payload invalide." }, { status: 400 });
-    }
-
-    // Honeypot anti-bot
-    if (clean(body.company)) {
-      return NextResponse.json({ success: true });
-    }
-
-    const name = safeLen(clean(body.name) || "Non renseigné", 80);
-    const email = safeLen(clean(body.email).toLowerCase(), 120);
-    const phone = safeLen(normalizePhone(body.phone), 40);
-    const service = safeLen(clean(body.service) || "Non spécifié", 80);
-    const date = safeLen(clean(body.date) || "—", 40);
-    const location = safeLen(clean(body.location) || "—", 120);
-    const budget = safeLen(clean(body.budget) || "—", 80);
-    const message = safeLen(clean(body.message), 5000);
+    const kind = body.kind ?? "project";
+    const name = clean(body.name) || "—";
+    const email = clean(body.email);
+    const phone = clean(body.phone);
+    const availability = clean(body.availability);
+    const message = clean(body.message);
 
     if (!email || !isEmail(email)) {
-      return NextResponse.json({ error: "Email invalide." }, { status: 400 });
-    }
-    if (!message || message.length < 10) {
-      return NextResponse.json({ error: "Message trop court." }, { status: 400 });
+      return NextResponse.json({ error: "Email invalide" }, { status: 400 });
     }
 
-    // IMPORTANT: ces FROM doivent être des adresses autorisées par Resend (domaine vérifié)
-    const internalFrom =
-      process.env.RESEND_FROM_INTERNAL || "Black Jesus Records <no-reply@blackjesusrecords.ca>";
+    if (kind === "call" && !availability) {
+      return NextResponse.json({ error: "Disponibilités requises" }, { status: 400 });
+    }
 
-    const clientFrom =
-      process.env.RESEND_FROM_CLIENT || "Black Jesus Records <contact@blackjesusrecords.ca>";
+    if (kind === "project" && message.length < 15) {
+      return NextResponse.json({ error: "Message trop court" }, { status: 400 });
+    }
 
-    const internalTo = process.env.CONTACT_TO_EMAIL || "blackjesusrecords.inc@gmail.com";
+    const subject =
+      kind === "call"
+        ? "Nouvelle demande — Appel"
+        : "Nouvelle demande — Projet";
 
-    // 1) Email interne (on met reply_to, le plus compatible)
-    const internal = await resendSend({
-      from: internalFrom,
-      to: [internalTo],
-      // ✅ plus compatible que replyTo selon versions
+    const html = `
+      <strong>Type :</strong> ${kind}<br/>
+      <strong>Nom :</strong> ${name}<br/>
+      <strong>Email :</strong> ${email}<br/>
+      <strong>Téléphone :</strong> ${phone || "—"}<br/>
+      ${
+        kind === "call"
+          ? `<strong>Disponibilités :</strong><br/>${availability}`
+          : `<strong>Message :</strong><br/>${message}`
+      }
+    `;
+
+    await resend.emails.send({
+      from: "Black Jesus Records <no-reply@blackjesusrecords.ca>",
+      to: ["blackjesusrecords.inc@gmail.com"],
       reply_to: email,
-      subject: `Nouvelle demande — ${service}`,
-      html: buildInternalHtml({ name, email, phone, service, date, location, budget, message }),
-    } as any);
-
-    // 2) Auto-réponse client
-    const client = await resendSend({
-      from: clientFrom,
-      to: [email],
-      subject: "Demande reçue — Black Jesus Records",
-      html: buildClientHtml(name),
+      subject,
+      html,
     });
 
-    // log minimal utile en prod
-    const internalId = (internal as any)?.data?.id || (internal as any)?.id;
-    const clientId = (client as any)?.data?.id || (client as any)?.id;
-    console.log("CONTACT OK:", { internalId, clientId, service, email });
-
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    console.error("CONTACT API ERROR:", err);
-    return NextResponse.json({ error: "Erreur serveur." }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
