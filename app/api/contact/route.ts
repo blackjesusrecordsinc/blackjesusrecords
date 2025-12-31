@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: "Black Jesus Records <no-reply@blackjesusrecords.ca>",
       to: ["blackjesusrecords.inc@gmail.com"],
-      reply_to: email,
+      replyTo: email,
       subject,
       html,
     });
