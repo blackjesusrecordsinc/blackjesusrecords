@@ -1,13 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
-const fade = {
+const fade: Variants = {
   hidden: { opacity: 0, y: 14 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.9, ease: "easeOut" },
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1], // ✅ TS OK (équivalent easeOut)
+    },
   },
 };
 
@@ -31,8 +35,8 @@ export default function SavoirFairePage() {
           animate="show"
           className="mt-6 max-w-2xl text-white/65 leading-relaxed"
         >
-          Un ensemble de pratiques centrées sur la précision, la cohérence
-          et une narration calme.
+          Un ensemble de pratiques centrées sur la précision, la cohérence et une
+          narration calme.
         </motion.p>
       </section>
 
@@ -69,9 +73,7 @@ function Section({ title, text }: { title: string; text: string }) {
         {title}
       </h2>
 
-      <p className="mt-5 text-white/65 leading-relaxed max-w-2xl">
-        {text}
-      </p>
+      <p className="mt-5 text-white/65 leading-relaxed max-w-2xl">{text}</p>
 
       <div className="mt-10 h-px w-full bg-white/12" />
     </div>

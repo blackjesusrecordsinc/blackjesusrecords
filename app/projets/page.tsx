@@ -2,13 +2,17 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
-const fade = {
+const fade: Variants = {
   hidden: { opacity: 0, y: 14 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.9, ease: "easeOut" },
+    transition: {
+      duration: 0.9,
+      ease: [0.22, 1, 0.36, 1], // ✅ équivalent "easeOut" mais typé OK
+    },
   },
 };
 
@@ -32,15 +36,15 @@ export default function ProjetsPage() {
           animate="show"
           className="mt-6 max-w-xl text-white/65 leading-relaxed"
         >
-          Une sélection de projets réalisés pour des artistes,
-          marques et structures indépendantes.
+          Une sélection de projets réalisés pour des artistes, marques et
+          structures indépendantes.
         </motion.p>
       </section>
 
       {/* GRID VISUEL */}
       <section className="max-w-7xl mx-auto px-6 pb-32">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {PROJECTS.map((p, i) => (
+          {PROJECTS.map((p) => (
             <motion.article
               key={p.id}
               variants={fade}
@@ -61,12 +65,8 @@ export default function ProjetsPage() {
 
               {/* TEXTE MINIMAL */}
               <div className="mt-4">
-                <h3 className="text-sm tracking-wide text-white/85">
-                  {p.title}
-                </h3>
-                <p className="mt-1 text-xs text-white/55">
-                  {p.type}
-                </p>
+                <h3 className="text-sm tracking-wide text-white/85">{p.title}</h3>
+                <p className="mt-1 text-xs text-white/55">{p.type}</p>
               </div>
             </motion.article>
           ))}
@@ -82,40 +82,10 @@ export default function ProjetsPage() {
 /* ================= DATA ================= */
 
 const PROJECTS = [
-  {
-    id: "p1",
-    title: "Clip musical",
-    type: "Réalisation · Montage",
-    cover: "/projects/01.jpg",
-  },
-  {
-    id: "p2",
-    title: "Contenu artiste",
-    type: "Direction artistique",
-    cover: "/projects/02.jpg",
-  },
-  {
-    id: "p3",
-    title: "Événement",
-    type: "Captation · Post-production",
-    cover: "/projects/03.jpg",
-  },
-  {
-    id: "p4",
-    title: "Brand content",
-    type: "Image · Stratégie",
-    cover: "/projects/04.jpg",
-  },
-  {
-    id: "p5",
-    title: "Portrait",
-    type: "Photo",
-    cover: "/projects/05.jpg",
-  },
-  {
-    id: "p6",
-    title: "Aftermovie",
-    type: "Réalisation",
-    cover: "/projects/06.jpg",
-  },
+  { id: "p1", title: "Clip musical", type: "Réalisation · Montage", cover: "/projects/01.jpg" },
+  { id: "p2", title: "Contenu artiste", type: "Direction artistique", cover: "/projects/02.jpg" },
+  { id: "p3", title: "Événement", type: "Captation · Post-production", cover: "/projects/03.jpg" },
+  { id: "p4", title: "Brand content", type: "Image · Stratégie", cover: "/projects/04.jpg" },
+  { id: "p5", title: "Portrait", type: "Photo", cover: "/projects/05.jpg" },
+  { id: "p6", title: "Aftermovie", type: "Réalisation", cover: "/projects/06.jpg" },
 ];

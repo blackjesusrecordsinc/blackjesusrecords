@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import type { Variants } from "framer-motion";
 
-const fade = {
+const fade: Variants = {
   hidden: { opacity: 0, y: 14 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.85, ease: "easeOut" },
+    transition: {
+      duration: 0.85,
+      ease: [0.22, 1, 0.36, 1], // ✅ TS OK (easeOut)
+    },
   },
 };
 
@@ -32,8 +36,9 @@ export default function StudioEtLabelPage() {
           animate="show"
           className="mt-6 max-w-2xl text-white/65 leading-relaxed"
         >
-          Black Jesus Records est un studio créatif et un label indépendant basé à Lévis, Québec.
-          Nous produisons des images et du son avec exigence, intention et cohérence.
+          Black Jesus Records est un studio créatif et un label indépendant basé
+          à Lévis, Québec. Nous produisons des images et du son avec exigence,
+          intention et cohérence.
         </motion.p>
 
         <motion.p
@@ -81,8 +86,8 @@ export default function StudioEtLabelPage() {
           {/* CTA DISCRET */}
           <div className="flex flex-col gap-6">
             <p className="text-white/60 leading-relaxed max-w-xl">
-              Si tu veux parler rapidement : planifier un appel.  
-              Si tu préfères écrire : débuter un projet.
+              Si tu veux parler rapidement : planifier un appel. Si tu préfères
+              écrire : débuter un projet.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-5">
