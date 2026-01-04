@@ -5,8 +5,18 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: true,
   },
+
   images: {
-    domains: ["images.unsplash.com"], // Ajoute d'autres domaines si besoin
+    // Images externes autorisées (Unsplash)
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+
+    // ℹ️ Les images locales (/public/**) ne passent PAS ici
+    // Elles fonctionnent automatiquement via /public
   },
 };
 
