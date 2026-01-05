@@ -1,8 +1,5 @@
-// app/api/contact/route.ts
-import { NextResponse } from "next/server";
-import { Resend } from "resend";
-import pRetry from "p-retry";
 
+<<<<<<< HEAD
 export const runtime = "nodejs";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -235,3 +232,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Erreur serveur." }, { status: 500 });
   }
 }
+=======
+export {};
+>>>>>>> 10e061a (Rebuild: premium layout + motion + readability)

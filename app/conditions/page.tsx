@@ -1,39 +1,65 @@
 export default function ConditionsPage() {
   return (
-    <main className="min-h-screen bg-black px-6 py-24">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-white">
-          Conditions d’utilisation
-        </h1>
+    <main className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <header className="relative border-b border-white/15">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_45%_at_50%_0%,rgba(245,197,66,0.15),rgba(0,0,0,0)_60%)]" />
+        <div className="relative mx-auto max-w-4xl px-6 pt-28 pb-12">
+          <p className="text-xs tracking-widest uppercase text-white/70">
+            Document légal
+          </p>
 
-        <p className="mt-6 text-white/70 leading-relaxed">
-          En accédant au site Black Jesus Records, vous acceptez les présentes
-          conditions d’utilisation.
-        </p>
+          <h1 className="mt-3 text-3xl md:text-5xl font-extrabold tracking-tight">
+            Conditions d’utilisation
+          </h1>
 
-        <section className="mt-10 space-y-6 text-sm text-white/70 leading-relaxed">
+          <p className="mt-4 max-w-3xl text-base text-white/90 leading-relaxed">
+            Les présentes conditions encadrent l’accès et l’utilisation du site
+            Black Jesus Records.
+          </p>
+        </div>
+      </header>
+
+      {/* Content */}
+      <section className="mx-auto max-w-4xl px-6 py-20">
+        <article className="space-y-10 text-[15px] leading-relaxed text-white/90">
           <p>
-            Tout le contenu présenté sur ce site (textes, images, vidéos, logos)
-            est protégé par le droit d’auteur et demeure la propriété de Black Jesus Records
-            ou de ses partenaires.
+            En accédant à ce site, l’utilisateur reconnaît avoir pris connaissance
+            des présentes conditions d’utilisation et accepter d’y être lié.
+            Si ces conditions ne sont pas acceptées, l’utilisation du site doit cesser.
           </p>
 
           <p>
-            Toute reproduction, diffusion ou utilisation non autorisée du contenu
-            est strictement interdite.
+            L’ensemble des contenus présents sur ce site, incluant notamment les textes,
+            images, vidéos, éléments graphiques, marques et identités visuelles,
+            est protégé par les lois relatives à la propriété intellectuelle.
+            Ces contenus demeurent la propriété exclusive de Black Jesus Records
+            ou de ses ayants droit.
           </p>
 
           <p>
-            Black Jesus Records se réserve le droit de modifier le contenu du site
-            ou ces conditions à tout moment, sans préavis.
+            Toute reproduction, diffusion, modification ou exploitation, totale ou partielle,
+            du contenu sans autorisation écrite préalable est strictement interdite,
+            quel que soit le support ou le procédé utilisé.
           </p>
 
           <p>
-            L’utilisation de ce site se fait sous votre entière responsabilité.
+            Le site est fourni à titre informatif. Black Jesus Records ne garantit
+            ni l’exactitude, ni l’exhaustivité, ni l’actualité des informations diffusées,
+            et décline toute responsabilité quant à l’utilisation qui pourrait en être faite.
           </p>
-        </section>
-      </div>
+
+          <p>
+            Black Jesus Records se réserve le droit de modifier, suspendre ou interrompre
+            l’accès au site, ainsi que de mettre à jour les présentes conditions,
+            à tout moment et sans préavis.
+          </p>
+
+          <p className="text-white/70 text-sm">
+            Les présentes conditions sont régies par les lois applicables au Québec et au Canada.
+          </p>
+        </article>
+      </section>
     </main>
   );
 }
-

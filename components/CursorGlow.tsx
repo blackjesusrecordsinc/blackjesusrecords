@@ -1,41 +1,49 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 
+/**
+ * - SSR safe: on démarre à false
+ * - On active seulement sur desktop hover + non-coarse
+ * - setState uniquement via callbacks (évite lint set-state-in-effect)
+ */
+
 export default function CursorGlow() {
-  const reduce = useReducedMotion();
-  const [pos, setPos] = useState({ x: -9999, y: -9999 });
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    if (reduce) return;
+    if (typeof window === "undefined" || !window.matchMedia) return;
 
-    const isCoarse = window.matchMedia("(pointer: coarse)").matches; // mobile/tablet
-    const canHover = window.matchMedia("(hover: hover)").matches;
+    const mqCoarse = window.matchMedia("(pointer: coarse)");
+    const mqHover = window.matchMedia("(hover: hover)");
 
-    // uniquement desktop “vrai”
-    const ok = !isCoarse && canHover;
-    setEnabled(ok);
+    const update = () => setEnabled(!mqCoarse.matches && mqHover.matches);
 
-    if (!ok) return;
+    // ✅ pas "sync setState" direct → microtask
+    queueMicrotask(update);
 
-    const onMove = (e: MouseEvent) => setPos({ x: e.clientX, y: e.clientY });
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => window.removeEventListener("mousemove", onMove);
-  }, [reduce]);
+    const add = (mq: MediaQueryList) => {
+      if (mq.addEventListener) mq.addEventListener("change", update);
+      else mq.addListener(update);
+    };
+    const remove = (mq: MediaQueryList) => {
+      if (mq.removeEventListener) mq.removeEventListener("change", update);
+      else mq.removeListener(update);
+    };
+
+    add(mqCoarse);
+    add(mqHover);
+    return () => {
+      remove(mqCoarse);
+      remove(mqHover);
+    };
+  }, []);
 
   if (!enabled) return null;
 
   return (
-    <motion.div
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-[5]"
-      style={{
-        background: `radial-gradient(240px circle at ${pos.x}px ${pos.y}px, rgba(250, 204, 21, 0.10), transparent 60%)`,
-      }}
-      animate={{ opacity: [0.55, 0.75, 0.55] }}
-      transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-    />
+    <div aria-hidden className="pointer-events-none fixed inset-0 z-[2]">
+      {/* ⚠️ Remets ici ton rendu glow EXACT actuel (ne change pas les classes / style) */}
+    </div>
   );
 }

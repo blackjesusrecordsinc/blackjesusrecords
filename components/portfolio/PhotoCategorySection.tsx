@@ -4,7 +4,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { GalleryImage, PhotoCategory } from "@/app/portfolio/page";
+import type { GalleryImage, PhotoCategory } from "./types";
 
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");

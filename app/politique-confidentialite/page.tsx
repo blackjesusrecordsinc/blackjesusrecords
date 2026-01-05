@@ -1,39 +1,69 @@
 export default function PolitiqueConfidentialitePage() {
   return (
-    <main className="min-h-screen bg-black px-6 py-24">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-3xl md:text-4xl font-extrabold text-white">
-          Politique de confidentialité
-        </h1>
+    <main className="min-h-screen bg-black text-white">
+      {/* Header */}
+      <header className="relative border-b border-white/15">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_45%_at_50%_0%,rgba(245,197,66,0.15),rgba(0,0,0,0)_60%)]" />
+        <div className="relative mx-auto max-w-4xl px-6 pt-28 pb-12">
+          <p className="text-xs tracking-widest uppercase text-white/70">
+            Document légal
+          </p>
 
-        <p className="mt-6 text-white/70 leading-relaxed">
-          Black Jesus Records respecte la confidentialité des renseignements personnels
-          collectés sur ce site.
-        </p>
+          <h1 className="mt-3 text-3xl md:text-5xl font-extrabold tracking-tight">
+            Politique de confidentialité
+          </h1>
 
-        <section className="mt-10 space-y-6 text-sm text-white/70 leading-relaxed">
+          <p className="mt-4 max-w-3xl text-base text-white/90 leading-relaxed">
+            Black Jesus Records accorde une importance particulière à la protection des
+            renseignements personnels et au respect de la vie privée des utilisateurs de ce site.
+          </p>
+        </div>
+      </header>
+
+      {/* Content */}
+      <section className="mx-auto max-w-4xl px-6 py-20">
+        <article className="space-y-10 text-[15px] leading-relaxed text-white/90">
           <p>
-            Les informations transmises via nos formulaires (nom, courriel, message)
-            sont utilisées uniquement pour répondre aux demandes, planifier des projets
-            ou assurer le suivi professionnel.
+            Cette politique de confidentialité vise à expliquer de manière transparente
+            quelles informations peuvent être collectées lors de l’utilisation du site
+            Black Jesus Records, ainsi que la façon dont ces informations sont utilisées,
+            conservées et protégées.
           </p>
 
           <p>
-            Aucune information personnelle n’est vendue, échangée ou partagée à des tiers,
-            sauf si requis par la loi.
+            Les renseignements transmis volontairement par les utilisateurs, notamment
+            par l’entremise de formulaires ou de communications directes, sont utilisés
+            exclusivement dans un cadre professionnel, afin de répondre aux demandes,
+            d’évaluer des projets ou d’assurer un suivi administratif.
           </p>
 
           <p>
-            Ce site peut utiliser des outils analytiques à des fins statistiques afin
-            d’améliorer l’expérience utilisateur.
+            Aucune information personnelle n’est vendue, louée ou échangée à des tiers.
+            Certaines données peuvent toutefois être traitées par des services techniques
+            nécessaires au fonctionnement du site (hébergement, messagerie, statistiques),
+            dans la mesure où ces services respectent des standards raisonnables de
+            confidentialité et de sécurité.
           </p>
 
           <p>
-            En utilisant ce site, vous consentez à cette politique de confidentialité.
+            Black Jesus Records met en œuvre des mesures organisationnelles et techniques
+            afin de protéger les informations contre tout accès non autorisé, perte,
+            divulgation ou utilisation abusive. Malgré ces précautions, aucun système
+            informatique ne peut garantir une sécurité absolue.
           </p>
-        </section>
-      </div>
+
+          <p>
+            Les renseignements sont conservés uniquement pour la durée nécessaire à la
+            réalisation des objectifs pour lesquels ils ont été collectés, puis supprimés
+            ou anonymisés lorsque leur conservation n’est plus justifiée.
+          </p>
+
+          <p className="text-white/70 text-sm">
+            En naviguant sur ce site, vous reconnaissez avoir pris connaissance de la
+            présente politique de confidentialité et en accepter les principes.
+          </p>
+        </article>
+      </section>
     </main>
   );
 }
-

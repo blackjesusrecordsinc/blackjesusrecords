@@ -3,7 +3,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
-import type { LightboxState } from "@/app/portfolio/page";
+import type { LightboxState } from "./types";
 
 const cn = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
