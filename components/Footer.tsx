@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+
 export default function Footer() {
   const year = new Date().getFullYear();
 
@@ -10,17 +14,8 @@ export default function Footer() {
     "block text-[15px] leading-[1.85] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] hover:text-white transition-colors underline underline-offset-8 decoration-white/25 hover:decoration-[#F5C542]/70";
 
   return (
-<<<<<<< HEAD
-    <footer className="border-t border-white/10 py-12 text-sm text-white/60">
-      <div className="max-w-7xl mx-auto px-6 space-y-3 text-center">
-        <p className="font-semibold text-white">Black Jesus Records</p>
-        <p>Studio créatif & label indépendant</p>
-        <p>Lévis, Québec</p>
-        <p>© 2025 Black Jesus Records</p>
-=======
     <footer className="mt-24 bg-black/0 border-t border-white/10">
       <div className="mx-auto w-full max-w-screen-2xl px-8 py-24">
-        {/* 3 blocs identiques */}
         <div className="grid grid-cols-1 gap-16 md:grid-cols-3 items-start">
           {/* GAUCHE — À PROPOS */}
           <div className="space-y-5">
@@ -42,7 +37,6 @@ export default function Footer() {
                   "text-[15px] md:text-base font-semibold uppercase",
                   "tracking-[0.34em]",
                   "text-[#F5C542]",
-                  // ✅ gold plus lisible sans bling
                   "drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)]",
                   "drop-shadow-[0_0_18px_rgba(245,197,66,0.22)]",
                 ].join(" ")}
@@ -50,7 +44,6 @@ export default function Footer() {
                 Black Jesus Records
               </p>
 
-              {/* ✅ secondaire plus clair */}
               <p className="text-[12px] leading-[1.85] text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
                 © {year} — Tous droits réservés
               </p>
@@ -87,7 +80,6 @@ export default function Footer() {
         <div className="mt-16 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
           Black Jesus Records
         </div>
->>>>>>> 10e061a (Rebuild: premium layout + motion + readability)
       </div>
     </footer>
   );

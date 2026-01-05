@@ -11,10 +11,7 @@ import RouteLoader from "@/components/RouteLoader";
 import CursorGlow from "@/components/CursorGlow";
 import PageTransition from "@/components/PageTransition";
 import WorkBackground from "@/components/WorkBackground";
-<<<<<<< HEAD
-=======
 import CalendlyScript from "@/components/CalendlyScript";
->>>>>>> 10e061a (Rebuild: premium layout + motion + readability)
 
 import { Analytics } from "@vercel/analytics/react";
 
@@ -58,44 +55,26 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // ✅ ROOT LAYOUT = STRICT: html + body, aucun fragment, aucun return conditionnel
   return (
-<<<<<<< HEAD
-    <html lang="fr" className="bg-transparent">
+    <html lang="fr" suppressHydrationWarning className="bg-transparent">
       <body className="readable min-h-screen bg-transparent text-white antialiased overflow-x-hidden [accent-color:#F5C542]">
-=======
-    <html lang="fr" suppressHydrationWarning>
-      <body className="readable min-h-screen bg-transparent text-white antialiased overflow-x-hidden [accent-color:#F5C542]">
-        {/* ✅ Client scripts INSIDE body (jamais dans <head> du layout) */}
         <CalendlyScript />
 
-        {/* ✅ Background global */}
->>>>>>> 10e061a (Rebuild: premium layout + motion + readability)
         <div className="fixed inset-0 -z-10">
           <WorkBackground count={11} intervalMs={7000} />
         </div>
 
-<<<<<<< HEAD
-=======
-        {/* ✅ UX loaders */}
->>>>>>> 10e061a (Rebuild: premium layout + motion + readability)
         <TopProgress />
         <Suspense fallback={null}>
           <RouteLoader />
         </Suspense>
 
         <CursorGlow />
-
         <Navbar />
 
-<<<<<<< HEAD
-        <main className="pt-[var(--nav-h)] relative z-0 bg-transparent">
-=======
-        {/* ✅ PageTransition ne doit JAMAIS toucher html/body */}
-        <div className="pt-[var(--nav-h)] relative z-0">
->>>>>>> 10e061a (Rebuild: premium layout + motion + readability)
+        <div className="pt-[var(--nav-h)] relative z-0 bg-transparent">
           <PageTransition>{children}</PageTransition>
-        </main>
+        </div>
 
         <Footer />
         <Analytics />

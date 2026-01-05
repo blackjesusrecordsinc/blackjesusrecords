@@ -28,7 +28,7 @@ type Props =
     };
 
 export default function ServiceCard(props: Props) {
-  const isServiceMode = "service" in props;
+  const isServiceMode = "service" in props && !!props.service;
 
   const title = isServiceMode ? props.service.title : props.title;
   const description = isServiceMode ? props.service.description : props.description;
