@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback } from "react";
+import { useEffect } from "react";
 
 const CALENDLY_URL =
   process.env.NEXT_PUBLIC_CALENDLY_URL ||
   "https://calendly.com/contact-blackjesusrecords/30min";
+
 
 export default function PlanifierUnAppelCTA({
   className,
@@ -13,29 +14,31 @@ export default function PlanifierUnAppelCTA({
   className?: string;
   label?: string;
 }) {
-  const onClick = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      e.preventDefault();
+  useEffect(() => {
+    const id = "calendly-widget-js";
+    if (document.getElementById(id)) return;
 
-      // ✅ Popup only si dispo
-      if (window.Calendly?.initPopupWidget) {
-        window.Calendly.initPopupWidget({ url: CALENDLY_URL });
-        return;
-      }
-
-      // fallback
-      window.location.href = CALENDLY_URL;
-    },
-    []
-  );
+    const s = document.createElement("script");
+    s.id = id;
+    s.src = "https://assets.calendly.com/assets/external/widget.js";
+    s.async = true;
+    document.body.appendChild(s);
+  }, []);
 
   return (
     <a
       href={CALENDLY_URL}
       className={className}
-      onClick={onClick}
+      onClick={(e) => {
+        e.preventDefault();
+        if (window.Calendly?.initPopupWidget) {
+          window.Calendly.initPopupWidget({ url: CALENDLY_URL });
+        } else {
+          // fallback: ouvre le lien
+          window.location.href = CALENDLY_URL;
+        }
+      }}
       aria-label="Planifier un appel (Calendly)"
-      rel="nofollow"
     >
       {label}
     </a>
