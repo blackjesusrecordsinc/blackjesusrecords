@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build
+.next/
+node_modules/
+tsconfig.tsbuildinfo
+.env.local
+
+# local trash
+_trash_backup/
