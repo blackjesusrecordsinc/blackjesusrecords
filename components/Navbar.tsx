@@ -12,7 +12,7 @@ const NAV: NavItem[] = [
   { href: "/studio-label", label: "Studio & Label" },
   { href: "/services", label: "Services" },
   { href: "/portfolio", label: "Portfolio" },
-  { href: "/debuter-un-projet", label: "Débuter un projet" }, // ✅ seul CTA en haut
+  { href: "/debuter-un-projet", label: "Débuter un projet" },
 ];
 
 const CTA_HREF = "/debuter-un-projet";
@@ -87,14 +87,13 @@ export default function Navbar() {
 
   const transparent = pathname === "/" && heroMode && !scrolled;
   const headerClass = [
-    "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-    transparent ? "bg-transparent" : "bg-black/55 backdrop-blur-xl border-b border-white/10",
+    "fixed top-0 left-0 right-0 z-[9990] transition-all duration-300",
+    transparent ? "bg-transparent" : "bg-black/55 md:backdrop-blur-xl border-b border-white/10",
   ].join(" ");
 
   return (
     <header className={headerClass} style={{ height: "var(--nav-h)" }}>
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* LOGO */}
         <button
           type="button"
           className="flex items-center gap-3 group text-left"
@@ -102,13 +101,7 @@ export default function Navbar() {
           onClick={() => onNavClick("/")}
         >
           <div className="relative w-10 h-10 rounded-full overflow-hidden border border-white/10 bg-white/5">
-            <Image
-              src="/logo_bjr.png"
-              alt="Black Jesus Records"
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src="/logo_bjr.png" alt="Black Jesus Records" fill className="object-cover" priority />
           </div>
 
           <div className="leading-tight">
@@ -119,7 +112,6 @@ export default function Navbar() {
           </div>
         </button>
 
-        {/* DESKTOP */}
         <div className="hidden md:flex items-center gap-7 text-sm">
           {nav.map((it) => {
             const active = isActive(it.href);
@@ -142,11 +134,7 @@ export default function Navbar() {
                   ].join(" ")}
                   aria-label="Débuter un projet"
                 >
-                  {/* Hover sheen ultra léger (pas continu) */}
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
-                  >
+                  <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-full">
                     <span
                       className="absolute -left-1/3 top-0 h-full w-1/3 rotate-12 opacity-0
                                  bg-[linear-gradient(90deg,rgba(245,197,66,0),rgba(245,197,66,0.10),rgba(255,255,255,0.10),rgba(245,197,66,0.10),rgba(245,197,66,0))]
@@ -154,9 +142,7 @@ export default function Navbar() {
                     />
                   </span>
 
-                  <span className="relative z-[1] font-semibold tracking-wide">
-                    {it.label}
-                  </span>
+                  <span className="relative z-[1] font-semibold tracking-wide">{it.label}</span>
 
                   <span
                     aria-hidden
@@ -192,7 +178,6 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* BURGER MOBILE */}
         <button
           className="md:hidden inline-flex items-center justify-center w-11 h-11 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition"
           onClick={() => setOpen((v) => !v)}
@@ -207,7 +192,6 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* MOBILE DRAWER */}
       <AnimatePresence>
         {open && (
           <>
@@ -215,14 +199,15 @@ export default function Navbar() {
               type="button"
               aria-label="Fermer"
               onClick={() => setOpen(false)}
-              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] md:hidden"
+              className="fixed inset-0 bg-black/70 z-[9998] isolate md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
 
             <motion.aside
-              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/78 backdrop-blur-xl border-l border-white/10 z-[70] md:hidden"
+              className="fixed top-0 right-0 h-full w-[86vw] max-w-sm bg-black/78 border-l border-white/10 z-[9999] isolate md:hidden"
+              style={{ transform: "none" }}
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -256,14 +241,16 @@ export default function Navbar() {
                           "w-full text-left py-3 px-4 rounded-xl transition border",
                           isCta
                             ? [
-                                "bg-black/25 backdrop-blur-md",
+                                "bg-black/25 backdrop-blur-md md:backdrop-blur-md",
                                 "border-[#F5C542]/35 text-white",
                                 "hover:border-[#F5C542]/55 hover:shadow-[0_0_18px_rgba(245,197,66,0.12)]",
                                 active ? "shadow-[0_0_18px_rgba(245,197,66,0.14)]" : "",
                               ].join(" ")
                             : [
                                 "border-white/10",
-                                active ? "text-white bg-white/5" : "text-white/85 hover:text-white hover:bg-white/5 hover:border-white/15",
+                                active
+                                  ? "text-white bg-white/5"
+                                  : "text-white/85 hover:text-white hover:bg-white/5 hover:border-white/15",
                               ].join(" "),
                         ].join(" ")}
                       >
