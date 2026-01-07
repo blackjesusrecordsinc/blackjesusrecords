@@ -1,4 +1,3 @@
-// app/api/contact/route.ts
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import pRetry from "p-retry";
@@ -14,12 +13,9 @@ type ContactPayload = {
   location?: string;
   budget?: string;
   message?: string;
-  company?: string; // honeypot
+  company?: string;
 };
 
-/* ============================
-   UTILS
-============================ */
 function escHtml(v: string) {
   return v
     .replaceAll("&", "&amp;")
@@ -53,10 +49,6 @@ function getOrigin(req: Request) {
   return origin || (referer ? new URL(referer).origin : "");
 }
 
-/**
- * ✅ Allowlist configurable (prod + previews)
- * - ALLOWED_ORIGINS="https://www.blackjesusrecords.ca,https://blackjesusrecords.ca"
- */
 function isAllowedOrigin(origin: string) {
   if (!origin) return true;
 
@@ -68,9 +60,6 @@ function isAllowedOrigin(origin: string) {
   return allowed.includes(origin);
 }
 
-/* ============================
-   EMAIL TEMPLATES
-============================ */
 function buildInternalHtml(data: {
   name: string;
   email: string;
@@ -183,18 +172,13 @@ function buildClientHtml(name: string) {
   </div>`;
 }
 
-/* ============================
-   RESEND SEND (RETRY SMART)
-============================ */
 function isTransientResendError(err: any) {
-  // Retry seulement si réseau / 5xx / 429
   const msg = String(err?.message || "");
   const status = err?.statusCode ?? err?.status ?? err?.code;
 
   if (status === 429) return true;
   if (typeof status === "number" && status >= 500) return true;
 
-  // Heuristiques réseau
   const m = msg.toLowerCase();
   if (
     msg.includes("ECONNRESET") ||
@@ -223,7 +207,6 @@ async function resendSend(resend: Resend, input: ResendSendInput) {
       const out = await resend.emails.send(input);
       const anyOut = out as any;
 
-      // Resend SDK renvoie souvent { data, error }
       if (anyOut?.error) {
         const e = anyOut.error;
         const statusCode = e?.statusCode ?? e?.status;
@@ -232,7 +215,6 @@ async function resendSend(resend: Resend, input: ResendSendInput) {
           statusCode,
         });
 
-        // On jette l'erreur, et shouldRetry décidera si on retente ou non
         throw err;
       }
 
@@ -242,10 +224,7 @@ async function resendSend(resend: Resend, input: ResendSendInput) {
       retries: 2,
       minTimeout: 300,
       maxTimeout: 1500,
-
-      // ✅ Stop retry automatiquement si non-transiente (plus besoin de AbortError)
       shouldRetry: (err) => isTransientResendError(err),
-
       onFailedAttempt: (e) => {
         const msg =
           (e as any)?.error?.message || String((e as any)?.error || "");
@@ -259,14 +238,11 @@ async function resendSend(resend: Resend, input: ResendSendInput) {
   );
 }
 
-/* ============================
-   HANDLER
-============================ */
 export async function POST(req: Request) {
   try {
     if (!process.env.RESEND_API_KEY) {
       return NextResponse.json(
-        { error: "Configuration serveur manquante." },
+        { error: "Configuration serveur manquante : RESEND_API_KEY." },
         { status: 500 }
       );
     }
@@ -274,7 +250,7 @@ export async function POST(req: Request) {
     const resend = getResend();
     if (!resend) {
       return NextResponse.json(
-        { error: "Configuration serveur manquante." },
+        { error: "Configuration serveur manquante : RESEND_API_KEY." },
         { status: 500 }
       );
     }
@@ -294,7 +270,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Payload invalide." }, { status: 400 });
     }
 
-    // Honeypot anti-bot
     if (clean(body.company)) {
       return NextResponse.json({ success: true });
     }
@@ -315,24 +290,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Message trop court." }, { status: 400 });
     }
 
-    // ✅ IMPORTANT: le FROM doit être autorisé par Resend (domaine vérifié)
     const internalFrom =
       process.env.RESEND_FROM_INTERNAL ||
       "Black Jesus Records <no-reply@blackjesusrecords.ca>";
 
+    const internalTo =
+      process.env.CONTACT_TO_EMAIL || "contact@blackjesusrecords.ca";
+
     const clientFrom =
       process.env.RESEND_FROM_CLIENT ||
-      "Black Jesus Records <contact@blackjesusrecords.ca>";
+      "Black Jesus Records <no-reply@blackjesusrecords.ca>";
 
-    const internalTo =
-      process.env.CONTACT_TO_EMAIL || "blackjesusrecords.inc@gmail.com";
-
-    // 1) Email interne
     const internal = await resendSend(resend, {
       from: internalFrom,
       to: [internalTo],
-      // ✅ replyTo (camelCase)
-      replyTo: email,
+      replyTo: `${name} <${email}>`,
       subject: `Nouvelle demande — ${service}`,
       html: buildInternalHtml({
         name,
@@ -346,10 +318,10 @@ export async function POST(req: Request) {
       }),
     });
 
-    // 2) Auto-réponse client
     const client = await resendSend(resend, {
       from: clientFrom,
       to: [email],
+      replyTo: internalTo,
       subject: "Demande reçue — Black Jesus Records",
       html: buildClientHtml(name),
     });
