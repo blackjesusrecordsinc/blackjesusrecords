@@ -9,6 +9,7 @@ import type { Variants } from "framer-motion";
 import Reveal from "@/components/Reveal";
 import Typewriter from "@/components/Typewriter";
 import HeroCineSlider from "@/components/HeroCineSlider";
+import PlanifierUnAppelCTA from "@/components/PlanifierUnAppelCTA";
 
 /* ================= CONFIG ================= */
 const CALL_URL = process.env.NEXT_PUBLIC_CALL_URL || "tel:+15818496669";
@@ -157,8 +158,7 @@ export default function HomePage() {
                     Débuter un projet →
                   </Link>
 
-                  <a
-                    href={CALL_URL}
+                  <PlanifierUnAppelCTA
                     className="inline-flex items-center justify-center rounded-full
                                border border-white/20 bg-black/25 px-8 py-4
                                text-white/90 font-semibold
@@ -167,9 +167,8 @@ export default function HomePage() {
                                hover:shadow-[0_0_20px_rgba(245,197,66,0.16)]
                                focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5C542]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-black/80
                                transition"
-                  >
-                    Planifier un appel
-                  </a>
+                    label="Planifier un appel"
+                  />
                 </div>
               </motion.div>
 
@@ -342,6 +341,7 @@ export default function HomePage() {
 
             <a
               href={CALL_URL}
+            <PlanifierUnAppelCTA
               className="inline-flex items-center justify-center rounded-full
                          border border-white/20 bg-black/25 px-8 py-4
                          text-white/90 font-semibold
@@ -350,11 +350,8 @@ export default function HomePage() {
                          hover:shadow-[0_0_20px_rgba(245,197,66,0.16)]
                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5C542]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-black/80
                          transition"
-            >
-              Planifier un appel
-            </a>
-          </div>
-        </motion.div>
+              label="Planifier un appel"
+            />
       </Reveal>
     </main>
   );
