@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-const ALL_IMAGES = Array.from(
+const WORK_IMAGES = Array.from(
   { length: 11 },
   (_, i) => `/work/${String(i + 1).padStart(2, "0")}.jpg`
 );
@@ -14,73 +14,44 @@ type Props = {
 };
 
 export default function WorkBackground({
-  count = 7,
-  intervalMs = 10000,
+  count = 11,
+  intervalMs = 7000,
 }: Props) {
-  const images = useMemo(() => ALL_IMAGES.slice(0, count), [count]);
-  const [front, setFront] = useState(0);
-  const [back, setBack] = useState(1);
-  const showFront = useRef(true);
+  const images = WORK_IMAGES.slice(0, count);
+  const [index, setIndex] = useState(0);
 
-  // autoplay (crossfade réel)
   useEffect(() => {
     const id = setInterval(() => {
-      showFront.current = !showFront.current;
-      setBack((v) => (v + 1) % images.length);
-      setFront((v) => (v + 1) % images.length);
+      setIndex((v) => (v + 1) % images.length);
     }, intervalMs);
     return () => clearInterval(id);
   }, [images.length, intervalMs]);
 
-  const A = images[front];
-  const B = images[back];
-
   return (
-    <div className="fixed inset-0 -z-10 pointer-events-none overflow-hidden">
-      {/* LAYER A */}
-      <div
-        className={`absolute inset-0 transition-opacity duration-[2200ms] ${
-          showFront.current ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <Image
-          src={A}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover scale-[1.03]"
-        />
-      </div>
-
-      {/* LAYER B */}
-      <div
-        className={`absolute inset-0 transition-opacity duration-[2200ms] ${
-          showFront.current ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        <Image
-          src={B}
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover scale-[1.03]"
-        />
-      </div>
-
-      {/* OVERLAY LISIBILITÉ — NEUTRE (PAS BLEU) */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.45), rgba(0,0,0,0.8))",
-        }}
+    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* IMAGE */}
+      <Image
+        key={images[index]}
+        src={images[index]}
+        alt="Black Jesus Records — background"
+        fill
+        priority
+        className="
+          object-cover
+          animate-[bgFloat_40s_linear_infinite]
+          transition-opacity
+          duration-[2500ms]
+        "
       />
 
-      {/* VOILE SOFT (léger, pas destructeur) */}
-      <div className="absolute inset-0 backdrop-blur-[1.5px]" />
+      {/* LAYER AQUARIUM (PAS DE NOIR) */}
+      <div className="absolute inset-0 backdrop-blur-[2px]" />
 
-      {/* GRAIN CINÉ (léger) */}
-      <div className="absolute inset-0 opacity-[0.06] mix-blend-overlay bg-[url('/noise.png')]" />
+      {/* TEINTE BLEU / PROFONDEUR */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#061428]/40 via-[#020b1a]/30 to-[#020b1a]/50" />
+
+      {/* GRAIN CINÉ */}
+      <div className="absolute inset-0 opacity-[0.08] mix-blend-overlay bg-[url('/noise.png')]" />
     </div>
   );
 }

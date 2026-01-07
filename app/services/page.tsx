@@ -2,448 +2,469 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import type { Variants } from "framer-motion";
-import { useCallback, useMemo } from "react";
+import { useRef } from "react";
 
-import Reveal from "@/components/Reveal";
 import HeroCineSlider from "@/components/HeroCineSlider";
+import Reveal from "@/components/Reveal";
 
 const CALENDLY_URL =
   process.env.NEXT_PUBLIC_CALENDLY_URL ||
   "https://calendly.com/contact-blackjesusrecords/30min";
 
+/* ✅ Preuves externes (directes) */
+const SHEGUE_YOUTUBE_URL = "https://www.youtube.com/@shegue242";
+const SHEGUE_SPOTIFY_URL = "https://open.spotify.com/intl-fr/artist/2uxnQEzqw94AWew2E7nEHc";
+const SHEGUE_LINKTREE_URL = "https://linktr.ee/shegue";
+
 /* ================= MOTION (ciné, sobre) ================= */
-const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const easeCine: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-const container: Variants = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06, delayChildren: 0.05 } },
-};
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 12, filter: "blur(6px)" },
+const fadeUp = {
+  hidden: { opacity: 0, y: 24, filter: "blur(10px)" },
   show: {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.7, ease: easeOut },
+    transition: { duration: 0.95, ease: easeCine },
   },
 };
 
-/* ================= UI (cohérence stricte) ================= */
-const pillBase =
-  "px-3 py-1.5 rounded-full border border-white/12 bg-white/[0.03] text-xs text-white/80 hover:text-white hover:border-white/22 transition-colors";
-const pillGold =
-  "px-3 py-1.5 rounded-full border border-[#F5C542]/25 bg-[#F5C542]/[0.06] text-xs text-white/90 hover:border-[#F5C542]/45 hover:bg-[#F5C542]/[0.10] transition-colors";
-
-const btnBase =
-  "inline-flex items-center justify-center rounded-xl px-8 py-4 font-semibold transition-colors";
-const btnOutline =
-  `${btnBase} border border-white/14 bg-white/[0.03] text-white/92 hover:text-white hover:border-white/22 hover:bg-white/[0.06]`;
-const btnGoldOutline =
-  `${btnBase} border border-[#F5C542]/30 bg-transparent text-white hover:border-[#F5C542]/55 hover:bg-[#F5C542]/[0.06]`;
-
-function PillLink({
-  href,
-  children,
-  tone = "base",
-}: {
-  href: string;
-  children: React.ReactNode;
-  tone?: "base" | "gold";
-}) {
+function OutlineFrame({ children }: { children: React.ReactNode }) {
   return (
-    <Link href={href} className={tone === "gold" ? pillGold : pillBase}>
-      {children}
-    </Link>
-  );
-}
-
-function PillAction({
-  children,
-  onClick,
-  tone = "base",
-  ariaLabel,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  tone?: "base" | "gold";
-  ariaLabel: string;
-}) {
-  return (
-    <button type="button" onClick={onClick} className={tone === "gold" ? pillGold : pillBase} aria-label={ariaLabel}>
-      {children}
-    </button>
-  );
-}
-
-function Card({
-  title,
-  desc,
-  points,
-}: {
-  title: string;
-  desc: string;
-  points: string[];
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
-      <div className="space-y-2">
-        <p className="text-sm font-semibold tracking-[0.18em] uppercase text-white/70">
-          <span className="text-[#F5C542]/90">•</span> {title}
-        </p>
-        <p className="text-white/85 leading-relaxed">{desc}</p>
-      </div>
-      <div className="mt-5 h-px w-full bg-white/10" />
-      <ul className="mt-5 space-y-3">
-        {points.map((t) => (
-          <li key={t} className="flex gap-3 text-sm leading-relaxed text-white/72">
-            <span className="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-[#F5C542]/70 shrink-0" />
-            <span>{t}</span>
-          </li>
-        ))}
-      </ul>
+    <div className="relative">
+      {/* cadre “artistique” : double ligne + léger glow */}
+      <div className="pointer-events-none absolute -inset-0.5 rounded-[28px] opacity-70 [background:radial-gradient(120%_100%_at_12%_8%,rgba(245,197,66,0.20)_0%,rgba(245,197,66,0.00)_42%),linear-gradient(to_bottom,rgba(255,255,255,0.10),rgba(255,255,255,0.02))]" />
+      <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-white/12" />
+      <div className="pointer-events-none absolute inset-[10px] rounded-[20px] border border-white/8" />
+      <div className="relative rounded-[28px] bg-white/[0.03] backdrop-blur-[2px]">{children}</div>
     </div>
+  );
+}
+
+function MetaPill({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4">
+      <p className="text-xs tracking-[0.22em] uppercase text-white/55">{label}</p>
+      <p className="mt-2 text-base font-semibold text-white/92">{value}</p>
+    </div>
+  );
+}
+
+type ProofLink = { href: string; label: string; external?: boolean };
+
+function ServiceBlock(props: {
+  title: string;
+  text: string;
+  deliverables: string[];
+  examples: string[];
+  proofLinks: ProofLink[];
+}) {
+  const { title, text, deliverables, examples, proofLinks } = props;
+
+  return (
+    <Reveal className="max-w-6xl mx-auto px-6 py-32">
+      <motion.div
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: false, margin: "-25%" }}
+        variants={{ show: { transition: { staggerChildren: 0.12 } } }}
+        className="space-y-10"
+      >
+        <motion.div variants={fadeUp} className="space-y-4">
+          <p className="text-xs tracking-[0.35em] uppercase text-white/60">• Service</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white">{title}</h2>
+          <div className="h-px w-full bg-white/10" />
+          <p className="max-w-3xl text-white/75 leading-relaxed">{text}</p>
+        </motion.div>
+
+        <motion.div variants={fadeUp} className="grid gap-6 md:grid-cols-12">
+          <div className="md:col-span-7">
+            <OutlineFrame>
+              <div className="p-8 md:p-10">
+                <p className="text-sm font-semibold tracking-[0.18em] uppercase text-white/70">
+                  <span className="text-[#F5C542]/90">•</span> Livrables
+                </p>
+
+                <ul className="mt-6 space-y-3">
+                  {deliverables.map((t) => (
+                    <li key={t} className="flex gap-3 text-sm text-white/72 leading-relaxed">
+                      <span className="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-[#F5C542]/70 shrink-0" />
+                      <span>{t}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-8 h-px w-full bg-white/10" />
+
+                <p className="mt-8 text-sm font-semibold tracking-[0.18em] uppercase text-white/70">
+                  <span className="text-[#F5C542]/90">•</span> Exemples de prestations
+                </p>
+                <ul className="mt-6 grid gap-3 sm:grid-cols-2">
+                  {examples.map((t) => (
+                    <li
+                      key={t}
+                      className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3 text-sm text-white/70"
+                    >
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+
+                {/* liens preuve (pas CTA) */}
+                <div className="mt-8 flex flex-wrap gap-4">
+                  {proofLinks.map((l) =>
+                    l.external ? (
+                      <a
+                        key={l.href + l.label}
+                        href={l.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.25em] text-[#F5C542]/85 hover:text-[#F5C542]"
+                      >
+                        {l.label} <span aria-hidden>→</span>
+                      </a>
+                    ) : (
+                      <Link
+                        key={l.href + l.label}
+                        href={l.href}
+                        className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.25em] text-[#F5C542]/85 hover:text-[#F5C542]"
+                      >
+                        {l.label} <span aria-hidden>→</span>
+                      </Link>
+                    )
+                  )}
+                </div>
+              </div>
+            </OutlineFrame>
+          </div>
+
+          <div className="md:col-span-5 space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
+              <p className="text-sm font-semibold tracking-[0.18em] uppercase text-white/70">
+                <span className="text-[#F5C542]/90">•</span> Standard
+              </p>
+              <p className="mt-4 text-white/75 leading-relaxed">
+                Clarté du besoin, exécution propre, livraison exploitable. Pas d’improvisation, pas de flou,
+                pas de “surprise” à la fin.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
+              <p className="text-sm font-semibold tracking-[0.18em] uppercase text-white/70">
+                <span className="text-[#F5C542]/90">•</span> Résultat
+              </p>
+              <p className="mt-4 text-white/75 leading-relaxed">
+                Un rendu lisible et crédible — prêt à être utilisé immédiatement, sur les bons formats.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
+    </Reveal>
   );
 }
 
 export default function ServicesPage() {
   const prefersReducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 0.25], [0, -14]);
+  const heroRef = useRef<HTMLDivElement>(null);
 
-  const openCalendly = useCallback(() => {
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  // profondeur lente (illusion 3D) — fond inchangé
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, -90]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0.35]);
+
+  const openCalendly = () => {
     if (window.Calendly?.initPopupWidget) {
       window.Calendly.initPopupWidget({ url: CALENDLY_URL });
-      return;
+    } else {
+      window.location.href = CALENDLY_URL;
     }
-    window.location.href = CALENDLY_URL;
-  }, []);
-
-  const proof = useMemo(
-    () => [
-      { k: "Rendu", v: "Ciné, propre, lisible", s: "direction & finition" },
-      { k: "Workflow", v: "Rapide, cadré", s: "brief → prod → livraison" },
-      { k: "Livrables", v: "Prêts à diffuser", s: "formats multi-plateformes" },
-    ],
-    []
-  );
+  };
 
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* HERO */}
-      <section className="relative min-h-[78vh] flex items-center overflow-hidden">
+      {/* ================= HERO (CTA #1) ================= */}
+      <section ref={heroRef} className="relative min-h-[90vh] flex items-center overflow-hidden">
+        {/* fond conservé */}
         <HeroCineSlider count={10} ext=".jpg" intervalMs={9000} />
 
-        {/* Overlay premium : focus texte + micro gold */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/90 via-black/55 to-black/85" />
-        <div className="pointer-events-none absolute inset-0 [background:radial-gradient(62%_58%_at_18%_26%,rgba(245,197,66,0.09)_0%,rgba(0,0,0,0)_56%)]" />
+        {/* overlays premium */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/90 via-black/50 to-black/85" />
+        <div className="pointer-events-none absolute inset-0 [background:radial-gradient(60%_55%_at_20%_30%,rgba(245,197,66,0.08)_0%,rgba(0,0,0,0)_60%)]" />
 
         <motion.div
-          style={prefersReducedMotion ? undefined : { y: heroY }}
-          className="relative z-10 mx-auto w-full max-w-6xl px-6 py-24"
+          style={prefersReducedMotion ? undefined : { y: heroY, opacity: heroOpacity }}
+          className="relative z-10 mx-auto w-full max-w-6xl px-6 py-28"
         >
-          <motion.div variants={container} initial="hidden" animate="show" className="space-y-10">
-            <motion.p
-              variants={prefersReducedMotion ? undefined : item}
-              className="text-xs tracking-[0.32em] uppercase text-white/70"
-            >
-              <span className="text-[#F5C542]/90">•</span> Services
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={{ show: { transition: { staggerChildren: 0.15 } } }}
+            className="space-y-10"
+          >
+            <motion.p variants={fadeUp} className="text-xs tracking-[0.35em] uppercase text-white/60">
+              • Services
             </motion.p>
 
-            <motion.h1
-              variants={prefersReducedMotion ? undefined : item}
-              className="text-4xl md:text-6xl font-extrabold leading-[1.05] text-white max-w-4xl"
-            >
-              On construit un rendu.
-              <br />
-              Pas une “liste de prestations”.
+            <motion.h1 variants={fadeUp} className="text-5xl md:text-7xl font-extrabold leading-[1.02]">
+              Services<span className="text-[#F5C542]">.</span>
             </motion.h1>
 
-            <motion.p
-              variants={prefersReducedMotion ? undefined : item}
-              className="text-lg md:text-xl text-white/78 max-w-2xl leading-relaxed"
-            >
-              Direction, exécution, diffusion : tout est pensé pour être clair, crédible
-              et prêt à performer — sans bruit, sans gimmicks.
+            <motion.p variants={fadeUp} className="max-w-2xl text-lg md:text-xl text-white/75 leading-relaxed">
+              <span className="text-white/90 font-semibold">De l’idée au livrable final.</span>{" "}
+              Production photo, vidéo, audio et digitale pour ceux qui exigent la clarté.
+              <br />
+              Tu sais exactement ce que tu obtiens, quand tu l’obtiens, et comment ça sera livré.
             </motion.p>
 
-            <motion.div
-              variants={prefersReducedMotion ? undefined : item}
-              className="flex flex-wrap gap-2 pt-1"
-            >
-              <PillLink href="#video">Production vidéo</PillLink>
-              <PillLink href="#audio">Audio & son</PillLink>
-              <PillLink href="#strategie">Web & stratégie</PillLink>
-              <PillLink href="/debuter-un-projet" tone="gold">
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-4 pt-4">
+              <Link
+                href="/debuter-un-projet"
+                className="rounded-xl border border-[#F5C542]/40 px-8 py-4 font-semibold hover:bg-[#F5C542]/10 transition"
+              >
                 Débuter un projet
-              </PillLink>
-              <PillAction ariaLabel="Planifier un appel (Calendly)" onClick={openCalendly}>
+              </Link>
+              <button
+                type="button"
+                onClick={openCalendly}
+                className="rounded-xl border border-white/20 px-8 py-4 text-white/90 hover:bg-white/5 transition"
+              >
                 Planifier un appel
-              </PillAction>
+              </button>
             </motion.div>
 
-            <motion.div
-              variants={prefersReducedMotion ? undefined : item}
-              className="grid gap-3 pt-3 md:grid-cols-3"
-            >
-              {proof.map((p) => (
-                <div key={p.k} className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-                  <p className="text-xs tracking-[0.24em] uppercase text-white/55">{p.k}</p>
-                  <p className="mt-2 text-base font-semibold text-white">{p.v}</p>
-                  <p className="mt-1 text-sm text-white/60">{p.s}</p>
-                </div>
-              ))}
+            <motion.div variants={fadeUp} className="grid gap-3 pt-6 md:grid-cols-3">
+              <MetaPill label="Rendu" value="Propre, lisible, adapté à l’usage" />
+              <MetaPill label="Méthode" value="Process clair, sans improvisation" />
+              <MetaPill label="Livraison" value="Fichiers organisés, délais respectés" />
             </motion.div>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* INTRO (vente + cadre) */}
-      <Reveal className="max-w-6xl mx-auto px-6 py-24">
-        <div className="grid gap-10 md:grid-cols-12 md:items-start">
-          <div className="md:col-span-7 space-y-6">
-            <p className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
-              Le vrai travail commence avant la caméra.
-            </p>
-            <p className="text-white/75 leading-relaxed">
-              On commence par cadrer : objectif, message, public, contraintes, diffusion.
-              Ensuite seulement, on produit — avec une direction claire et une finition clean.
-            </p>
-            <p className="text-white/75 leading-relaxed">
-              Si tu as déjà les infos : dépose un brief. Sinon : appel court, cadrage, décision.
-            </p>
-            <div className="pt-2 flex flex-wrap gap-3">
-              <Link href="/debuter-un-projet" className={btnGoldOutline}>
-                Débuter un projet
-              </Link>
-              <button type="button" onClick={openCalendly} className={btnOutline}>
-                Planifier un appel
-              </button>
-            </div>
+      {/* ================= STRIP VIVANT ================= */}
+      <section className="relative py-16 overflow-hidden border-y border-white/10">
+        <motion.div
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 32, ease: "linear", repeat: Infinity }}
+          className="whitespace-nowrap text-sm md:text-base tracking-[0.35em] uppercase text-white/55"
+        >
+          Cadrage · Direction artistique · Production · Post-production · Livraison · Image · Son · Digital ·
+          Cadrage · Direction artistique · Production · Post-production · Livraison · Image · Son · Digital ·
+        </motion.div>
+      </section>
+
+      {/* ================= APPROCHE + MÉTHODE (timeline) ================= */}
+      <Reveal className="max-w-6xl mx-auto px-6 py-32">
+        <div className="grid gap-14 md:grid-cols-12 md:items-start">
+          <div className="md:col-span-7 space-y-8">
+            <motion.h2
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: false, margin: "-20%" }}
+              variants={fadeUp}
+              className="text-3xl md:text-4xl font-extrabold"
+            >
+              Une approche claire et structurée.
+            </motion.h2>
+
+            <motion.p
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: false, margin: "-20%" }}
+              variants={fadeUp}
+              className="text-white/75 leading-relaxed"
+            >
+              On commence par cadrer pour éviter les allers-retours inutiles : objectif, message, public,
+              contraintes, supports. Ensuite on produit avec une direction claire, puis on finalise et on
+              livre des fichiers propres, organisés, prêts à être utilisés.
+            </motion.p>
           </div>
 
           <div className="md:col-span-5">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-7">
-              <p className="text-sm font-semibold tracking-[0.18em] uppercase text-white/70">
-                <span className="text-[#F5C542]/90">•</span> Process (simple, solide)
-              </p>
-              <div className="mt-5 space-y-4">
-                {[
-                  { t: "1. Cadrage", d: "objectif, audience, message, contraintes, diffusion" },
-                  { t: "2. Production", d: "tournage / création / exécution propre, cohérente" },
-                  { t: "3. Post", d: "montage, sound, étalonnage, finition" },
-                  { t: "4. Livraison", d: "exports optimisés + structure de fichiers nette" },
-                ].map((x) => (
-                  <div key={x.t} className="flex gap-3">
-                    <span className="mt-[0.55em] h-1.5 w-1.5 rounded-full bg-[#F5C542]/70 shrink-0" />
-                    <div>
-                      <p className="text-sm font-semibold text-white/90">{x.t}</p>
-                      <p className="text-sm text-white/65 leading-relaxed">{x.d}</p>
-                    </div>
-                  </div>
-                ))}
+            <OutlineFrame>
+              <div className="p-8 md:p-10">
+                <p className="text-sm font-semibold tracking-[0.18em] uppercase text-white/70">
+                  <span className="text-[#F5C542]/90">•</span> Notre méthode
+                </p>
+
+                <div className="mt-7 space-y-6">
+                  {[
+                    { n: "01", t: "Cadrage", d: "Brief, intention, format, budget, délais." },
+                    { n: "02", t: "Production", d: "Tournage / captation / création, propre et efficace." },
+                    { n: "03", t: "Post-production", d: "Montage, son, étalonnage, finitions." },
+                    { n: "04", t: "Livraison", d: "Exports + fichiers organisés + délais respectés." },
+                  ].map((x) => (
+                    <motion.div
+                      key={x.n}
+                      initial="hidden"
+                      whileInView="show"
+                      viewport={{ once: false, margin: "-25%" }}
+                      variants={fadeUp}
+                      className="flex gap-4"
+                    >
+                      <div className="min-w-[56px]">
+                        <p className="text-xs tracking-[0.28em] uppercase text-white/55">{x.n}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-base font-semibold text-white/90">{x.t}</p>
+                        <p className="text-sm text-white/65 leading-relaxed">{x.d}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
-              <div className="mt-6 h-px w-full bg-white/10" />
-              <p className="mt-6 text-sm text-white/65 leading-relaxed">
-                Résultat attendu : un rendu lisible, crédible, et prêt à être publié partout.
-              </p>
-            </div>
+            </OutlineFrame>
           </div>
         </div>
       </Reveal>
 
-      {/* ================= VIDEO ================= */}
-      <section id="video" className="scroll-mt-28">
-        <Reveal className="max-w-6xl mx-auto px-6 py-24">
-          <div className="space-y-10">
-            <div className="space-y-4">
-              <p className="text-2xl md:text-3xl font-extrabold text-white">Réalisation & production vidéo</p>
-              <div className="h-px w-full bg-white/10" />
-              <p className="text-white/75 max-w-3xl leading-relaxed">
-                Clips, contenus, événements. Une direction artistique claire, une exécution propre,
-                un rendu ciné — pensé pour la diffusion.
-              </p>
-            </div>
+      {/* ================= SERVICES (preuves directes) ================= */}
+      <ServiceBlock
+        title="Production vidéo"
+        text="Pour clips, contenus réseaux, promos et événements. On tourne pour le montage : plans utiles, rythme, cohérence visuelle et rendu ciné lisible."
+        deliverables={[
+          "Versions vertical / horizontal (Reels/TikTok + YouTube)",
+          "Exports optimisés (web + archive)",
+          "Dossier livré organisé (projet + masters + exports)",
+        ]}
+        examples={["Clips musicaux", "Vidéos promotionnelles", "Captation d’événements", "Contenus réseaux & web"]}
+        proofLinks={[
+          { href: SHEGUE_YOUTUBE_URL, label: "Voir les clips (YouTube)", external: true },
+          { href: SHEGUE_LINKTREE_URL, label: "Plus de liens (Linktree)", external: true },
+        ]}
+      />
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card
-                title="Direction"
-                desc="On verrouille la vision avant de produire."
-                points={[
-                  "références & intention",
-                  "structure, rythme, plans",
-                  "cohérence lumière / cadre / style",
-                ]}
-              />
-              <Card
-                title="Production"
-                desc="Tournage stabilisé, propre, assumé."
-                points={[
-                  "plans utiles, pas de remplissage",
-                  "exécution rapide et cadrée",
-                  "captation pensée pour le montage",
-                ]}
-              />
-              <Card
-                title="Finition"
-                desc="Le rendu final doit tenir partout."
-                points={[
-                  "montage + étalonnage clean",
-                  "exports multi-plateformes",
-                  "livraison structurée",
-                ]}
-              />
-            </div>
+      <ServiceBlock
+        title="Photographie"
+        text="Portraits, événements et image de marque. L’objectif : une image nette, flatteuse, cohérente, utilisable partout (web, réseaux, print)."
+        deliverables={[
+          "Sélection + retouche cohérente",
+          "Formats web + haute résolution",
+          "Galerie / dossier structuré",
+        ]}
+        examples={["Portraits", "Événements privés", "Événements professionnels", "Image de marque / entreprise"]}
+        proofLinks={[{ href: "/portfolio#photo", label: "Voir des projets photo", external: false }]}
+      />
 
-            <div className="pt-2 flex flex-wrap gap-3">
-              <Link href="/portfolio" className={btnOutline}>
-                Voir le portfolio
-              </Link>
-              <Link href="/debuter-un-projet" className={btnGoldOutline}>
-                Débuter un projet
-              </Link>
-              <button type="button" onClick={openCalendly} className={btnOutline}>
-                Planifier un appel
-              </button>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <ServiceBlock
+        title="Audio & son"
+        text="Enregistrement, direction, mixage et traitement sonore. Le rendu doit rester propre sur casque, voiture, enceintes et téléphone — sans surprise."
+        deliverables={[
+          "Fichiers WAV + MP3",
+          "Versions clean / explicit si nécessaire",
+          "Stems / exports si demandés",
+        ]}
+        examples={["Enregistrement voix", "Mixage", "Mastering", "Traitement sonore pour vidéo"]}
+        proofLinks={[
+          { href: SHEGUE_SPOTIFY_URL, label: "Écouter (Spotify)", external: true },
+          { href: SHEGUE_LINKTREE_URL, label: "Plus de liens (Linktree)", external: true },
+        ]}
+      />
 
-      {/* ================= AUDIO ================= */}
-      <section id="audio" className="scroll-mt-28">
-        <Reveal className="max-w-6xl mx-auto px-6 py-24">
-          <div className="space-y-10">
-            <div className="space-y-4">
-              <p className="text-2xl md:text-3xl font-extrabold text-white">Audio & son</p>
-              <div className="h-px w-full bg-white/10" />
-              <p className="text-white/75 max-w-3xl leading-relaxed">
-                Création, direction et livrables prêts à publier. L’objectif : un rendu maîtrisé,
-                cohérent, qui tient sur toutes les écoutes.
-              </p>
-            </div>
+      <ServiceBlock
+        title="Digital & structure de contenu"
+        text="On structure ton image en ligne pour que tout soit cohérent : site, réseaux, contenus. L’idée : un écosystème où la photo, la vidéo et l’audio travaillent ensemble."
+        deliverables={[
+          "Structure de page / sections / parcours",
+          "Organisation des contenus (quoi poster, où, comment)",
+          "Recommandations claires pour la diffusion",
+        ]}
+        examples={[
+          "Structure de site ou de page",
+          "Présentation d’artiste / entreprise",
+          "Écosystème de contenu",
+          "Conseils de diffusion",
+        ]}
+        proofLinks={[{ href: "/portfolio#digital", label: "Voir des études de cas", external: false }]}
+      />
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card
-                title="Direction"
-                desc="On cherche l’intention et on la sert."
-                points={[
-                  "cohérence artistique",
-                  "choix simples et assumés",
-                  "priorité à la lisibilité",
-                ]}
-              />
-              <Card
-                title="Production"
-                desc="Captation propre, focus résultat."
-                points={[
-                  "prise utile, sans bruit",
-                  "organisation de session",
-                  "workflow efficace",
-                ]}
-              />
-              <Card
-                title="Finalisation"
-                desc="Sortie prête à publier."
-                points={[
-                  "équilibre, contrôle, cohérence",
-                  "exports & livrables clairs",
-                  "structure de livraison nette",
-                ]}
-              />
-            </div>
+      {/* ================= FAQ ================= */}
+      <Reveal className="max-w-5xl mx-auto px-6 py-32">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, margin: "-15%" }}
+          variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+        >
+          <motion.h2 variants={fadeUp} className="text-3xl md:text-4xl font-extrabold">
+            Questions fréquentes
+          </motion.h2>
 
-            <div className="pt-2 flex flex-wrap gap-3">
-              <Link href="/debuter-un-projet" className={btnGoldOutline}>
-                Débuter un projet
-              </Link>
-              <button type="button" onClick={openCalendly} className={btnOutline}>
-                Planifier un appel
-              </button>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+          <motion.div variants={fadeUp} className="mt-10 space-y-10">
+            {[
+              {
+                q: "Travaillez-vous avec tous types de clients ?",
+                a: "Oui. Artistes, particuliers, marques et entreprises. Le format change, pas les standards.",
+              },
+              {
+                q: "Comment se déroule un projet ?",
+                a: "Cadrage, production, post-production, livraison. Chaque étape est définie à l’avance.",
+              },
+              { q: "Quels sont vos délais ?", a: "Les délais sont annoncés dès le départ et respectés." },
+              {
+                q: "Comment sont définis les tarifs ?",
+                a: "Selon le projet, le volume et les délais. Un devis clair est proposé après brief ou appel.",
+              },
+            ].map((f) => (
+              <OutlineFrame key={f.q}>
+                <div className="p-8 md:p-10">
+                  <p className="font-semibold text-white/90">{f.q}</p>
+                  <p className="mt-3 text-white/70 leading-relaxed">{f.a}</p>
+                </div>
+              </OutlineFrame>
+            ))}
+          </motion.div>
+        </motion.div>
+      </Reveal>
 
-      {/* ================= STRATEGIE ================= */}
-      <section id="strategie" className="scroll-mt-28">
-        <Reveal className="max-w-6xl mx-auto px-6 py-24">
-          <div className="space-y-10">
-            <div className="space-y-4">
-              <p className="text-2xl md:text-3xl font-extrabold text-white">Web & stratégie digitale</p>
-              <div className="h-px w-full bg-white/10" />
-              <p className="text-white/75 max-w-3xl leading-relaxed">
-                Présence numérique, cohérence de marque, diffusion. On structure pour que ton contenu
-                soit clair, crédible et aligné partout.
-              </p>
-            </div>
+      {/* ================= CTA FINAL (CTA #2) ================= */}
+      <Reveal className="max-w-4xl mx-auto px-6 pb-40 text-center">
+        <motion.h2
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, margin: "-15%" }}
+          variants={fadeUp}
+          className="text-3xl md:text-4xl font-extrabold"
+        >
+          On avance uniquement lorsque le projet est clair et aligné.
+        </motion.h2>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card
-                title="Structure"
-                desc="Une base claire, pas du bruit."
-                points={[
-                  "message & positionnement",
-                  "arborescence simple",
-                  "cohérence visuelle",
-                ]}
-              />
-              <Card
-                title="Système"
-                desc="Le contenu doit travailler pour toi."
-                points={[
-                  "formats & routines",
-                  "réutilisation intelligente",
-                  "diffusion cadrée",
-                ]}
-              />
-              <Card
-                title="Crédibilité"
-                desc="Premium, minimal, lisible."
-                points={[
-                  "hiérarchie forte",
-                  "contraste maîtrisé",
-                  "micro-accent gold",
-                ]}
-              />
-            </div>
+        <motion.p
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, margin: "-15%" }}
+          variants={fadeUp}
+          className="mt-6 text-white/70 leading-relaxed"
+        >
+          Soumets un brief ou prends un appel court pour cadrer. Ensuite, on décide.
+        </motion.p>
 
-            <div className="pt-2 flex flex-wrap gap-3">
-              <Link href="/debuter-un-projet" className={btnGoldOutline}>
-                Débuter un projet
-              </Link>
-              <button type="button" onClick={openCalendly} className={btnOutline}>
-                Planifier un appel
-              </button>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* CTA FINAL (sans jaune plein, vente propre) */}
-      <Reveal className="max-w-6xl mx-auto px-6 pb-28">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-10 md:p-12">
-          <div className="mx-auto max-w-3xl text-center space-y-6">
-            <p className="text-2xl md:text-3xl font-extrabold text-white">
-              On cadre ton projet. Puis on décide.
-            </p>
-
-            <p className="text-white/70 leading-relaxed">
-              Deux options : déposer un brief complet, ou faire un appel court pour cadrer.
-              Ensuite, on avance seulement si c’est aligné.
-            </p>
-
-            <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/debuter-un-projet" className={btnGoldOutline}>
-                Débuter un projet
-              </Link>
-              <button type="button" onClick={openCalendly} className={btnOutline}>
-                Planifier un appel
-              </button>
-            </div>
-          </div>
-        </div>
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, margin: "-15%" }}
+          variants={fadeUp}
+          className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
+        >
+          <Link
+            href="/debuter-un-projet"
+            className="rounded-xl border border-[#F5C542]/40 px-8 py-4 font-semibold hover:bg-[#F5C542]/10 transition"
+          >
+            Débuter un projet
+          </Link>
+          <button
+            type="button"
+            onClick={openCalendly}
+            className="rounded-xl border border-white/20 px-8 py-4 hover:bg-white/5 transition"
+          >
+            Planifier un appel
+          </button>
+        </motion.div>
       </Reveal>
     </main>
   );

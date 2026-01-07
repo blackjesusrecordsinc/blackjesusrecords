@@ -1,84 +1,55 @@
-"use client";
-
+// components/Footer.tsx
 import Link from "next/link";
 
 export default function Footer() {
-  const year = new Date().getFullYear();
-
-  // ✅ Lisibilité : texte plus clair + ombre propre (sans noircir le fond)
-  const kicker =
-    "text-[11px] font-semibold tracking-[0.26em] uppercase text-white/90";
-  const line =
-    "text-[15px] leading-[1.85] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]";
-  const linkLine =
-    "block text-[15px] leading-[1.85] text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)] hover:text-white transition-colors underline underline-offset-8 decoration-white/25 hover:decoration-[#F5C542]/70";
-
   return (
-    <footer className="mt-24 bg-black/0 border-t border-white/10">
-      <div className="mx-auto w-full max-w-screen-2xl px-8 py-24">
-        <div className="grid grid-cols-1 gap-16 md:grid-cols-3 items-start">
-          {/* GAUCHE — À PROPOS */}
-          <div className="space-y-5">
-            <p className={kicker}>À propos</p>
-            <div className="space-y-1">
-              <p className={line}>Studio créatif & label indépendant</p>
-              <p className={line}>On élève ce qui vient d’ici</p>
-              <p className={line}>Exécution ciné, rigueur totale</p>
-              <p className={line}>Projets pensés pour durer</p>
-            </div>
+    <footer className="mt-24 border-t border-white/10 bg-black/55">
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+          {/* BRAND */}
+          <div className="space-y-2">
+            <p className="text-sm font-semibold tracking-wide text-[#F5C542]">
+              Black Jesus Records
+            </p>
+            <p className="text-sm text-white/70 leading-relaxed">
+              Image · Son · Stratégie — Pour artistes, marques et événements.
+            </p>
           </div>
 
-          {/* CENTRE — IDENTITÉ */}
-          <div className="space-y-5 text-center">
-            <p className={kicker}>Identité</p>
-            <div className="space-y-1">
-              <p
-                className={[
-                  "text-[15px] md:text-base font-semibold uppercase",
-                  "tracking-[0.34em]",
-                  "text-[#F5C542]",
-                  "drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)]",
-                  "drop-shadow-[0_0_18px_rgba(245,197,66,0.22)]",
-                ].join(" ")}
-              >
-                Black Jesus Records
-              </p>
-
-              <p className="text-[12px] leading-[1.85] text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
-                © {year} — Tous droits réservés
-              </p>
-              <p className="text-[12px] leading-[1.85] text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
-                Lévis, Québec
-              </p>
-              <p className="text-[12px] leading-[1.85] text-white/90 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
-                Québec & international
-              </p>
-            </div>
-          </div>
-
-          {/* DROITE — NAVIGATION */}
-          <div className="space-y-5 md:text-right">
-            <p className={kicker}>Navigation</p>
-            <div className="space-y-1">
-              <Link href="/services" className={linkLine}>
-                Services
-              </Link>
-              <Link href="/portfolio" className={linkLine}>
-                Portfolio
-              </Link>
-              <Link href="/politique-confidentialite" className={linkLine}>
-                Politique de confidentialité
-              </Link>
-              <Link href="/conditions" className={linkLine}>
-                Conditions
-              </Link>
-            </div>
-          </div>
+          {/* LINKS */}
+          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            <Link className="text-white/70 hover:text-white transition" href="/services">
+              Services
+            </Link>
+            <Link className="text-white/70 hover:text-white transition" href="/portfolio">
+              Portfolio
+            </Link>
+            <Link className="text-white/70 hover:text-white transition" href="/studio-label">
+              Studio & Label
+            </Link>
+            <Link className="text-white/70 hover:text-white transition" href="/a-propos">
+              À propos
+            </Link>
+            <Link className="text-white/70 hover:text-white transition" href="/contact">
+              Contact
+            </Link>
+          </nav>
         </div>
 
-        {/* micro-finish */}
-        <div className="mt-16 text-center text-[11px] tracking-[0.22em] uppercase text-white/80 drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
-          Black Jesus Records
+        {/* LEGAL */}
+        <div className="mt-10 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <p className="text-xs text-white/55">
+            © 2026 Black Jesus Records. Tous droits réservés.
+          </p>
+
+          <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs">
+            <Link className="text-white/55 hover:text-white transition" href="/politique-confidentialite">
+              Confidentialité
+            </Link>
+            <Link className="text-white/55 hover:text-white transition" href="/conditions">
+              Conditions
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

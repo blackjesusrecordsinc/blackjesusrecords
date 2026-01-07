@@ -8,31 +8,41 @@ module.exports = {
 
   theme: {
     extend: {
+      /* =========================
+         COULEURS — BLACK JESUS
+      ========================= */
       colors: {
-        /* =========================
-           BRAND — BLACK JESUS
-        ========================= */
-        primary: "#F5C542",      // jaune signature (cinéma / luxe)
-        primarySoft: "#E6B93C",  // hover / accents doux
-        primaryText: "#0B0B0B",
-
-        /* =========================
-           NEUTRES
-        ========================= */
-        dark: "#0B0B0B",
-        foreground: "#F5F5F5",
-
-        /* =========================
-           TEXT TOKENS
-        ========================= */
-        mutedStrong: "rgba(255,255,255,0.90)",
-        muted: "rgba(255,255,255,0.78)",
-        mutedSoft: "rgba(255,255,255,0.55)",
+        primary: "#F5C542",       // jaune signature (cinéma / luxe)
+        primarySoft: "#E6B93C",   // hover / accents doux
+        dark: "#0B0B0B",          // noir profond
+        grayText: "#D1D1D1",      // texte secondaire clair
       },
 
+      /* =========================
+         OMBRES CINÉ
+      ========================= */
       boxShadow: {
-        glow: "0 0 22px rgba(245,197,66,0.25)",
-        title: "0 10px 30px rgba(0,0,0,0.55)",
+        glow: "0 0 22px rgba(245, 197, 66, 0.25)",
+        glowSoft: "0 0 14px rgba(245, 197, 66, 0.18)",
+      },
+
+      /* =========================
+         BACKDROP BLUR (cohérent Navbar)
+      ========================= */
+      backdropBlur: {
+        xs: "2px",
+        sm: "6px",
+        md: "12px",
+        lg: "20px",
+      },
+
+      /* =========================
+         BORDER RADIUS (ciné / premium)
+      ========================= */
+      borderRadius: {
+        xl: "0.75rem",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
       },
     },
   },

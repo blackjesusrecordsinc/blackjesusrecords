@@ -39,8 +39,8 @@ export default function Typewriter({
     }
 
     if (deleting && isDoneDeleting) {
-      setTimeout(() => setDeleting(false), 0);
-      setTimeout(() => setPhraseIdx((p) => (p + 1) % phrases.length), 0);
+      setDeleting(false);
+      setPhraseIdx((p) => (p + 1) % phrases.length);
       return;
     }
 

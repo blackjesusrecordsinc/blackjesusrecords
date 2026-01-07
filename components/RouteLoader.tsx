@@ -4,9 +4,6 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-/* =========================
-   Helpers navigation
-========================= */
 function isModifiedEvent(e: MouseEvent) {
   return e.metaKey || e.altKey || e.ctrlKey || e.shiftKey;
 }
@@ -37,33 +34,29 @@ function isInternalHref(href: string) {
 }
 
 function isSamePageHashNav(href: string) {
+  // "/#services" depuis "/" => pas loader, juste scroll
   try {
     const next = new URL(href, window.location.href);
     const cur = new URL(window.location.href);
-    return (
-      next.pathname === cur.pathname &&
-      !!next.hash &&
-      next.search === cur.search
-    );
+    const samePath = next.pathname === cur.pathname;
+    const hashOnly = !!next.hash && samePath && next.search === cur.search;
+    return hashOnly;
   } catch {
     return false;
   }
 }
 
-/* =========================
-   Component
-========================= */
 export default function RouteLoader() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const reduce = useReducedMotion();
 
   const [loading, setLoading] = useState(false);
-  const [hint, setHint] = useState("");
+  const [hint, setHint] = useState<string>("");
 
   const timeoutRef = useRef<number | null>(null);
 
-  /* stop loader on route change */
+  // stop loader quand la route change
   useEffect(() => {
     setLoading(false);
     setHint("");
@@ -71,21 +64,23 @@ export default function RouteLoader() {
       window.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, searchParams?.toString()]);
 
   useEffect(() => {
     if (reduce) return;
 
-    const start = (label = "Chargement…") => {
-      setHint(label);
+    const start = (label?: string) => {
+      setHint(label ?? "");
       setLoading(true);
 
+      // safety stop
       if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
       timeoutRef.current = window.setTimeout(() => {
         setLoading(false);
         setHint("");
         timeoutRef.current = null;
-      }, 8000);
+      }, 9000);
     };
 
     const onClickCapture = (e: MouseEvent) => {
@@ -95,16 +90,21 @@ export default function RouteLoader() {
       const a = getAnchorTarget(e.target as HTMLElement);
       if (!a) return;
 
+      // target blank => pas loader
       if (a.target && a.target !== "_self") return;
 
       const href = a.getAttribute("href") || "";
       if (!isInternalHref(href)) return;
+
+      // ancre même page => pas loader
       if (href.startsWith("#") || isSamePageHashNav(href)) return;
 
       const nextUrl = new URL(href, window.location.href);
       const curUrl = new URL(window.location.href);
+
       if (nextUrl.toString() === curUrl.toString()) return;
 
+      // label premium
       const label =
         nextUrl.pathname === "/booking"
           ? "Ouverture réservation…"
@@ -119,13 +119,15 @@ export default function RouteLoader() {
 
     const onSubmitCapture = (e: Event) => {
       const form = e.target as HTMLFormElement | null;
-      if (!form) return;
+      if (!form || form.tagName !== "FORM") return;
 
+      // Si le form a target _blank => pas loader
       const target = form.getAttribute("target");
       if (target && target !== "_self") return;
 
+      // Si le form a action externe => on évite un faux loader (à moins que tu veuilles)
       const action = form.getAttribute("action") || "";
-      if (action.startsWith("http")) {
+      if (action && action.startsWith("http")) {
         try {
           const u = new URL(action);
           if (u.origin !== window.location.origin) return;
@@ -134,6 +136,7 @@ export default function RouteLoader() {
         }
       }
 
+      // Label basé sur page
       const label =
         window.location.pathname.includes("booking")
           ? "Envoi de la réservation…"
@@ -151,7 +154,7 @@ export default function RouteLoader() {
         setLoading(false);
         setHint("");
         timeoutRef.current = null;
-      }, 2200);
+      }, 2500);
     };
 
     document.addEventListener("click", onClickCapture, true);
@@ -176,14 +179,15 @@ export default function RouteLoader() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.12 }}
+            transition={{ duration: 0.14 }}
+            className="w-full"
           >
-            {/* progress bar */}
+            {/* bar */}
             <div className="relative h-[3px] w-full overflow-hidden">
               <div className="absolute inset-0 bg-white/10" />
 
               <motion.div
-                className="absolute top-0 h-full w-[34%] bg-primary"
+                className="absolute top-0 h-full w-[35%] bg-yellow-400"
                 initial={{ x: "-40%" }}
                 animate={{ x: "220%" }}
                 transition={{
@@ -191,11 +195,11 @@ export default function RouteLoader() {
                   repeat: Infinity,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                style={{ willChange: "transform" }}
+                style={{ filter: "drop-shadow(0 0 12px rgba(250,204,21,0.35))" }}
               />
 
               <motion.div
-                className="absolute top-0 h-full w-[16%] bg-primary/60"
+                className="absolute top-0 h-full w-[18%] bg-yellow-200/80"
                 initial={{ x: "-25%" }}
                 animate={{ x: "240%" }}
                 transition={{
@@ -204,19 +208,18 @@ export default function RouteLoader() {
                   ease: [0.22, 1, 0.36, 1],
                   delay: 0.12,
                 }}
-                style={{ willChange: "transform" }}
               />
             </div>
 
-            {/* hint (desktop only) */}
+            {/* hint */}
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+              initial={{ opacity: 0, y: -6, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -6, filter: "blur(6px)" }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="absolute right-4 top-3 hidden sm:flex items-center gap-2 text-[11px] text-white/70"
             >
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
               {hint || "Chargement…"}
             </motion.div>
           </motion.div>
