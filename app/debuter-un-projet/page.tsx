@@ -58,7 +58,7 @@ export default function DebuterUnProjet() {
     if (company) {
       setStatus("success");
       setMsg("Demande envoyée.");
-      e.currentTarget.reset();
+      formRef.current?.reset();
       return;
     }
 
@@ -108,10 +108,15 @@ export default function DebuterUnProjet() {
 
       setStatus("success");
       setMsg("Demande envoyée. Réponse sous 24–48h ouvrables.");
-      e.currentTarget.reset();
+      formRef.current?.reset();
     } catch (err: any) {
       setStatus("error");
-      setMsg(String(err?.message || "Erreur d’envoi. Réessaie plus tard."));
+      const raw = String(err?.message || "");
+      setMsg(
+        raw.includes("currentTarget")
+          ? "Erreur d’envoi. Réessaie plus tard."
+          : raw || "Erreur d’envoi. Réessaie plus tard."
+      );
     }
   }, []);
 
@@ -128,12 +133,13 @@ export default function DebuterUnProjet() {
         </h1>
 
         <p className="mt-6 text-white/90 leading-relaxed">
-          Cet espace sert à déposer un brief complet. Plus c’est précis, plus notre réponse est rapide,
-          réaliste et alignée sur ton objectif.
+          Cet espace sert à déposer un brief complet. Plus c’est précis, plus notre
+          réponse est rapide, réaliste et alignée sur ton objectif.
         </p>
 
         <p className="mt-3 text-white/85 leading-relaxed">
-          Après l’envoi, on revient avec une lecture structurée et la prochaine étape (appel, devis, date de prod).
+          Après l’envoi, on revient avec une lecture structurée et la prochaine
+          étape (appel, devis, date de prod).
         </p>
 
         <p className="mt-6 text-white/85 leading-relaxed">
@@ -170,7 +176,9 @@ export default function DebuterUnProjet() {
           </div>
 
           <div>
-            <label className="block text-sm mb-2 text-white/90">Adresse courriel</label>
+            <label className="block text-sm mb-2 text-white/90">
+              Adresse courriel
+            </label>
             <input
               type="email"
               name="email"
@@ -182,7 +190,9 @@ export default function DebuterUnProjet() {
           </div>
 
           <div>
-            <label className="block text-sm mb-2 text-white/90">Brief du projet</label>
+            <label className="block text-sm mb-2 text-white/90">
+              Brief du projet
+            </label>
             <textarea
               name="message"
               rows={8}
@@ -191,7 +201,8 @@ export default function DebuterUnProjet() {
               className="w-full rounded-xl bg-white/8 border border-white/20 px-4 py-3 text-white placeholder:text-white/70 outline-none focus:border-white/45"
             />
             <p className="mt-2 text-xs text-white/80">
-              Conseil : ajoute 1–2 références (artistes / marques / liens) et ton délai idéal.
+              Conseil : ajoute 1–2 références (artistes / marques / liens) et ton
+              délai idéal.
             </p>
           </div>
 
@@ -247,7 +258,8 @@ export default function DebuterUnProjet() {
           </button>
 
           <p className="text-xs text-white/80">
-            Aucune prospection. Tes informations servent uniquement à répondre à cette demande.
+            Aucune prospection. Tes informations servent uniquement à répondre à
+            cette demande.
           </p>
         </form>
       </motion.div>
