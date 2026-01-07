@@ -158,17 +158,14 @@ export default function HomePage() {
                     Débuter un projet →
                   </Link>
 
-                  <PlanifierUnAppelCTA
-                    className="inline-flex items-center justify-center rounded-full
+                  <PlanifierUnAppelCTA className="inline-flex items-center justify-center rounded-full
                                border border-white/20 bg-black/25 px-8 py-4
                                text-white/90 font-semibold
                                hover:-translate-y-[2px] hover:scale-[1.01]
                                hover:border-[#F5C542]/50 hover:text-white
                                hover:shadow-[0_0_20px_rgba(245,197,66,0.16)]
                                focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5C542]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-black/80
-                               transition"
-                    label="Planifier un appel"
-                  />
+                               transition" label="Planifier un appel" />
                 </div>
               </motion.div>
 
@@ -339,19 +336,16 @@ export default function HomePage() {
               Débuter un projet →
             </Link>
 
-            <a
-              href={CALL_URL}
-            <PlanifierUnAppelCTA
-              className="inline-flex items-center justify-center rounded-full
+            <PlanifierUnAppelCTA className="inline-flex items-center justify-center rounded-full
                          border border-white/20 bg-black/25 px-8 py-4
                          text-white/90 font-semibold
                          hover:-translate-y-[2px] hover:scale-[1.01]
                          hover:border-[#F5C542]/50 hover:text-white
                          hover:shadow-[0_0_20px_rgba(245,197,66,0.16)]
                          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F5C542]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-black/80
-                         transition"
-              label="Planifier un appel"
-            />
+                         transition" label="Planifier un appel" />
+          </div>
+        </motion.div>
       </Reveal>
     </main>
   );
